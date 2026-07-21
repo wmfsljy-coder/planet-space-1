@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우주 탐사와 태양 활동 — 관측 스테이션</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+
+<div class="app">
+  <nav class="rail" id="rail">
+    <div class="brand">
+      <a class="home" href="../">← 행성우주과학1</a>
+      <div class="eyebrow" style="margin-top:8px">Ⅰ-1 · 우주 탐사와 행성계</div>
+      <h1 class="display">우주 탐사와<br>태양 활동</h1>
+    </div>
+    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 우주 탐사 방법</button>
+    <button class="tab-btn" data-tab="1"><span class="num">02</span> 태양 활동과 우주 위험</button>
+  </nav>
+
+  <main>
+    <section class="tab-panel" data-panel="0">
+      <div class="stage-head">
+        <div class="eyebrow">01 · 천체에 다가가는 여러 방법</div>
+        <h2 class="display">우주 탐사 방법</h2>
+        <p>탐사 방법을 클릭해 각각 어떤 방식으로 천체를 관측하는지 확인해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="canvas-wrap"><canvas id="c0" width="900" height="380"></canvas></div>
+        <div class="info-card" id="c0-info">탐사 방법을 클릭해 보세요.</div>
+      </div>
+    </section>
+
+    <section class="tab-panel" data-panel="1" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">02 · 태양의 활동이 지구에 미치는 영향</div>
+        <h2 class="display">태양 활동과 우주 위험 감시</h2>
+        <p>태양 활동 주기(약 11년) 슬라이더를 조절해, 흑점 수와 태양 활동이 활발할 때 지구에 어떤 영향을 주는지 확인해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="canvas-wrap"><canvas id="c1" width="900" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">태양 활동 주기 진행(년)<span class="val" id="c1-y-val">0</span></div>
+            <input type="range" id="c1-y" min="0" max="11" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="info-card" id="c1-info"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="theme-toggle" id="themeToggle">라이트 모드</button>
+<script src="../assets/theme.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* TAB0 우주탐사 방법 */
+(function () {
+  var canvas = document.getElementById("c0");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var info = document.getElementById("c0-info");
+  var methods = [
+    { icon: "🛰️", name: "근접 통과(플라이바이)", desc: "천체 가까이를 스쳐 지나가며 짧은 시간 동안 관측합니다. 연료 소모가 적어 먼 천체 탐사에 유리합니다.", x: 150 },
+    { icon: "🔄", name: "궤도선(오비터)", desc: "천체 주위를 도는 궤도에 진입해 장기간 관측합니다. 표면 전체를 지도화하는 데 유리합니다.", x: 400 },
+    { icon: "🪂", name: "착륙선(랜더)", desc: "천체 표면에 직접 착륙해 그 지점을 정밀하게 관측·분석합니다.", x: 650 },
+    { icon: "🤖", name: "탐사차(로버)", desc: "착륙 후 표면을 이동하며 여러 지점을 탐사합니다. 예) 화성의 큐리오시티, 퍼서비어런스.", x: 850 }
+  ];
+  canvas.addEventListener("click", function (e) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = canvas._w / rect.width;
+    var mx = (e.clientX - rect.left) * scaleX;
+    methods.forEach(function (m) { if (Math.abs(mx - m.x) < 110) info.innerHTML = "<b>" + m.icon + " " + m.name + "</b> — " + m.desc; });
+  });
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    methods.forEach(function (m) {
+      ctx.save();
+      ctx.strokeStyle = cssVar("--line"); ctx.fillStyle = cssVar("--panel-2");
+      ctx.fillRect(m.x - 100, 100, 200, 160);
+      ctx.strokeRect(m.x - 100, 100, 200, 160);
+      ctx.restore();
+      ctx.font = "44px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(m.icon, m.x, 190);
+      ctx.font = "700 12px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.fillText(m.name, m.x, 235);
+    });
+  }
+  render();
+})();
+
+/* TAB1 태양활동 */
+(function () {
+  var canvas = document.getElementById("c1");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var y = 0;
+  var info = document.getElementById("c1-info");
+  document.getElementById("c1-y").addEventListener("input", function (e) { y = +e.target.value; document.getElementById("c1-y-val").textContent = y; render(); });
+
+  function activity(yy) { return (1 - Math.cos(yy / 11 * Math.PI * 2)) / 2; }
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    var x0 = 60, x1 = 480, y0 = 40, y1 = H - 60;
+    ctx.strokeStyle = cssVar("--line"); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.beginPath();
+    for (var px = 0; px <= 200; px++) {
+      var yy = px / 200 * 11;
+      var xx = x0 + px / 200 * (x1 - x0), yyy = y1 - activity(yy) * (y1 - y0);
+      if (px === 0) ctx.moveTo(xx, yyy); else ctx.lineTo(xx, yyy);
+    }
+    ctx.strokeStyle = cssVar("--coral"); ctx.lineWidth = 2.5; ctx.stroke();
+    var curX = x0 + y / 11 * (x1 - x0), curY = y1 - activity(y) * (y1 - y0);
+    ctx.fillStyle = cssVar("--teal"); ctx.beginPath(); ctx.arc(curX, curY, 6, 0, 7); ctx.fill();
+    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist"); ctx.textAlign = "center";
+    ctx.fillText("태양 활동 주기(약 11년)", (x0 + x1) / 2, y1 + 26);
+
+    // sun visualization with spots proportional to activity
+    var act = activity(y);
+    var sunX = 700, sunY = H / 2, sunR = 90;
+    ctx.save(); ctx.fillStyle = cssVar("--coral"); ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, 7); ctx.fill(); ctx.restore();
+    var nSpots = Math.round(act * 12);
+    var seed = Math.floor(y * 100);
+    function rnd(n) { seed = (seed * 9301 + 49297) % 233280; return (seed / 233280) * n; }
+    for (var i = 0; i < nSpots; i++) {
+      var ang = rnd(Math.PI * 2), r = rnd(sunR * 0.8);
+      ctx.fillStyle = cssVar("--abyss");
+      ctx.beginPath(); ctx.arc(sunX + Math.cos(ang) * r, sunY + Math.sin(ang) * r, 3 + rnd(3), 0, 7); ctx.fill();
+    }
+    if (act > 0.6) {
+      ctx.save(); ctx.strokeStyle = cssVar("--foam"); ctx.globalAlpha = .5; ctx.lineWidth = 2;
+      for (var f = 0; f < 3; f++) {
+        var fa = rnd(Math.PI * 2);
+        ctx.beginPath(); ctx.moveTo(sunX + Math.cos(fa) * sunR, sunY + Math.sin(fa) * sunR);
+        ctx.lineTo(sunX + Math.cos(fa) * (sunR + 40), sunY + Math.sin(fa) * (sunR + 40));
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    info.innerHTML = "태양 활동 극대기에 가까울수록(현재 활동 지수 " + (act * 100).toFixed(0) + "%) 흑점 수가 늘고, <b>플레어</b>와 <b>코로나 물질 방출(CME)</b>이 활발해집니다. 이는 지구 자기권을 교란시켜 <b>오로라</b>를 강화하고, 인공위성 고장·GPS 오차·정전 등 <b>우주 위험</b>을 일으킬 수 있습니다.";
+  }
+  render();
+})();
+
+})();
+</script>
+</body>
+</html>

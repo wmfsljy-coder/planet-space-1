@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>태양계 천체와 외계 행성 — 관측 스테이션</title>
+<link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+
+<div class="app">
+  <nav class="rail" id="rail">
+    <div class="brand">
+      <a class="home" href="../">← 행성우주과학1</a>
+      <div class="eyebrow" style="margin-top:8px">Ⅰ-2 · 우주 탐사와 행성계</div>
+      <h1 class="display">태양계 천체와<br>외계 행성</h1>
+    </div>
+    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 케플러 법칙</button>
+    <button class="tab-btn" data-tab="1"><span class="num">02</span> 행성과 소천체</button>
+    <button class="tab-btn" data-tab="2"><span class="num">03</span> 외계 행성계 탐사</button>
+  </nav>
+
+  <main>
+    <section class="tab-panel" data-panel="0">
+      <div class="stage-head">
+        <div class="eyebrow">01 · 행성 운동의 세 가지 규칙</div>
+        <h2 class="display">케플러 법칙</h2>
+        <p>이심률 슬라이더로 타원 궤도의 모양을, 재생 버튼으로 같은 시간 동안 쓸고 지나가는 면적이 항상 같다는 제2법칙(면적 속도 일정 법칙)을 확인해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="canvas-wrap"><canvas id="c0" width="900" height="420"></canvas></div>
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">궤도 이심률<span class="val" id="c0-e-val">0.4</span></div>
+            <input type="range" id="c0-e" min="0" max="0.8" step="0.05" value="0.4">
+          </div>
+        </div>
+        <div class="info-card" id="c0-info"></div>
+      </div>
+    </section>
+
+    <section class="tab-panel" data-panel="1" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">02 · 태양계를 이루는 천체들</div>
+        <h2 class="display">행성과 소천체의 특징</h2>
+        <p>천체를 클릭해 지구형 행성, 목성형 행성, 소천체의 특징을 비교해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="canvas-wrap"><canvas id="c1" width="900" height="380"></canvas></div>
+        <div class="info-card" id="c1-info">천체를 클릭해 보세요.</div>
+      </div>
+    </section>
+
+    <section class="tab-panel" data-panel="2" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">03 · 태양계 밖 행성 찾기</div>
+        <h2 class="display">외계 행성계 탐사</h2>
+        <p>중심별의 표면 온도 슬라이더를 조절해 액체 물이 존재할 수 있는 '생명 가능 지대'가 어떻게 달라지는지 확인해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="canvas-wrap"><canvas id="c2" width="900" height="380"></canvas></div>
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">중심별 표면 온도(K)<span class="val" id="c2-t-val">5800</span></div>
+            <input type="range" id="c2-t" min="3000" max="10000" step="100" value="5800">
+          </div>
+        </div>
+        <div class="info-card" id="c2-info"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="theme-toggle" id="themeToggle">라이트 모드</button>
+<script src="../assets/theme.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* TAB0 케플러법칙 */
+(function () {
+  var canvas = document.getElementById("c0");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var ecc = 0.4;
+  var info = document.getElementById("c0-info");
+  document.getElementById("c0-e").addEventListener("input", function (e) { ecc = +e.target.value; document.getElementById("c0-e-val").textContent = ecc.toFixed(2); render(); });
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    var cx = W / 2, cy = H / 2, a = 300, b = a * Math.sqrt(1 - ecc * ecc), c = Math.sqrt(a * a - b * b);
+    ctx.strokeStyle = cssVar("--line"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(cx, cy, a, b, 0, 0, 7); ctx.stroke();
+    ctx.fillStyle = cssVar("--coral"); ctx.beginPath(); ctx.arc(cx + c, cy, 12, 0, 7); ctx.fill();
+    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist"); ctx.textAlign = "center"; ctx.fillText("태양(초점)", cx + c, cy + 28);
+
+    // two equal-area sectors: near perihelion (fast, short arc) and near aphelion (slow, long arc)
+    function pointAt(angle) { return { x: cx + a * Math.cos(angle), y: cy + b * Math.sin(angle) }; }
+    drawSector(0, 0.5, cssVar("--teal"));
+    drawSector(Math.PI, Math.PI + 1.7, cssVar("--violet"));
+
+    function drawSector(a0, a1, color) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(cx + c, cy);
+      for (var t = a0; t <= a1; t += 0.02) {
+        var p = pointAt(t);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color; ctx.globalAlpha = .4; ctx.fill();
+      ctx.restore();
+    }
+    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--teal"); ctx.textAlign = "left";
+    ctx.fillText("근일점 부근: 짧은 시간, 빠른 속도", cx + a - 260, cy - b - 20);
+    ctx.fillStyle = cssVar("--violet");
+    ctx.fillText("원일점 부근: 같은 시간, 느린 속도, 넓은 면적", cx - a + 10, cy + b + 30);
+
+    info.innerHTML = "<b>제1법칙(타원 궤도 법칙)</b>: 행성은 태양을 한 초점으로 하는 타원 궤도를 그립니다(이심률 " + ecc.toFixed(2) + "). <b>제2법칙(면적 속도 일정 법칙)</b>: 태양과 행성을 잇는 선분이 같은 시간 동안 쓸고 지나가는 면적은 항상 같습니다 — 그림의 두 색칠된 부채꼴 면적이 같습니다. 이 때문에 행성은 태양에 가까운 근일점에서 더 빠르게, 먼 원일점에서 더 느리게 움직입니다. <b>제3법칙(조화 법칙)</b>: 공전 주기의 제곱은 궤도 긴반지름의 세제곱에 비례합니다(T² ∝ a³).";
+  }
+  render();
+})();
+
+/* TAB1 행성과 소천체 */
+(function () {
+  var canvas = document.getElementById("c1");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var info = document.getElementById("c1-info");
+  var bodies = [
+    { icon: "🪨", name: "지구형 행성", desc: "수성·금성·지구·화성. 크기가 작고 밀도가 크며(암석·금속 위주), 표면이 단단하고 위성 수가 적습니다.", x: 150 },
+    { icon: "🪐", name: "목성형 행성", desc: "목성·토성·천왕성·해왕성. 크기가 크고 밀도가 작으며(기체·얼음 위주), 고리와 많은 위성을 가집니다.", x: 400 },
+    { icon: "☄️", name: "혜성", desc: "얼음과 먼지로 이루어져 태양에 가까워지면 꼬리가 생깁니다. 태양계 외곽(카이퍼대·오르트구름)에서 옵니다.", x: 650 },
+    { icon: "🌑", name: "소행성·왜소행성", desc: "주로 화성과 목성 사이(소행성대)에 분포하는 암석질 천체입니다. 명왕성처럼 구형에 가깝지만 행성 지위를 얻지 못한 것을 왜소행성이라 합니다.", x: 850 }
+  ];
+  canvas.addEventListener("click", function (e) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = canvas._w / rect.width;
+    var mx = (e.clientX - rect.left) * scaleX;
+    bodies.forEach(function (b) { if (Math.abs(mx - b.x) < 110) info.innerHTML = "<b>" + b.icon + " " + b.name + "</b> — " + b.desc; });
+  });
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    bodies.forEach(function (b) {
+      ctx.save();
+      ctx.strokeStyle = cssVar("--line"); ctx.fillStyle = cssVar("--panel-2");
+      ctx.fillRect(b.x - 100, 100, 200, 160);
+      ctx.strokeRect(b.x - 100, 100, 200, 160);
+      ctx.restore();
+      ctx.font = "44px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(b.icon, b.x, 190);
+      ctx.font = "700 12px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.fillText(b.name, b.x, 235);
+    });
+  }
+  render();
+})();
+
+/* TAB2 외계행성 */
+(function () {
+  var canvas = document.getElementById("c2");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var temp = 5800;
+  var info = document.getElementById("c2-info");
+  document.getElementById("c2-t").addEventListener("input", function (e) { temp = +e.target.value; document.getElementById("c2-t-val").textContent = temp; render(); });
+
+  function tempToColor(t) {
+    if (t > 8000) return "#c8d8ff";
+    if (t > 6000) return "#fff6df";
+    if (t > 5000) return "#ffe9b3";
+    return "#ff7a5c";
+  }
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    var cx = 130, cy = H / 2;
+    var luminosityFactor = Math.pow(temp / 5800, 4);
+    var habZoneMid = 150 * Math.sqrt(luminosityFactor);
+    var habZoneWidth = habZoneMid * 0.35;
+
+    ctx.fillStyle = tempToColor(temp); ctx.beginPath(); ctx.arc(cx, cy, 40, 0, 7); ctx.fill();
+
+    ctx.save();
+    ctx.strokeStyle = cssVar("--teal"); ctx.globalAlpha = .35; ctx.lineWidth = habZoneWidth * 2;
+    ctx.beginPath(); ctx.arc(cx, cy, habZoneMid, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--teal"); ctx.textAlign = "left";
+    ctx.fillText("생명 가능 지대(액체 물이 있을 수 있는 거리)", cx + habZoneMid + habZoneWidth + 20, cy);
+
+    // orbit markers
+    [0.6, 1.0, 1.6].forEach(function (f, i) {
+      var r = habZoneMid * f * 0.7 + (i - 1) * 0;
+    });
+    var earthLikeR = habZoneMid;
+    ctx.save(); ctx.strokeStyle = cssVar("--line"); ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.arc(cx, cy, earthLikeR, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+    ctx.fillStyle = cssVar("--cold"); ctx.beginPath(); ctx.arc(cx + earthLikeR, cy, 6, 0, 7); ctx.fill();
+
+    info.innerHTML = "중심별의 표면 온도가 " + temp + "K일 때, 광도는 태양의 약 " + luminosityFactor.toFixed(2) + "배입니다. 별이 <b>뜨거울수록(광도가 클수록) 생명 가능 지대는 멀고 넓어지며</b>, 차가울수록 별에 가깝고 좁아집니다. 외계 행성은 주로 <b>식 현상법</b>(행성이 별 앞을 지나며 별빛이 살짝 어두워지는 것을 관측)이나 <b>시선 속도법</b>(행성의 중력으로 별이 미세하게 흔들리는 것을 관측)으로 찾습니다.";
+  }
+  render();
+})();
+
+})();
+</script>
+</body>
+</html>
