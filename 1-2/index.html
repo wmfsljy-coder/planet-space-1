@@ -49,6 +49,26 @@
         <div class="canvas-wrap"><canvas id="c1" width="900" height="380"></canvas></div>
         <div class="info-card" id="c1-info">천체를 클릭해 보세요.</div>
       </div>
+
+      <div class="stage-card" style="margin-top:14px;">
+        <div class="stage-head" style="padding:16px 20px 0;">
+          <div class="eyebrow">심화 · 실제 반지름·질량 데이터로 계산하기</div>
+          <h2 class="display" style="font-size:20px;">행성 밀도와 표면 중력 계산기</h2>
+        </div>
+        <div class="canvas-wrap"><canvas id="c1b" width="900" height="320"></canvas></div>
+        <div class="controls">
+          <div class="ctrl-group" style="flex:1 1 100%">
+            <div class="ctrl-label">행성 선택<span class="val" id="c1b-name-val">수성</span></div>
+            <input type="range" id="c1b-idx" min="0" max="7" step="1" value="0">
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="lbl">평균 밀도</div><div class="num" id="c1b-density">—</div></div>
+          <div class="stat-box"><div class="lbl">표면 중력(지구=1)</div><div class="num" id="c1b-gravity">—</div></div>
+          <div class="stat-box"><div class="lbl">분류</div><div class="num" id="c1b-class">—</div></div>
+        </div>
+        <div class="info-card" id="c1b-info"></div>
+      </div>
     </section>
 
     <section class="tab-panel" data-panel="2" hidden>
@@ -154,6 +174,84 @@
     });
   }
   render();
+})();
+
+/* TAB1-b 행성 밀도·중력 계산기 */
+(function () {
+  var canvas = document.getElementById("c1b");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var slider = document.getElementById("c1b-idx");
+  var nameVal = document.getElementById("c1b-name-val");
+  var densityEl = document.getElementById("c1b-density");
+  var gravityEl = document.getElementById("c1b-gravity");
+  var classEl = document.getElementById("c1b-class");
+  var info = document.getElementById("c1b-info");
+
+  var G = 6.674e-11;
+  var planets = [
+    { name: "수성", r: 2439.7, m: 0.330, color: "--mist" },
+    { name: "금성", r: 6051.8, m: 4.87, color: "--coral" },
+    { name: "지구", r: 6371.0, m: 5.97, color: "--cold" },
+    { name: "화성", r: 3389.5, m: 0.642, color: "--coral" },
+    { name: "목성", r: 69911, m: 1898, color: "--foam" },
+    { name: "토성", r: 58232, m: 568, color: "--foam" },
+    { name: "천왕성", r: 25362, m: 86.8, color: "--teal" },
+    { name: "해왕성", r: 24622, m: 102, color: "--teal" }
+  ];
+  var earthG = 9.8;
+
+  function calc(p) {
+    var rM = p.r * 1000;
+    var massKg = p.m * 1e24;
+    var volume = (4 / 3) * Math.PI * Math.pow(rM, 3);
+    var density = massKg / volume / 1000; // g/cm^3
+    var g = G * massKg / (rM * rM);
+    return { density: density, g: g, gRel: g / earthG };
+  }
+
+  var maxR = planets[4].r; // Jupiter scale reference
+
+  function render(idx) {
+    var p = planets[idx];
+    var c = calc(p);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+
+    var cx = W / 2, cy = H / 2 + 10;
+    var scale = 130 / Math.sqrt(maxR);
+    var rPx = Math.max(10, Math.sqrt(p.r) * scale);
+    ctx.beginPath(); ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
+    ctx.fillStyle = cssVar(p.color); ctx.fill();
+    ctx.strokeStyle = cssVar("--line"); ctx.stroke();
+
+    // earth reference circle overlay for comparison (dashed)
+    var rEarthPx = Math.max(4, Math.sqrt(planets[2].r) * scale);
+    ctx.save(); ctx.setLineDash([3, 3]); ctx.strokeStyle = cssVar("--mist");
+    ctx.beginPath(); ctx.arc(cx, cy, rEarthPx, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+
+    ctx.font = "700 16px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.textAlign = "center";
+    ctx.fillText(p.name, cx, cy - rPx - 20);
+    ctx.font = "10px Segoe UI"; ctx.fillStyle = cssVar("--mist");
+    ctx.fillText("점선 = 지구 크기 비교", cx, cy + rPx + 26);
+    ctx.font = "11px Segoe UI";
+    ctx.fillText("반지름 " + p.r.toLocaleString() + " km · 질량(지구=1) " + (p.m / planets[2].m).toFixed(2), cx, H - 16);
+  }
+
+  function update() {
+    var idx = +slider.value;
+    var p = planets[idx];
+    var c = calc(p);
+    nameVal.textContent = p.name;
+    densityEl.textContent = c.density.toFixed(2) + " g/cm³";
+    gravityEl.textContent = c.gRel.toFixed(2) + "배";
+    var isRocky = c.density > 3;
+    classEl.textContent = isRocky ? "지구형(암석)" : "목성형(기체·얼음)";
+    render(idx);
+    info.innerHTML = "밀도 = 질량 ÷ 부피(4/3·π·r³), 표면 중력 = G × 질량 ÷ 반지름² (G = 6.674×10⁻¹¹) 공식으로 직접 계산한 값입니다. " + p.name + "은(는) 평균 밀도 <b>" + c.density.toFixed(2) + " g/cm³</b>로 " + (isRocky ? "지구형 행성처럼 암석·금속 위주의 단단한 구조" : "목성형 행성처럼 기체·얼음 위주의 가벼운 구조") + "임을 알 수 있고, 표면 중력은 지구의 <b>" + c.gRel.toFixed(2) + "배</b>입니다.";
+  }
+  slider.addEventListener("input", update);
+  update();
 })();
 
 /* TAB2 외계행성 */

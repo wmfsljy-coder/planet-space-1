@@ -30,6 +30,32 @@
         <div class="canvas-wrap"><canvas id="c0" width="900" height="380"></canvas></div>
         <div class="info-card" id="c0-info">탐사 방법을 클릭해 보세요.</div>
       </div>
+
+      <div class="stage-card" style="margin-top:14px;">
+        <div class="stage-head" style="padding:16px 20px 0;">
+          <div class="eyebrow">심화 · 탐사선과의 통신은 왜 실시간이 아닐까?</div>
+          <h2 class="display" style="font-size:20px;">전파 신호 지연 시간 계산기</h2>
+        </div>
+        <div class="canvas-wrap"><canvas id="c0b" width="900" height="260"></canvas></div>
+        <div class="controls">
+          <div class="ctrl-group" style="flex:1 1 100%">
+            <div class="ctrl-label">목표 천체</div>
+            <div class="seg" id="c0b-preset">
+              <button class="on" data-d="38">달</button>
+              <button data-d="7840">화성(최근접)</button>
+              <button data-d="401000">화성(최원접)</button>
+              <button data-d="628000">목성</button>
+              <button data-d="4300000">해왕성</button>
+              <button data-d="22100000">보이저 1호(현재)</button>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">거리 직접 조절(만 km)<span class="val" id="c0b-d-val">38</span></div>
+            <input type="range" id="c0b-d" min="38" max="22100000" step="1" value="38">
+          </div>
+        </div>
+        <div class="info-card" id="c0b-info"></div>
+      </div>
     </section>
 
     <section class="tab-panel" data-panel="1" hidden>
@@ -145,6 +171,82 @@
     info.innerHTML = "태양 활동 극대기에 가까울수록(현재 활동 지수 " + (act * 100).toFixed(0) + "%) 흑점 수가 늘고, <b>플레어</b>와 <b>코로나 물질 방출(CME)</b>이 활발해집니다. 이는 지구 자기권을 교란시켜 <b>오로라</b>를 강화하고, 인공위성 고장·GPS 오차·정전 등 <b>우주 위험</b>을 일으킬 수 있습니다.";
   }
   render();
+})();
+
+/* TAB0-b 통신 지연시간 계산기 */
+(function () {
+  var canvas = document.getElementById("c0b");
+  var ctx = setupCanvas(canvas);
+  var W = canvas._w, H = canvas._h;
+  var C = 299792.458; // km/s
+  var slider = document.getElementById("c0b-d");
+  var val = document.getElementById("c0b-d-val");
+  var info = document.getElementById("c0b-info");
+
+  document.querySelectorAll("#c0b-preset button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("#c0b-preset button").forEach(function (x) { x.classList.toggle("on", x === b); });
+      slider.value = b.getAttribute("data-d");
+      update();
+    });
+  });
+  slider.addEventListener("input", function () {
+    document.querySelectorAll("#c0b-preset button").forEach(function (x) { x.classList.remove("on"); });
+    update();
+  });
+
+  function fmtTime(sec) {
+    if (sec < 60) return sec.toFixed(1) + "초";
+    if (sec < 3600) return (sec / 60).toFixed(1) + "분";
+    if (sec < 86400) return (sec / 3600).toFixed(2) + "시간";
+    return (sec / 86400).toFixed(2) + "일";
+  }
+
+  function render(distKm, oneWaySec) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
+    var x0 = 70, x1 = W - 70, y = H / 2 - 10;
+    ctx.strokeStyle = cssVar("--line"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+    ctx.fillStyle = cssVar("--cold"); ctx.font = "28px Segoe UI"; ctx.textAlign = "center";
+    ctx.fillText("🛰️", x0, y - 20);
+    ctx.fillText("📡", x1, y - 20);
+    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist");
+    ctx.fillText("탐사선", x0, y + 26);
+    ctx.fillText("지구(관제소)", x1, y + 26);
+
+    // animated pulse traveling along the line, speed scaled to log(distance) for visibility
+    var t = (Date.now() / 1000) % 2.4;
+    var frac = Math.min(1, t / 2.2);
+    var px = x0 + frac * (x1 - x0);
+    ctx.fillStyle = cssVar("--coral");
+    ctx.beginPath(); ctx.arc(px, y, 6, 0, Math.PI * 2); ctx.fill();
+
+    ctx.font = "700 13px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.textAlign = "center";
+    ctx.fillText("편도 지연 " + fmtTime(oneWaySec) + " · 왕복(응답까지) " + fmtTime(oneWaySec * 2), (x0 + x1) / 2, y - 60);
+  }
+
+  var rafId = null;
+  function loop() {
+    var d = +slider.value;
+    render(d, d / C);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function update() {
+    var d = +slider.value;
+    val.textContent = d.toLocaleString();
+    var oneWay = d / C;
+    var note;
+    if (oneWay < 2) note = "지연이 매우 짧아 실시간 원격 조종(조이스틱 조작)이 가능한 수준입니다.";
+    else if (oneWay < 60) note = "몇 초~몇십 초의 지연이 있어, 사람이 직접 실시간으로 조작하기엔 다소 불편합니다(예: 달 탐사).";
+    else if (oneWay < 3600) note = "지연이 분 단위이므로, 화성 탐사 로버처럼 '미리 계획한 명령을 한꺼번에 보내고 결과를 기다리는' 방식으로 운영해야 합니다.";
+    else note = "지연이 시간~일 단위여서 실시간 조작은 불가능하며, 탐사선이 스스로 판단하는 자율 기능이 반드시 필요합니다.";
+    info.innerHTML = "거리 " + d.toLocaleString() + "만 km, 빛의 속력(약 " + C.toLocaleString() + " km/s) 기준 편도 신호 지연은 <b>" + fmtTime(oneWay) + "</b>, 명령을 보내고 응답을 받기까지(왕복)는 <b>" + fmtTime(oneWay * 2) + "</b>입니다. " + note;
+  }
+  slider.addEventListener("input", update);
+  update();
+  loop();
 })();
 
 })();
