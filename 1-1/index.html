@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>우주 탐사와 태양 활동 — 관측 스테이션</title>
 <link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .mission-cards { display: flex; gap: 10px; flex-wrap: wrap; padding: 18px 20px 0; }
+  .mission-card { flex: 1 1 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.55; color: var(--mist); cursor: pointer; transition: all .15s; }
+  .mission-card:hover { border-color: var(--teal-dim); }
+  .mission-card.selected { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal) inset; }
+  .mission-slots { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
+  .mission-slot { flex: 1 1 160px; min-height: 90px; border: 1.5px dashed var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: all .15s; }
+  .mission-slot .slot-title { font-size: 12.5px; font-weight: 700; color: var(--foam); margin-bottom: 6px; }
+  .mission-slot .slot-body { font-size: 11.5px; line-height: 1.5; color: var(--mist); }
+  .mission-slot.filled { border-style: solid; background: var(--panel-2); }
+  .mission-slot.correct { border-color: var(--teal); }
+  .mission-slot.wrong { border-color: var(--coral); }
+</style>
 </head>
 <body>
 
@@ -73,6 +86,21 @@
           </div>
         </div>
         <div class="info-card" id="c1-info"></div>
+      </div>
+
+      <div class="stage-head" style="margin-top:30px;">
+        <div class="eyebrow">🔎 미션 · 태양 활동 감시의 실생활 관련성</div>
+        <h2 class="display" style="font-size:20px;">이 태양 활동은 어떤 영향을 일으킬까요?</h2>
+        <p>태양 활동 감시 시스템은 실생활 여러 분야를 보호하기 위해 필요합니다. 태양 활동 카드를 클릭해 선택한 뒤, 그로 인해 나타나는 영향 칸을 클릭해 짝지어 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="mission-cards" id="c1m-cards"></div>
+        <div class="mission-slots" id="c1m-slots"></div>
+        <div class="toggle-row" style="margin:14px 20px 0;">
+          <button class="chip" id="c1m-check">채점하기</button>
+          <button class="chip" id="c1m-new">카드 새로 섞기</button>
+        </div>
+        <div class="info-card" id="c1m-info">카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.</div>
       </div>
     </section>
   </main>
@@ -171,6 +199,116 @@
     info.innerHTML = "태양 활동 극대기에 가까울수록(현재 활동 지수 " + (act * 100).toFixed(0) + "%) 흑점 수가 늘고, <b>플레어</b>와 <b>코로나 물질 방출(CME)</b>이 활발해집니다. 이는 지구 자기권을 교란시켜 <b>오로라</b>를 강화하고, 인공위성 고장·GPS 오차·정전 등 <b>우주 위험</b>을 일으킬 수 있습니다.";
   }
   render();
+})();
+
+/* TAB1 미션 — 태양 활동과 실생활 영향 매칭 */
+(function () {
+  var cardsEl = document.getElementById("c1m-cards");
+  var slotsEl = document.getElementById("c1m-slots");
+  var checkBtn = document.getElementById("c1m-check");
+  var newBtn = document.getElementById("c1m-new");
+  if (!cardsEl) return;
+
+  var slotNames = { flare: "태양 플레어", cme: "코로나 질량 방출(CME)", wind: "태양풍 강화", particle: "고에너지 입자 유입" };
+  var slotOrder = ["flare", "cme", "wind", "particle"];
+  var clues = {
+    flare: "X선이 급증해 지구로 순간적으로 쏟아지면서, 대낮 쪽 전리층이 교란되어 단파 무선 통신이 갑자기 두절되는 델린저 현상이 나타납니다.",
+    cme: "많은 양의 플라스마가 지구 자기장을 강하게 흔들어 지자기 폭풍을 일으키고, 송전망에 유도 전류가 흘러 대규모 정전 사고로 이어질 수 있습니다.",
+    wind: "평소보다 강한 태양풍 입자가 지구 자기장을 따라 극지방으로 흘러들며, 오로라가 관측되는 지역이 평소보다 낮은 위도까지 넓어집니다.",
+    particle: "고에너지 입자가 인공위성의 전자 장비를 손상시키고 GPS 신호를 교란해, 내비게이션의 위치 오차가 커지고 위성 고장 위험이 높아집니다."
+  };
+
+  var pool = [];
+  var slots = {};
+  var selected = null;
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function reset() {
+    pool = shuffle(slotOrder.slice());
+    slots = { flare: null, cme: null, wind: null, particle: null };
+    selected = null;
+    var info = document.getElementById("c1m-info");
+    info.style.color = "";
+    info.textContent = "카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.";
+    render();
+  }
+
+  function render() {
+    cardsEl.innerHTML = "";
+    pool.forEach(function (key) {
+      var card = document.createElement("div");
+      card.className = "mission-card" + (selected === key ? " selected" : "");
+      card.textContent = clues[key];
+      card.addEventListener("click", function () {
+        selected = (selected === key) ? null : key;
+        render();
+      });
+      cardsEl.appendChild(card);
+    });
+
+    slotsEl.innerHTML = "";
+    slotOrder.forEach(function (targetKey) {
+      var slot = document.createElement("div");
+      var filledKey = slots[targetKey];
+      slot.className = "mission-slot" + (filledKey ? " filled" : "");
+      var title = document.createElement("div");
+      title.className = "slot-title";
+      title.textContent = slotNames[targetKey];
+      slot.appendChild(title);
+      var body = document.createElement("div");
+      body.className = "slot-body";
+      body.textContent = filledKey ? clues[filledKey] : "여기를 클릭해 선택한 카드를 놓으세요.";
+      slot.appendChild(body);
+      slot.addEventListener("click", function () {
+        if (filledKey) {
+          pool.push(filledKey);
+          slots[targetKey] = null;
+          render();
+        } else if (selected) {
+          slots[targetKey] = selected;
+          pool = pool.filter(function (k) { return k !== selected; });
+          selected = null;
+          render();
+        }
+      });
+      slotsEl.appendChild(slot);
+    });
+  }
+
+  checkBtn.addEventListener("click", function () {
+    var info = document.getElementById("c1m-info");
+    if (pool.length > 0) {
+      info.style.color = "";
+      info.textContent = "아직 배치하지 않은 카드가 있습니다. 4장을 모두 알맞은 칸에 놓아 주세요.";
+      return;
+    }
+    var correctCount = 0;
+    slotsEl.querySelectorAll(".mission-slot").forEach(function (slotEl, i) {
+      var targetKey = slotOrder[i];
+      var ok = slots[targetKey] === targetKey;
+      slotEl.classList.remove("correct", "wrong");
+      slotEl.classList.add(ok ? "correct" : "wrong");
+      if (ok) correctCount++;
+    });
+    if (correctCount === 4) {
+      info.style.color = "var(--teal)";
+      info.innerHTML = "<b>4장 모두 정답입니다!</b> 태양 활동은 통신·전력·항법 등 실생활 곳곳에 영향을 미치기 때문에 우주 위험 감시가 중요합니다.";
+    } else {
+      info.style.color = "var(--coral)";
+      info.innerHTML = correctCount + " / 4 칸이 맞았습니다. 빨간 테두리 칸을 다시 살펴보고 카드를 옮겨 보세요.";
+    }
+  });
+
+  newBtn.addEventListener("click", reset);
+  reset();
 })();
 
 /* TAB0-b 통신 지연시간 계산기 */

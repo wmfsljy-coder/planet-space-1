@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>태양계 천체와 외계 행성 — 관측 스테이션</title>
 <link rel="stylesheet" href="../assets/theme.css">
+<style>
+  .mission-cards { display: flex; gap: 10px; flex-wrap: wrap; padding: 18px 20px 0; }
+  .mission-card { flex: 1 1 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.55; color: var(--mist); cursor: pointer; transition: all .15s; }
+  .mission-card:hover { border-color: var(--teal-dim); }
+  .mission-card.selected { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal) inset; }
+  .mission-slots { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
+  .mission-slot { flex: 1 1 160px; min-height: 90px; border: 1.5px dashed var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: all .15s; }
+  .mission-slot .slot-title { font-size: 12.5px; font-weight: 700; color: var(--foam); margin-bottom: 6px; }
+  .mission-slot .slot-body { font-size: 11.5px; line-height: 1.5; color: var(--mist); }
+  .mission-slot.filled { border-style: solid; background: var(--panel-2); }
+  .mission-slot.correct { border-color: var(--teal); }
+  .mission-slot.wrong { border-color: var(--coral); }
+</style>
 </head>
 <body>
 
@@ -36,6 +49,21 @@
           </div>
         </div>
         <div class="info-card" id="c0-info"></div>
+      </div>
+
+      <div class="stage-head" style="margin-top:30px;">
+        <div class="eyebrow">🔎 미션 · 케플러 법칙으로 데이터 해석하기</div>
+        <h2 class="display" style="font-size:20px;">이 천체의 공전 주기는 몇 년일까요?</h2>
+        <p>케플러 제3법칙(조화 법칙)에 따르면 공전 주기 T(년)와 궤도 반지름 a(AU) 사이에는 T² = a³의 관계가 성립합니다. 새로 발견된 천체의 궤도 반지름을 보고 공전 주기로 가장 알맞은 값을 선택해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="info-card" id="c0m-data" style="margin:18px 20px 0;"></div>
+        <div class="seg" id="c0m-choices" style="margin:14px 20px 0;"></div>
+        <div class="toggle-row" style="margin:14px 20px 0;">
+          <button class="chip" id="c0m-check">정답 확인</button>
+          <button class="chip" id="c0m-new">새 천체 자료</button>
+        </div>
+        <div class="info-card" id="c0m-info">보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.</div>
       </div>
     </section>
 
@@ -69,6 +97,21 @@
         </div>
         <div class="info-card" id="c1b-info"></div>
       </div>
+
+      <div class="stage-head" style="margin-top:30px;">
+        <div class="eyebrow">🔎 미션 · 관측 특징으로 행성 맞히기</div>
+        <h2 class="display" style="font-size:20px;">이 관측 기록은 어떤 행성일까요?</h2>
+        <p>천체 망원경으로 관측한 특징 카드를 클릭해 선택한 뒤, 알맞은 행성 칸을 클릭해 짝지어 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="mission-cards" id="c1m-cards"></div>
+        <div class="mission-slots" id="c1m-slots"></div>
+        <div class="toggle-row" style="margin:14px 20px 0;">
+          <button class="chip" id="c1m-check">채점하기</button>
+          <button class="chip" id="c1m-new">카드 새로 섞기</button>
+        </div>
+        <div class="info-card" id="c1m-info">카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.</div>
+      </div>
     </section>
 
     <section class="tab-panel" data-panel="2" hidden>
@@ -86,6 +129,25 @@
           </div>
         </div>
         <div class="info-card" id="c2-info"></div>
+      </div>
+
+      <div class="stage-head" style="margin-top:30px;">
+        <div class="eyebrow">🔎 미션 · 생명 가능 지대 판정하기</div>
+        <h2 class="display" style="font-size:20px;">이 행성은 생명 가능 지대 안에 있을까요?</h2>
+        <p>중심별의 표면 온도와 행성의 궤도 반지름 자료가 주어집니다. 별이 뜨거울수록 생명 가능 지대는 멀고 넓어진다는 원리를 이용해 이 행성의 위치를 판정해 보세요.</p>
+      </div>
+      <div class="stage-card">
+        <div class="info-card" id="c2m-data" style="margin:18px 20px 0;"></div>
+        <div class="seg" id="c2m-choices" style="margin:14px 20px 0;">
+          <button data-c="hot">생명 가능 지대보다 안쪽(너무 뜨거움)</button>
+          <button data-c="hz">생명 가능 지대 안</button>
+          <button data-c="cold">생명 가능 지대보다 바깥쪽(너무 추움)</button>
+        </div>
+        <div class="toggle-row" style="margin:14px 20px 0;">
+          <button class="chip" id="c2m-check">정답 확인</button>
+          <button class="chip" id="c2m-new">새 행성계 자료</button>
+        </div>
+        <div class="info-card" id="c2m-info">보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.</div>
       </div>
     </section>
   </main>
@@ -140,6 +202,75 @@
     info.innerHTML = "<b>제1법칙(타원 궤도 법칙)</b>: 행성은 태양을 한 초점으로 하는 타원 궤도를 그립니다(이심률 " + ecc.toFixed(2) + "). <b>제2법칙(면적 속도 일정 법칙)</b>: 태양과 행성을 잇는 선분이 같은 시간 동안 쓸고 지나가는 면적은 항상 같습니다 — 그림의 두 색칠된 부채꼴 면적이 같습니다. 이 때문에 행성은 태양에 가까운 근일점에서 더 빠르게, 먼 원일점에서 더 느리게 움직입니다. <b>제3법칙(조화 법칙)</b>: 공전 주기의 제곱은 궤도 긴반지름의 세제곱에 비례합니다(T² ∝ a³).";
   }
   render();
+})();
+
+/* TAB0 미션 — 케플러 법칙으로 데이터 해석하기 */
+(function () {
+  var dataEl = document.getElementById("c0m-data");
+  var choicesEl = document.getElementById("c0m-choices");
+  var checkBtn = document.getElementById("c0m-check");
+  var newBtn = document.getElementById("c0m-new");
+  if (!dataEl) return;
+
+  var a = 4, trueT = 8;
+  var picked = null, choices = [];
+
+  function shuffle(arr) {
+    var arr2 = arr.slice();
+    for (var i = arr2.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr2[i]; arr2[i] = arr2[j]; arr2[j] = tmp;
+    }
+    return arr2;
+  }
+
+  function newQuestion() {
+    a = 1 + Math.round(Math.random() * 24) / 2;
+    trueT = Math.round(Math.pow(a, 1.5) * 10) / 10;
+    dataEl.innerHTML = "새로 발견된 천체의 궤도 긴반지름은 <b>a = " + a + " AU</b>입니다.";
+    var decoys = [];
+    while (decoys.length < 3) {
+      var factor = 0.5 + Math.random() * 1.5;
+      var d = Math.round(trueT * factor * 10) / 10;
+      if (Math.abs(d - trueT) > trueT * 0.15 && decoys.indexOf(d) === -1 && d > 0) decoys.push(d);
+    }
+    choices = shuffle([trueT].concat(decoys));
+    picked = null;
+    renderChoices();
+    var info = document.getElementById("c0m-info");
+    info.style.color = "";
+    info.textContent = "보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.";
+  }
+
+  function renderChoices() {
+    choicesEl.innerHTML = "";
+    choices.forEach(function (t) {
+      var btn = document.createElement("button");
+      btn.className = picked === t ? "on" : "";
+      btn.textContent = t + "년";
+      btn.addEventListener("click", function () { picked = t; renderChoices(); });
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  checkBtn.addEventListener("click", function () {
+    var info = document.getElementById("c0m-info");
+    if (picked === null) {
+      info.style.color = "";
+      info.textContent = "먼저 보기 중 하나를 선택하세요.";
+      return;
+    }
+    if (picked === trueT) {
+      info.style.color = "var(--teal)";
+      info.innerHTML = "<b>정답입니다!</b> T² = a³이므로 T = a^1.5 = " + a + "^1.5 ≈ " + trueT + "년입니다.";
+    } else {
+      info.style.color = "var(--coral)";
+      info.innerHTML = "다시 생각해 보세요. 정답은 <b>" + trueT + "년</b>입니다. T = a^1.5 관계를 이용해 계산해 보세요.";
+    }
+  });
+
+  newBtn.addEventListener("click", newQuestion);
+  newQuestion();
 })();
 
 /* TAB1 행성과 소천체 */
@@ -239,7 +370,7 @@
   }
 
   function update() {
-    var idx = +slider.value;
+    var idx = Math.round(+slider.value);
     var p = planets[idx];
     var c = calc(p);
     nameVal.textContent = p.name;
@@ -252,6 +383,116 @@
   }
   slider.addEventListener("input", update);
   update();
+})();
+
+/* TAB1 미션 — 관측 특징으로 행성 맞히기 */
+(function () {
+  var cardsEl = document.getElementById("c1m-cards");
+  var slotsEl = document.getElementById("c1m-slots");
+  var checkBtn = document.getElementById("c1m-check");
+  var newBtn = document.getElementById("c1m-new");
+  if (!cardsEl) return;
+
+  var slotNames = { mercury: "수성", mars: "화성", jupiter: "목성", saturn: "토성" };
+  var slotOrder = ["mercury", "mars", "jupiter", "saturn"];
+  var clues = {
+    mercury: "태양에 가장 가까우며 대기가 거의 없고, 표면이 크레이터로 뒤덮여 달과 비슷한 모습입니다.",
+    mars: "붉은 사막 같은 표면과 극지방의 하얀 극관이 두드러지며, 거대한 화산과 협곡 지형이 관측됩니다.",
+    jupiter: "태양계에서 가장 크고, 대적점이라는 거대한 소용돌이와 여러 개의 얇은 고리, 많은 위성을 가지고 있습니다.",
+    saturn: "뚜렷하고 화려한 고리 시스템이 가장 크게 발달했으며, 가장 큰 위성인 타이탄은 두꺼운 대기를 가지고 있습니다."
+  };
+
+  var pool = [];
+  var slots = {};
+  var selected = null;
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function reset() {
+    pool = shuffle(slotOrder.slice());
+    slots = { mercury: null, mars: null, jupiter: null, saturn: null };
+    selected = null;
+    var info = document.getElementById("c1m-info");
+    info.style.color = "";
+    info.textContent = "카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.";
+    render();
+  }
+
+  function render() {
+    cardsEl.innerHTML = "";
+    pool.forEach(function (key) {
+      var card = document.createElement("div");
+      card.className = "mission-card" + (selected === key ? " selected" : "");
+      card.textContent = clues[key];
+      card.addEventListener("click", function () {
+        selected = (selected === key) ? null : key;
+        render();
+      });
+      cardsEl.appendChild(card);
+    });
+
+    slotsEl.innerHTML = "";
+    slotOrder.forEach(function (targetKey) {
+      var slot = document.createElement("div");
+      var filledKey = slots[targetKey];
+      slot.className = "mission-slot" + (filledKey ? " filled" : "");
+      var title = document.createElement("div");
+      title.className = "slot-title";
+      title.textContent = slotNames[targetKey];
+      slot.appendChild(title);
+      var body = document.createElement("div");
+      body.className = "slot-body";
+      body.textContent = filledKey ? clues[filledKey] : "여기를 클릭해 선택한 카드를 놓으세요.";
+      slot.appendChild(body);
+      slot.addEventListener("click", function () {
+        if (filledKey) {
+          pool.push(filledKey);
+          slots[targetKey] = null;
+          render();
+        } else if (selected) {
+          slots[targetKey] = selected;
+          pool = pool.filter(function (k) { return k !== selected; });
+          selected = null;
+          render();
+        }
+      });
+      slotsEl.appendChild(slot);
+    });
+  }
+
+  checkBtn.addEventListener("click", function () {
+    var info = document.getElementById("c1m-info");
+    if (pool.length > 0) {
+      info.style.color = "";
+      info.textContent = "아직 배치하지 않은 카드가 있습니다. 4장을 모두 알맞은 칸에 놓아 주세요.";
+      return;
+    }
+    var correctCount = 0;
+    slotsEl.querySelectorAll(".mission-slot").forEach(function (slotEl, i) {
+      var targetKey = slotOrder[i];
+      var ok = slots[targetKey] === targetKey;
+      slotEl.classList.remove("correct", "wrong");
+      slotEl.classList.add(ok ? "correct" : "wrong");
+      if (ok) correctCount++;
+    });
+    if (correctCount === 4) {
+      info.style.color = "var(--teal)";
+      info.innerHTML = "<b>4장 모두 정답입니다!</b> 표면 상태와 고리·위성 등 관측 특징으로 행성의 종류를 구별할 수 있습니다.";
+    } else {
+      info.style.color = "var(--coral)";
+      info.innerHTML = correctCount + " / 4 칸이 맞았습니다. 빨간 테두리 칸을 다시 살펴보고 카드를 옮겨 보세요.";
+    }
+  });
+
+  newBtn.addEventListener("click", reset);
+  reset();
 })();
 
 /* TAB2 외계행성 */
@@ -298,6 +539,69 @@
     info.innerHTML = "중심별의 표면 온도가 " + temp + "K일 때, 광도는 태양의 약 " + luminosityFactor.toFixed(2) + "배입니다. 별이 <b>뜨거울수록(광도가 클수록) 생명 가능 지대는 멀고 넓어지며</b>, 차가울수록 별에 가깝고 좁아집니다. 외계 행성은 주로 <b>식 현상법</b>(행성이 별 앞을 지나며 별빛이 살짝 어두워지는 것을 관측)이나 <b>시선 속도법</b>(행성의 중력으로 별이 미세하게 흔들리는 것을 관측)으로 찾습니다.";
   }
   render();
+})();
+
+/* TAB2 미션 — 생명 가능 지대 판정하기 */
+(function () {
+  var dataEl = document.getElementById("c2m-data");
+  var choicesEl = document.getElementById("c2m-choices");
+  var checkBtn = document.getElementById("c2m-check");
+  var newBtn = document.getElementById("c2m-new");
+  if (!dataEl) return;
+
+  var trueKey = "hz";
+  var temp = 5800, orbit = 1.0;
+  var picked = null;
+  var seg = choicesEl.querySelectorAll("button");
+
+  seg.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      picked = btn.dataset.c;
+      seg.forEach(function (b) { b.classList.toggle("on", b === btn); });
+    });
+  });
+
+  var labels = { hot: "생명 가능 지대보다 안쪽(너무 뜨거움)", hz: "생명 가능 지대 안", cold: "생명 가능 지대보다 바깥쪽(너무 추움)" };
+
+  function classify(t, orb) {
+    var luminosityFactor = Math.pow(t / 5800, 4);
+    var hzMid = Math.pow(t / 5800, 2);
+    var low = hzMid * 0.65, high = hzMid * 1.35;
+    if (orb < low) return "hot";
+    if (orb > high) return "cold";
+    return "hz";
+  }
+
+  function newQuestion() {
+    temp = 3200 + Math.round(Math.random() * 68) * 100;
+    orbit = Math.round((0.2 + Math.random() * 4.8) * 10) / 10;
+    trueKey = classify(temp, orbit);
+    dataEl.innerHTML = "중심별의 표면 온도는 <b>" + temp + " K</b>, 이 행성의 궤도 반지름은 <b>" + orbit.toFixed(1) + " AU</b>입니다.";
+    picked = null;
+    seg.forEach(function (b) { b.classList.remove("on"); });
+    var info = document.getElementById("c2m-info");
+    info.style.color = "";
+    info.textContent = "보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.";
+  }
+
+  checkBtn.addEventListener("click", function () {
+    var info = document.getElementById("c2m-info");
+    if (picked === null) {
+      info.style.color = "";
+      info.textContent = "먼저 보기 중 하나를 선택하세요.";
+      return;
+    }
+    if (picked === trueKey) {
+      info.style.color = "var(--teal)";
+      info.innerHTML = "<b>정답입니다!</b> " + labels[trueKey] + "에 해당합니다. 별이 뜨거울수록(광도가 클수록) 생명 가능 지대는 멀고 넓어집니다.";
+    } else {
+      info.style.color = "var(--coral)";
+      info.innerHTML = "다시 생각해 보세요. 정답은 <b>" + labels[trueKey] + "</b>입니다.";
+    }
+  });
+
+  newBtn.addEventListener("click", newQuestion);
+  newQuestion();
 })();
 
 })();
