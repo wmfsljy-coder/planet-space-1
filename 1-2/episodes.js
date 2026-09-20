@@ -1157,7 +1157,9 @@ function solveKepler(e, M) {
       var sr = clamp(16 + 26 * Math.log(s.R * 10) / Math.LN10, 12, 54);
       dot(ctx, 62, cy, sr, v(s.c));
       ring(ctx, 62, cy, sr, v("--line"), 2);
-      text(ctx, s.n, 62, cy + sr + 24, { s: 12, w: "900", a: "center" });
+      ctx.font = "900 12px " + FONT;
+      var nw = ctx.measureText(s.n).width;
+      text(ctx, s.n, clamp(62, nw / 2 + 6, 894 - nw / 2), cy + sr + 24, { s: 12, w: "900", a: "center" });
       text(ctx, "반지름 " + s.R.toFixed(3) + " R☉", 62, cy + sr + 42, { s: 10, c: v("--mist"), a: "center" });
       text(ctx, "표면 온도 " + s.T.toLocaleString() + " K", 62, cy + sr + 58, { s: 10, c: v("--mist"), a: "center" });
 
@@ -1256,7 +1258,7 @@ function solveKepler(e, M) {
   function three() {
     var g = window.sthState("hz") || {};
     if (g.sun && g.tr1 && window.sthState("hzQ")) {
-      window.sthMission("m3-4", true, "<span class='m-tag'>미션 완료</span>보수적 기준으로 TRAPPIST-1의 생명 가능 지대(<b>0.0223~0.0321 AU</b>)에 들어오는 행성은 <b>e</b> 하나였습니다. 생명 가능 지대의 자리는 <b>별의 광도</b>가 정합니다.");
+      window.sthMission("m3-4", true, "<span class='m-tag'>미션 완료</span>보수적 기준으로 TRAPPIST-1의 생명 가능 지대(<b>0.0223~0.0322 AU</b>)에 들어오는 행성은 <b>e</b> 하나였습니다. 생명 가능 지대의 자리는 <b>별의 광도</b>가 정합니다.");
       ep.clear(3);
     }
   }
