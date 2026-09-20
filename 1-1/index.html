@@ -5,19 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>우주 탐사와 태양 활동 — 관측 스테이션</title>
 <link rel="stylesheet" href="../assets/theme.css">
-<style>
-  .mission-cards { display: flex; gap: 10px; flex-wrap: wrap; padding: 18px 20px 0; }
-  .mission-card { flex: 1 1 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.55; color: var(--mist); cursor: pointer; transition: all .15s; }
-  .mission-card:hover { border-color: var(--teal-dim); }
-  .mission-card.selected { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal) inset; }
-  .mission-slots { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
-  .mission-slot { flex: 1 1 160px; min-height: 90px; border: 1.5px dashed var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: all .15s; }
-  .mission-slot .slot-title { font-size: 12.5px; font-weight: 700; color: var(--foam); margin-bottom: 6px; }
-  .mission-slot .slot-body { font-size: 11.5px; line-height: 1.5; color: var(--mist); }
-  .mission-slot.filled { border-style: solid; background: var(--panel-2); }
-  .mission-slot.correct { border-color: var(--teal); }
-  .mission-slot.wrong { border-color: var(--coral); }
-</style>
+<link rel="stylesheet" href="../assets/story.css">
 </head>
 <body>
 
@@ -28,408 +16,268 @@
       <div class="eyebrow" style="margin-top:8px">Ⅰ-1 · 우주 탐사와 행성계</div>
       <h1 class="display">우주 탐사와<br>태양 활동</h1>
     </div>
-    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 우주 탐사 방법</button>
-    <button class="tab-btn" data-tab="1"><span class="num">02</span> 태양 활동과 우주 위험</button>
-    <button class="tab-btn" data-tab="2"><span class="num">03</span> 정리하기</button>
+    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 22분 늦게 닿는 명령</button>
+    <button class="tab-btn" data-tab="1"><span class="num">02</span> 8분 20초 뒤의 첫 신호</button>
+    <button class="tab-btn" data-tab="2"><span class="num">03</span> 빗나가게 하라</button>
+    <button class="tab-btn" data-tab="3"><span class="num">04</span> 정리하기</button>
+    <button class="tab-btn" data-tab="4"><span class="num">05</span> 우리 반</button>
   </nav>
 
   <main>
+    <!-- =====================================================================
+         01 우주 탐사 방법 — 이야기 「22분 늦게 닿는 명령」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="0">
       <div class="stage-head">
-        <div class="eyebrow">01 · 천체에 다가가는 여러 방법</div>
-        <h2 class="display">우주 탐사 방법</h2>
-        <p>탐사 방법을 클릭해 각각 어떤 방식으로 천체를 관측하는지 확인해 보세요.</p>
-      
-        <span class="std-chip">12행우01-01</span><span class="std-chip">12행우01-02</span><div class="std-note"><b>[12행우01-01]</b> 태양계 탐사선의 활동을 통해 알아낸 성과를 이해하고, 인공위성을 활용한 우주탐사의 필요성을 토론할 수 있다.<br><b>[12행우01-02]</b> 태양 활동 감시 시스템과 지구 접근 천체를 비롯한 지구를 위협하는 우주 위험 감시 기술의 중요성을 우주 재난 측면에서 인식할 수 있다.</div><div class="terms"><b>탐사선</b><b>흑점</b><b>플레어</b><b>우주 위험</b></div>
-      </div>
-      <div class="stage-card">
-        <div class="canvas-wrap"><canvas id="c0" width="900" height="380"></canvas></div>
-        <div class="info-card" id="c0-info">탐사 방법을 클릭해 보세요.</div>
+        <div class="eyebrow">01 · 태양계 탐사선 · 이야기 한 편</div>
+        <h2 class="display">22분 늦게 닿는 명령</h2>
+        <p>당신은 오늘부터 심우주 관제소의 신참 임무 설계자입니다. 화성에서 방금 도착한 사진 한 장에서 시작해, 어떤 탐사 방식을 고를지·명령이 언제 닿는지·로버를 어떻게 굴릴지를 다섯 장면에 걸쳐 직접 정합니다.</p>
+        <span class="std-chip">12행우01-01</span><div class="std-note"><b>[12행우01-01]</b> 태양계 탐사선의 활동을 통해 알아낸 성과를 이해하고, 인공위성을 활용한 우주탐사의 필요성을 토론할 수 있다.</div><div class="terms"><b>탐사선</b><b>근접 통과</b><b>궤도선</b><b>로버</b><b>전파 지연</b></div>
       </div>
 
-      <div class="stage-card" style="margin-top:14px;">
-        <div class="stage-head" style="padding:16px 20px 0;">
-          <div class="eyebrow">심화 · 탐사선과의 통신은 왜 실시간이 아닐까?</div>
-          <h2 class="display" style="font-size:20px;">전파 신호 지연 시간 계산기</h2>
-        </div>
-        <div class="canvas-wrap"><canvas id="c0b" width="900" height="260"></canvas></div>
-        <div class="controls">
-          <div class="ctrl-group" style="flex:1 1 100%">
-            <div class="ctrl-label">목표 천체</div>
-            <div class="seg" id="c0b-preset">
-              <button class="on" data-d="38">달</button>
-              <button data-d="7840">화성(최근접)</button>
-              <button data-d="401000">화성(최원접)</button>
-              <button data-d="628000">목성</button>
-              <button data-d="4300000">해왕성</button>
-              <button data-d="22100000">보이저 1호(현재)</button>
+      <div class="episode" id="ep1">
+        <section class="scene" data-title="11분 전의 사진">
+          <div class="story narr"><div class="who">🛰️</div><div class="say"><span class="name">이야기</span>오전 9시 14분, 관제소 화면에 화성 로버가 보낸 사진 한 장이 떴습니다. 로버 앞 <b>3 m 지점에 바퀴가 빠질 만한 모래 구덩이</b>가 있습니다. 관제사가 반사적으로 “정지!”를 외쳤지만, 옆자리 선임이 고개를 저었습니다.</div></div>
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">선임 관제사 한별</span>“소용없어요. 지금 보고 있는 이 사진은 <b>11분 전</b> 모습이고, 우리가 보내는 ‘정지’ 명령도 <b>11분 뒤</b>에야 로버에 닿아요. 우리 눈에는 오전 9시지만, 화성에서는 이미 오전 9시 25분의 일이 벌어진 뒤죠.”</div></div>
+          <div class="case-file"><b class="k">오늘의 자료</b> 지구–화성 거리 <b>1.99 AU</b> (약 2억 9,800만 km) &nbsp;|&nbsp; 전파는 빛과 같은 속력 <b>299,792 km/s</b> &nbsp;|&nbsp; 로버가 하루에 받을 수 있는 명령: <b>1회</b></div>
+          <div class="gate loose" id="a-g1"></div>
+        </section>
+
+        <section class="scene" data-title="어떤 방식으로 다가갈까">
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“신참에게 첫 과제를 줄게요. 관제소 벽에 지금까지의 탐사 임무 기록이 붙어 있어요. 저마다 <b>천체에 다가간 방식</b>이 다릅니다. 스쳐 지나가기만 한 것, 둘레를 돈 것, 내려앉은 것, 돌아다닌 것, 그리고 <b>흙을 담아 되가져온</b> 것까지요. 목표가 무엇이었는지 읽고 방식별로 나눠 보세요.”</div></div>
+          <div class="stage-card"><div id="a-sort"></div></div>
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“하나 더. 신참들이 꼭 묻는 질문이에요. ‘지상에도 거대 망원경이 있는데 왜 굳이 우주로 올리나요?’”</div></div>
+          <div class="stage-card" style="margin-top:14px"><div id="a-q1"></div></div>
+          <div class="mission" id="a-m2"><span class="m-tag">미션</span>임무 설계자 자격 시험 두 가지를 통과하세요.<ul><li id="a-m2a">임무 기록 11건을 탐사 방식 다섯 가지로 모두 분류하기</li><li id="a-m2b">인공위성·우주 망원경이 필요한 까닭 고르기</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="명령은 언제 도착하는가">
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“이제 아까 그 11분의 정체를 직접 재 봅시다. 거리를 바꿔 가며 <b>편도 지연</b>과 <b>왕복 지연</b>이 얼마나 되는지 확인하세요. 화성은 공전하면서 지구와의 거리가 <b>0.37 AU에서 2.67 AU까지</b> 크게 달라집니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="a-c-delay" width="900" height="330"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">지구에서 목표까지의 거리<span class="val" id="a-d-val">—</span></div>
+                <input type="range" id="a-d" min="0" max="400" step="1" value="150">
+              </div>
             </div>
+            <div class="info-card" id="a-delay-info"></div>
           </div>
-          <div class="ctrl-group">
-            <div class="ctrl-label">거리 직접 조절(만 km)<span class="val" id="c0b-d-val">38</span></div>
-            <input type="range" id="c0b-d" min="38" max="22100000" step="1" value="38">
+          <div class="mission" id="a-m3"><span class="m-tag">미션</span>슬라이더 하나로 세 가지 상황을 모두 만들어 보세요.<ul><li id="a-m3a">화성이 가장 가까울 때 — 편도 지연 <b>3분대</b></li><li id="a-m3b">화성이 가장 멀 때 — 왕복 지연 <b>40분 이상</b></li><li id="a-m3c">보이저 1호처럼 먼 곳 — 왕복 지연 <b>하루 이상</b></li></ul></div>
+        </section>
+
+        <section class="scene" data-title="로버에게 보낼 하루치 명령">
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“자, 실전입니다. 로버가 <b>900 m</b> 떨어진 삼각주 바위까지 <b>30솔(화성의 하루) 안에</b> 가야 합니다. 지연 때문에 명령은 하루에 한 번뿐이에요. 지구에서 사진으로 안전을 확인할 수 있는 거리는 로버 앞 <b>25 m</b>까지. 그보다 멀리 가라고 시키면 보지도 못한 땅을 밟게 됩니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="a-c-rover" width="900" height="340"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">하루치 명령 — “오늘은 몇 m 전진하라”<span class="val" id="a-L-val">20 m</span></div>
+                <input type="range" id="a-L" min="0" max="150" step="5" value="20">
+              </div>
+            </div>
+            <div class="toggle-row" style="margin:0 22px 14px;"><button class="chip" id="a-auto" type="button">🤖 로버의 자율 항법 켜기</button></div>
+            <div class="info-card" id="a-rover-info"></div>
           </div>
-        </div>
-        <div class="info-card" id="c0b-info"></div>
+          <div class="mission" id="a-m4"><span class="m-tag">미션</span>30솔 안에 로버를 <b>900 m</b> 앞 삼각주 바위까지 보내세요. 하루치 명령 거리를 바꿔 가며, 자율 항법을 켰을 때와 껐을 때가 어떻게 다른지 확인하세요.</div>
+        </section>
+
+        <section class="scene" data-title="결말 — 왜 멀리 갈수록 로버는 똑똑해야 하는가">
+          <div class="ending">
+            <h4>🛰️ 거리는 곧 시간이고, 시간은 곧 자율성이다</h4>
+            <p>전파는 우주에서 가장 빠른 빛의 속력으로 달리지만, 그 빠른 신호조차 화성까지 <b>3분에서 22분</b>이 걸립니다. 왕복이면 <b>6분에서 44분</b>. 그래서 화성 로버는 조이스틱으로 실시간 조종하는 장난감 자동차가 아니라, <b>하루치 명령을 한꺼번에 받아 스스로 판단하며 굴러가는 로봇</b>이어야 합니다. 더 먼 곳으로 갈수록 탐사선은 더 똑똑해져야 합니다.</p>
+            <p>그렇게 모은 성과가 오늘의 태양계 지도를 그렸습니다. <b>보이저 2호</b>는 지금까지 천왕성과 해왕성을 가까이서 본 유일한 탐사선이고, <b>카시니</b>는 13년 동안 토성 둘레를 돌며 위성과 고리를 살폈으며, <b>뉴허라이즌스</b>는 명왕성의 하트 모양 얼음 평원을 처음 보여 주었습니다. <b>하야부사2</b>와 <b>오시리스-렉스</b>는 소행성의 흙을 지구 실험실로 가져왔고, 우리나라의 <b>다누리</b>는 달 궤도에서 착륙 후보지를 골라 두었습니다.</p>
+            <div class="vs" id="a-vs"></div>
+            <span class="stamp">임무 기록 ① 완료</span>
+          </div>
+          <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: 이 화면의 로버 모형은 하루 주행 거리와 자율 항법의 효율만 넣은 <b>단순화한 모형</b>입니다. 실제 화성 로버의 하루 이동 거리는 지형의 경사와 모래의 성질, 태양 전지가 하루에 모을 수 있는 전력, 통신 위성이 머리 위를 지나가는 시각까지 함께 따져 정합니다.</div>
+          <div class="stage-card" style="padding:6px 0 4px"><div id="wk1"></div></div>
+        </section>
       </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
     </section>
 
+    <!-- =====================================================================
+         02 태양 활동 감시 — 이야기 「8분 20초 뒤의 첫 신호」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="1" hidden>
       <div class="stage-head">
-        <div class="eyebrow">02 · 태양의 활동이 지구에 미치는 영향</div>
-        <h2 class="display">태양 활동과 우주 위험 감시</h2>
-        <p>태양 활동 주기(약 11년) 슬라이더를 조절해, 흑점 수와 태양 활동이 활발할 때 지구에 어떤 영향을 주는지 확인해 보세요.</p>
-      </div>
-      <div class="stage-card">
-        <div class="canvas-wrap"><canvas id="c1" width="900" height="380"></canvas></div>
-        <div class="controls">
-          <div class="ctrl-group">
-            <div class="ctrl-label">태양 활동 주기 진행(년)<span class="val" id="c1-y-val">0</span></div>
-            <input type="range" id="c1-y" min="0" max="11" step="0.5" value="0">
-          </div>
-        </div>
-        <div class="info-card" id="c1-info"></div>
+        <div class="eyebrow">02 · 태양 활동 감시 시스템 · 이야기 한 편</div>
+        <h2 class="display">8분 20초 뒤의 첫 신호</h2>
+        <p>1989년 3월, 캐나다 퀘벡 주가 90초 만에 어둠에 잠겼습니다. 범인은 지구 밖에 있었습니다. 당신은 우주 기상 예보관이 되어 태양을 11년 동안 지켜보고, 폭발에서 지구까지 걸리는 시간을 계산해 <b>경보를 내릴 시각</b>을 직접 정합니다.</p>
+        <span class="std-chip">12행우01-02</span><div class="std-note"><b>[12행우01-02]</b> 태양 활동 감시 시스템과 지구 접근 천체를 비롯한 지구를 위협하는 우주 위험 감시 기술의 중요성을 우주 재난 측면에서 인식할 수 있다.</div><div class="terms"><b>흑점</b><b>플레어</b><b>코로나 질량 방출</b><b>지자기 폭풍</b><b>우주 위험</b></div>
       </div>
 
-      <div class="stage-head" style="margin-top:30px;">
-        <div class="eyebrow">🔎 미션 · 태양 활동 감시의 실생활 관련성</div>
-        <h2 class="display" style="font-size:20px;">이 태양 활동은 어떤 영향을 일으킬까요?</h2>
-        <p>태양 활동 감시 시스템은 실생활 여러 분야를 보호하기 위해 필요합니다. 태양 활동 카드를 클릭해 선택한 뒤, 그로 인해 나타나는 영향 칸을 클릭해 짝지어 보세요.</p>
+      <div class="episode" id="ep2">
+        <section class="scene" data-title="90초 만에 꺼진 퀘벡">
+          <div class="story narr"><div class="who">💡</div><div class="say"><span class="name">이야기</span>1989년 3월 13일 새벽, 캐나다 퀘벡 주의 전력망이 <b>90초 만에</b> 통째로 멈췄습니다. 약 <b>600만 명</b>이 아홉 시간 가까이 전기 없이 지냈습니다. 발전소가 고장 난 것도, 누가 선을 끊은 것도 아니었습니다. 같은 시각 하늘에는 평소에는 볼 수 없던 <b>붉은 오로라</b>가 남쪽 하늘까지 내려와 있었습니다.</div></div>
+          <div class="story narr"><div class="who">📜</div><div class="say"><span class="name">이야기</span>130년 전에는 더 큰 일이 있었습니다. 1859년, 영국의 천문학자 <b>리처드 캐링턴</b>은 흑점 무리에서 갑자기 하얗게 번쩍이는 빛을 보았습니다. 이튿날 전 세계 전신망이 불꽃을 튀기며 멈췄고, 쿠바와 하와이처럼 낮은 위도에서도 오로라가 보였습니다.</div></div>
+          <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">우주 기상 센터장 도현</span>“오늘부터 당신이 예보관입니다. 첫 질문부터 답해 보세요. 이게 예보의 전부거든요.”</div></div>
+          <div class="gate loose" id="b-g1"></div>
+        </section>
+
+        <section class="scene" data-title="태양을 11년 동안 지켜보기">
+          <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“예보의 시작은 <b>흑점 세기</b>입니다. 400년 전 갈릴레이 때부터 사람들이 세어 온 숫자죠. 태양 관측 화면의 시간을 11년 동안 돌려 보세요. 흑점이 가장 적을 때와 가장 많을 때를 직접 찾아내야 합니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-c-sun" width="900" height="360"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">태양 활동 주기 진행(년)<span class="val" id="b-y-val">2.5</span></div>
+                <input type="range" id="b-y" min="0" max="11" step="0.5" value="2.5">
+              </div>
+            </div>
+            <div class="info-card" id="b-sun-info"></div>
+          </div>
+          <div class="stage-card" style="margin-top:14px"><div id="b-q1"></div></div>
+          <div class="mission" id="b-m2"><span class="m-tag">미션</span>태양 활동 주기의 양 끝을 찾고, 흑점의 정체를 밝히세요.<ul><li id="b-m2a">극소기 — 흑점 수 <b>10개 이하</b>인 때</li><li id="b-m2b">극대기 — 흑점 수 <b>150개 이상</b>인 때</li><li id="b-m2c">흑점이 검게 보이는 까닭 고르기</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="세 번의 도착 — 경보를 언제 낼까">
+          <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“방금 극대기의 큰 흑점 무리에서 <b>X급 플레어</b>가 터졌습니다. 그런데 태양 폭풍은 한 덩어리로 오지 않아요. <b>세 가지가 서로 다른 속력으로</b> 따로따로 도착합니다. 코로나그래프로 잰 코로나 질량 방출(CME)의 속력을 넣고, 각각 언제 닿는지 계산하세요.”</div></div>
+          <div class="story"><div class="who">👩‍💼</div><div class="say"><span class="name">전력 회사 담당자</span>“예보관님, 저희는 경보를 받으면 송전망을 <b>보호 모드</b>로 돌립니다. 다만 보호 모드에서는 보낼 수 있는 전력이 줄어 손해가 커요. <b>너무 일찍 돌려도, 너무 늦게 돌려도 안 됩니다.</b> 폭풍이 닿기 <b>6시간 안쪽</b>에 시작하도록 시각을 잡아 주세요.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-c-storm" width="900" height="380"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group">
+                <div class="ctrl-label">관측된 CME의 속력<span class="val" id="b-v-val">1,200 km/s</span></div>
+                <input type="range" id="b-v" min="600" max="3000" step="50" value="1200">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">송전망 보호 모드를 켤 시각 — 폭발 후<span class="val" id="b-h-val">0시간</span></div>
+                <input type="range" id="b-h" min="0" max="72" step="1" value="0">
+              </div>
+            </div>
+            <div class="toggle-row" style="margin:0 22px 14px;"><button class="btn primary" id="b-run" type="button">▶ 폭발 순간부터 지켜보기</button></div>
+            <div class="info-card" id="b-storm-info"></div>
+          </div>
+          <div class="mission" id="b-m3"><span class="m-tag">미션</span>속력 슬라이더와 시각 슬라이더를 <b>하나씩</b> 움직여 세 가지를 끝내세요.<ul><li id="b-m3a">이틀이 넘게 걸리는 <b>느린 CME</b> 만들어 보기</li><li id="b-m3b">하루 안에 닿는 <b>빠른 CME</b> 만들어 보기</li><li id="b-m3c">지금 속력에 맞추어 <b>보호 모드 시각</b> 잡기 (도착 6시간 전 ~ 도착 시각)</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="무엇이 무엇을 망가뜨렸나">
+          <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“경보는 잘 냈습니다. 이제 피해 신고가 들어오기 시작해요. 그런데 신고마다 <b>원인이 다릅니다.</b> 8분 만에 온 X선 탓인지, 몇십 분 만에 온 고에너지 입자 탓인지, 하루 넘게 걸려 온 코로나 질량 방출 탓인지 가려내야 다음 경보를 제대로 낼 수 있어요.”</div></div>
+          <div class="stage-card"><div id="b-sort"></div></div>
+          <div class="mission" id="b-m4"><span class="m-tag">미션</span>피해 신고 8건을 원인별로 모두 분류하세요.</div>
+        </section>
+
+        <section class="scene" data-title="결말 — 8분과 사흘 사이">
+          <div class="ending">
+            <h4>☀️ 태양 폭풍은 한꺼번에 오지 않는다. 그래서 감시할 값어치가 있다</h4>
+            <p>플레어의 <b>X선</b>은 빛의 속력으로 달려 <b>8분 20초</b> 만에 닿습니다. 이건 막을 수도, 미리 알릴 수도 없습니다. 이미 도착한 뒤에야 관측되니까요. 하지만 <b>고에너지 입자</b>는 몇십 분에서 몇 시간, 정전을 일으키는 <b>코로나 질량 방출</b>은 <b>하루에서 사흘</b>이 걸립니다. 바로 이 시간 차이가 우리가 쓸 수 있는 <b>경보 시간</b>입니다.</p>
+            <p>그래서 사람은 태양과 지구 사이 <b>라그랑주 L1 지점</b>(지구에서 태양 쪽으로 약 150만 km)에 감시 위성을 띄워 두었습니다. 폭풍이 L1을 지나가는 순간 자기장의 방향과 세기를 재서, 지구에 닿기 <b>15분에서 한 시간 전</b>에 마지막 확인 경보를 보냅니다. 그 짧은 시간에 전력 회사는 송전망을 보호 모드로 돌리고, 항공사는 극지방 항로를 돌리고, 위성 운영자는 민감한 장비를 잠시 끕니다.</p>
+            <div class="vs" id="b-vs"></div>
+            <span class="stamp">예보 기록 ② 완료</span>
+          </div>
+          <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: 이 화면은 코로나 질량 방출이 <b>일정한 속력으로 곧장</b> 날아온다고 본 단순화한 모형입니다. 실제 코로나 질량 방출은 태양풍과 부딪치며 느려지거나 빨라지고, 지구를 비껴가기도 합니다. 게다가 <b>지자기 폭풍의 세기는 속력만으로 정해지지 않습니다.</b> 구름이 품고 있는 자기장이 <b>남쪽</b>을 향해야 지구 자기장과 이어져 큰 폭풍이 되는데, 그 방향은 구름이 L1을 지나기 전까지는 알 수 없습니다. 예보의 가장 큰 어려움이 바로 이것입니다.</div>
+          <div class="stage-card" style="padding:6px 0 4px"><div id="wk2"></div></div>
+        </section>
       </div>
-      <div class="stage-card">
-        <div class="mission-cards" id="c1m-cards"></div>
-        <div class="mission-slots" id="c1m-slots"></div>
-        <div class="toggle-row" style="margin:14px 20px 0;">
-          <button class="chip" id="c1m-check">채점하기</button>
-          <button class="chip" id="c1m-new">카드 새로 섞기</button>
-        </div>
-        <div class="info-card" id="c1m-info">카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.</div>
-      </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
     </section>
 
+    <!-- =====================================================================
+         03 지구 접근 천체 — 이야기 「빗나가게 하라」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="2" hidden>
       <div class="stage-head">
-        <div class="eyebrow">03 · 오늘 알아낸 것을 문장으로</div>
+        <div class="eyebrow">03 · 지구 접근 천체 감시 · 이야기 한 편</div>
+        <h2 class="display">빗나가게 하라</h2>
+        <p>2013년 2월, 아무도 예고하지 못한 돌덩이 하나가 러시아 하늘에서 터졌습니다. 이번에는 미리 찾아낸 소행성이 지구로 옵니다. 충돌 에너지를 계산하고, 언제 발견했느냐에 따라 얼마나 세게 밀어야 하는지를 직접 정해 지구를 빗겨 가게 하세요.</p>
+        <span class="std-chip">12행우01-02</span><div class="std-note"><b>[12행우01-02]</b> 태양 활동 감시 시스템과 지구 접근 천체를 비롯한 지구를 위협하는 우주 위험 감시 기술의 중요성을 우주 재난 측면에서 인식할 수 있다.</div><div class="terms"><b>지구 접근 천체</b><b>충돌 에너지</b><b>궤도 편향</b><b>우주 위험 감시</b></div>
+      </div>
+
+      <div class="episode" id="ep3">
+        <section class="scene" data-title="2013년 2월 15일 아침">
+          <div class="story narr"><div class="who">☄️</div><div class="say"><span class="name">이야기</span>2013년 2월 15일 아침, 러시아 <b>첼랴빈스크</b> 상공에 해보다 밝은 불덩이가 나타났습니다. 지름 약 <b>20 m</b>짜리 돌덩이가 초속 약 <b>19 km</b>로 들어와 상공 30 km 부근에서 터진 것입니다. 충격파에 유리창이 한꺼번에 깨지면서 약 <b>1,500명</b>이 다쳤습니다. 이 소행성을 미리 발견한 사람은 <b>아무도 없었습니다.</b> 태양 쪽에서 날아와 망원경으로는 보이지 않았기 때문입니다.</div></div>
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">지구 접근 천체 감시팀장 수아</span>“그날 이후 감시망이 크게 늘었습니다. 그리고 오늘 아침, 우리 망원경이 하나 찾아냈어요. 지름 <b>150 m</b>급. 아직 몇 년 뒤의 일이지만, 궤도 계산 결과가 좋지 않습니다.”</div></div>
+          <div class="case-file"><b class="k">관측 자료</b> 지름 약 <b>150 m</b> &nbsp;|&nbsp; 밀도 약 <b>3,000 kg/m³</b>(암석질) &nbsp;|&nbsp; 충돌 속도 약 <b>19 km/s</b> &nbsp;|&nbsp; 지구를 빗나가게 하려면 궤도를 따라 <b>12,000 km</b> 이상 어긋나게 해야 함</div>
+          <div class="gate loose" id="c-g1"></div>
+        </section>
+
+        <section class="scene" data-title="얼마나 큰 것이 얼마나 위험한가">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“먼저 상대를 알아야죠. 소행성이 가진 <b>운동 에너지</b>가 그대로 충돌 에너지가 됩니다. 지름을 바꿔 가며 에너지가 어떻게 달라지는지 보세요. 지름이 <b>2배</b>가 되면 에너지는 몇 배가 될까요?”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="c-c-energy" width="900" height="340"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">소행성의 지름<span class="val" id="c-d-val">60 m</span></div>
+                <input type="range" id="c-d" min="10" max="1000" step="10" value="60">
+              </div>
+            </div>
+            <div class="info-card" id="c-energy-info"></div>
+          </div>
+          <div class="mission" id="c-m2"><span class="m-tag">미션</span>지름 슬라이더로 두 가지를 재현하세요.<ul><li id="c-m2a">2013년 첼랴빈스크 — 충돌 에너지 <b>400~700 kt</b></li><li id="c-m2b">도시 하나를 통째로 날릴 규모 — <b>100 Mt 이상</b></li></ul></div>
+        </section>
+
+        <section class="scene" data-title="일찍 알수록 살짝만 밀면 된다">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“영화처럼 폭파하지 않습니다. <b>살짝 밀어 속력만 아주 조금 바꿔 주면</b> 됩니다. 소행성은 그 뒤로 수천 번 공전하면서 조금씩 제자리에서 어긋나, 약속 장소에 늦게 도착하게 되거든요. 밀어 주는 힘이 같아도 <b>일찍 밀수록 어긋남이 훨씬 커집니다.</b>”</div></div>
+          <div class="story"><div class="who">👨‍🔧</div><div class="say"><span class="name">충돌체 설계 기술자</span>“다만 조건이 있습니다. 속도 변화를 <b>40 mm/s보다 크게</b> 주려면 그만큼 세게 들이받아야 하는데, 그러면 소행성이 부서져 <b>여러 조각이 쏟아질</b> 위험이 있어요. 40 mm/s 이하로 맞춰 주세요.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="c-c-dart" width="900" height="340"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group">
+                <div class="ctrl-label">충돌 몇 년 전에 밀어 줄까<span class="val" id="c-t-val">5년 전</span></div>
+                <input type="range" id="c-t" min="1" max="20" step="1" value="5">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">충돌체가 주는 속도 변화<span class="val" id="c-dv-val">5 mm/s</span></div>
+                <input type="range" id="c-dv" min="0" max="80" step="1" value="5">
+              </div>
+            </div>
+            <div class="info-card" id="c-dart-info"></div>
+          </div>
+          <div class="mission" id="c-m3"><span class="m-tag">미션</span>두 조건을 <b>함께</b> 만족하는 편향 계획을 찾으세요. 슬라이더는 하나씩 움직여도 됩니다.<ul><li>충돌 시점에 궤도를 따라 <b>12,000 km 이상</b> 어긋날 것</li><li>속도 변화는 <b>40 mm/s 이하</b>일 것 (그보다 세면 소행성이 부서질 위험)</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="감시망을 세우다">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“계획이 나왔으니 보고서를 씁시다. 우리가 소행성 하나를 처음 발견해서 실제로 밀어내기까지, <b>어떤 순서로</b> 일이 진행되는지 정리해 주세요. 순서 하나만 어긋나도 준비할 시간을 잃습니다.”</div></div>
+          <div class="stage-card"><div id="c-order"></div></div>
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“마지막으로 하나만 더요. 예산 심의에서 반드시 나오는 질문입니다.”</div></div>
+          <div class="stage-card" style="margin-top:14px"><div id="c-q1"></div></div>
+          <div class="mission" id="c-m4"><span class="m-tag">미션</span>보고서를 완성하세요.<ul><li id="c-m4a">지구 접근 천체 대응 5단계를 순서대로 놓기</li><li id="c-m4b">감시에 돈을 쓰는 까닭 고르기</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="결말 — 이미 한 번 해 본 일">
+          <div class="ending">
+            <h4>☄️ 2022년 9월 26일, 인류는 처음으로 천체의 궤도를 바꾸었다</h4>
+            <p>이 이야기는 상상이 아닙니다. 2022년 9월 26일, NASA의 <b>DART</b> 탐사선이 소행성 <b>디디모스</b>를 도는 작은 위성 <b>디모르포스</b>에 일부러 들이받았습니다. 충돌 전 디모르포스의 공전 주기는 11시간 55분이었는데, 충돌 뒤 <b>11시간 23분</b>으로 <b>약 32분</b> 짧아졌습니다. 목표였던 73초의 스무 배가 넘는 성과였습니다. 인류가 천체의 궤도를 의도적으로 바꾼 첫 사건입니다.</p>
+            <p>여기서 가장 중요한 교훈은 ‘세게 밀었다’가 아니라 <b>‘먼저 찾아냈다’</b>입니다. 같은 12,000 km를 어긋나게 하는 데, 20년 전이면 7 mm/s면 충분하지만 3년 전이면 40 mm/s로도 모자랍니다. <b>발견이 곧 방어입니다.</b> 첼랴빈스크처럼 태양 쪽에서 오는 것은 지상 망원경으로 볼 수 없어, 어두운 소행성까지 잡아낼 <b>적외선 우주 망원경</b>이 준비되고 있습니다. 우주 위험 감시는 하늘을 구경하는 일이 아니라, <b>재난이 일어나기 전에 시간을 벌어 두는 일</b>입니다.</p>
+            <div class="vs" id="c-vs"></div>
+            <span class="stamp">방어 기록 ③ 완료</span>
+          </div>
+          <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: 이 화면의 편향 계산은 ‘어긋난 거리 ≈ 3 × 속도 변화 × 남은 시간’이라는 <b>단순화한 모형</b>입니다. 실제로는 소행성의 질량과 모양, 부딪친 뒤 튀어 나가는 부스러기의 반작용, 다른 행성 곁을 지날 때 받는 중력까지 모두 계산해야 합니다. ‘40 mm/s를 넘으면 부서진다’는 기준도 이야기를 위해 정한 값으로, 실제 한계는 소행성이 단단한 바위인지 자갈 더미인지에 따라 크게 달라집니다.</div>
+          <div class="stage-card" style="padding:6px 0 4px"><div id="wk3"></div></div>
+        </section>
+      </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
+    </section>
+
+    <!-- ===================================================================== 04 정리하기 -->
+    <section class="tab-panel" data-panel="3" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">04 · 세 기록을 하나로</div>
         <h2 class="display">정리하기</h2>
-        <p>조작한 것을 말이나 글로 옮기지 않으면 남지 않습니다. 아래를 채우고 <b>답안 복사</b>를 눌러 제출하세요. 쓰는 동안 자동으로 저장됩니다.</p>
+        <p>세 이야기의 결과가 아래에 모입니다. 세 기록을 꿰는 한 문장을 쓰고 <b>답안 복사</b>를 눌러 제출하세요. 쓰는 동안 자동으로 저장됩니다.</p>
       </div>
       <div class="stage-card" style="padding:6px 0 4px"><div id="wk"></div></div>
+    </section>
+
+    <!-- ===================================================================== 05 우리 반 -->
+    <section class="tab-panel" data-panel="4" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">05 · 같은 반 친구들과 나누기</div>
+        <h2 class="display">우리 반</h2>
+        <p>내가 세운 임무 계획과 찾아낸 답을 우리 반에 올리고, 친구들은 어떤 작전을 세웠는지 살펴보세요. <b>올리기 버튼을 눌렀을 때만</b> 공유됩니다. 실명 대신 별명을 쓰세요.</p>
+      </div>
+      <div class="stage-card"><div id="share"></div></div>
     </section>
   </main>
 </div>
 
 <button class="theme-toggle" id="themeToggle">라이트 모드</button>
 <script src="../assets/theme.js"></script>
-<script>
-(function () {
-"use strict";
-
-/* TAB0 우주탐사 방법 */
-(function () {
-  var canvas = document.getElementById("c0");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var info = document.getElementById("c0-info");
-  var methods = [
-    { icon: "🛰️", name: "근접 통과(플라이바이)", desc: "천체 가까이를 스쳐 지나가며 짧은 시간 동안 관측합니다. 연료 소모가 적어 먼 천체 탐사에 유리합니다.", x: 150 },
-    { icon: "🔄", name: "궤도선(오비터)", desc: "천체 주위를 도는 궤도에 진입해 장기간 관측합니다. 표면 전체를 지도화하는 데 유리합니다.", x: 400 },
-    { icon: "🪂", name: "착륙선(랜더)", desc: "천체 표면에 직접 착륙해 그 지점을 정밀하게 관측·분석합니다.", x: 650 },
-    { icon: "🤖", name: "탐사차(로버)", desc: "착륙 후 표면을 이동하며 여러 지점을 탐사합니다. 예) 화성의 큐리오시티, 퍼서비어런스.", x: 850 }
-  ];
-  canvas.addEventListener("click", function (e) {
-    var rect = canvas.getBoundingClientRect();
-    var scaleX = canvas._w / rect.width;
-    var mx = (e.clientX - rect.left) * scaleX;
-    methods.forEach(function (m) { if (Math.abs(mx - m.x) < 110) info.innerHTML = "<b>" + m.icon + " " + m.name + "</b> — " + m.desc; });
-  });
-  function render() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    methods.forEach(function (m) {
-      ctx.save();
-      ctx.strokeStyle = cssVar("--line"); ctx.fillStyle = cssVar("--panel-2");
-      ctx.fillRect(m.x - 100, 100, 200, 160);
-      ctx.strokeRect(m.x - 100, 100, 200, 160);
-      ctx.restore();
-      ctx.font = "44px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(m.icon, m.x, 190);
-      ctx.font = "700 12px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.fillText(m.name, m.x, 235);
-    });
-  }
-  render();
-})();
-
-/* TAB1 태양활동 */
-(function () {
-  var canvas = document.getElementById("c1");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var y = 0;
-  var info = document.getElementById("c1-info");
-  document.getElementById("c1-y").addEventListener("input", function (e) { y = +e.target.value; document.getElementById("c1-y-val").textContent = y; render(); });
-
-  function activity(yy) { return (1 - Math.cos(yy / 11 * Math.PI * 2)) / 2; }
-  function render() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    var x0 = 60, x1 = 480, y0 = 40, y1 = H - 60;
-    ctx.strokeStyle = cssVar("--line"); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x1, y1); ctx.stroke();
-    ctx.beginPath();
-    for (var px = 0; px <= 200; px++) {
-      var yy = px / 200 * 11;
-      var xx = x0 + px / 200 * (x1 - x0), yyy = y1 - activity(yy) * (y1 - y0);
-      if (px === 0) ctx.moveTo(xx, yyy); else ctx.lineTo(xx, yyy);
-    }
-    ctx.strokeStyle = cssVar("--coral"); ctx.lineWidth = 2.5; ctx.stroke();
-    var curX = x0 + y / 11 * (x1 - x0), curY = y1 - activity(y) * (y1 - y0);
-    ctx.fillStyle = cssVar("--teal"); ctx.beginPath(); ctx.arc(curX, curY, 6, 0, 7); ctx.fill();
-    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist"); ctx.textAlign = "center";
-    ctx.fillText("태양 활동 주기(약 11년)", (x0 + x1) / 2, y1 + 26);
-
-    // sun visualization with spots proportional to activity
-    var act = activity(y);
-    var sunX = 700, sunY = H / 2, sunR = 90;
-    ctx.save(); ctx.fillStyle = cssVar("--coral"); ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, 7); ctx.fill(); ctx.restore();
-    var nSpots = Math.round(act * 12);
-    var seed = Math.floor(y * 100);
-    function rnd(n) { seed = (seed * 9301 + 49297) % 233280; return (seed / 233280) * n; }
-    for (var i = 0; i < nSpots; i++) {
-      var ang = rnd(Math.PI * 2), r = rnd(sunR * 0.8);
-      ctx.fillStyle = cssVar("--abyss");
-      ctx.beginPath(); ctx.arc(sunX + Math.cos(ang) * r, sunY + Math.sin(ang) * r, 3 + rnd(3), 0, 7); ctx.fill();
-    }
-    if (act > 0.6) {
-      ctx.save(); ctx.strokeStyle = cssVar("--foam"); ctx.globalAlpha = .5; ctx.lineWidth = 2;
-      for (var f = 0; f < 3; f++) {
-        var fa = rnd(Math.PI * 2);
-        ctx.beginPath(); ctx.moveTo(sunX + Math.cos(fa) * sunR, sunY + Math.sin(fa) * sunR);
-        ctx.lineTo(sunX + Math.cos(fa) * (sunR + 40), sunY + Math.sin(fa) * (sunR + 40));
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    info.innerHTML = "태양 활동 극대기에 가까울수록(현재 활동 지수 " + (act * 100).toFixed(0) + "%) 흑점 수가 늘고, <b>플레어</b>와 <b>코로나 물질 방출(CME)</b>이 활발해집니다. 이는 지구 자기권을 교란시켜 <b>오로라</b>를 강화하고, 인공위성 고장·GPS 오차·정전 등 <b>우주 위험</b>을 일으킬 수 있습니다.";
-  }
-  render();
-})();
-
-/* TAB1 미션 — 태양 활동과 실생활 영향 매칭 */
-(function () {
-  var cardsEl = document.getElementById("c1m-cards");
-  var slotsEl = document.getElementById("c1m-slots");
-  var checkBtn = document.getElementById("c1m-check");
-  var newBtn = document.getElementById("c1m-new");
-  if (!cardsEl) return;
-
-  var slotNames = { flare: "태양 플레어", cme: "코로나 질량 방출(CME)", wind: "태양풍 강화", particle: "고에너지 입자 유입" };
-  var slotOrder = ["flare", "cme", "wind", "particle"];
-  var clues = {
-    flare: "X선이 급증해 지구로 순간적으로 쏟아지면서, 대낮 쪽 전리층이 교란되어 단파 무선 통신이 갑자기 두절되는 델린저 현상이 나타납니다.",
-    cme: "많은 양의 플라스마가 지구 자기장을 강하게 흔들어 지자기 폭풍을 일으키고, 송전망에 유도 전류가 흘러 대규모 정전 사고로 이어질 수 있습니다.",
-    wind: "평소보다 강한 태양풍 입자가 지구 자기장을 따라 극지방으로 흘러들며, 오로라가 관측되는 지역이 평소보다 낮은 위도까지 넓어집니다.",
-    particle: "고에너지 입자가 인공위성의 전자 장비를 손상시키고 GPS 신호를 교란해, 내비게이션의 위치 오차가 커지고 위성 고장 위험이 높아집니다."
-  };
-
-  var pool = [];
-  var slots = {};
-  var selected = null;
-
-  function shuffle(arr) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-    }
-    return a;
-  }
-
-  function reset() {
-    pool = shuffle(slotOrder.slice());
-    slots = { flare: null, cme: null, wind: null, particle: null };
-    selected = null;
-    var info = document.getElementById("c1m-info");
-    info.style.color = "";
-    info.textContent = "카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.";
-    render();
-  }
-
-  function render() {
-    cardsEl.innerHTML = "";
-    pool.forEach(function (key) {
-      var card = document.createElement("div");
-      card.className = "mission-card" + (selected === key ? " selected" : "");
-      card.textContent = clues[key];
-      card.addEventListener("click", function () {
-        selected = (selected === key) ? null : key;
-        render();
-      });
-      cardsEl.appendChild(card);
-    });
-
-    slotsEl.innerHTML = "";
-    slotOrder.forEach(function (targetKey) {
-      var slot = document.createElement("div");
-      var filledKey = slots[targetKey];
-      slot.className = "mission-slot" + (filledKey ? " filled" : "");
-      var title = document.createElement("div");
-      title.className = "slot-title";
-      title.textContent = slotNames[targetKey];
-      slot.appendChild(title);
-      var body = document.createElement("div");
-      body.className = "slot-body";
-      body.textContent = filledKey ? clues[filledKey] : "여기를 클릭해 선택한 카드를 놓으세요.";
-      slot.appendChild(body);
-      slot.addEventListener("click", function () {
-        if (filledKey) {
-          pool.push(filledKey);
-          slots[targetKey] = null;
-          render();
-        } else if (selected) {
-          slots[targetKey] = selected;
-          pool = pool.filter(function (k) { return k !== selected; });
-          selected = null;
-          render();
-        }
-      });
-      slotsEl.appendChild(slot);
-    });
-  }
-
-  checkBtn.addEventListener("click", function () {
-    var info = document.getElementById("c1m-info");
-    if (pool.length > 0) {
-      info.style.color = "";
-      info.textContent = "아직 배치하지 않은 카드가 있습니다. 4장을 모두 알맞은 칸에 놓아 주세요.";
-      return;
-    }
-    var correctCount = 0;
-    slotsEl.querySelectorAll(".mission-slot").forEach(function (slotEl, i) {
-      var targetKey = slotOrder[i];
-      var ok = slots[targetKey] === targetKey;
-      slotEl.classList.remove("correct", "wrong");
-      slotEl.classList.add(ok ? "correct" : "wrong");
-      if (ok) correctCount++;
-    });
-    if (correctCount === 4) {
-      info.style.color = "var(--teal)";
-      info.innerHTML = "<b>4장 모두 정답입니다!</b> 태양 활동은 통신·전력·항법 등 실생활 곳곳에 영향을 미치기 때문에 우주 위험 감시가 중요합니다.";
-    } else {
-      info.style.color = "var(--coral)";
-      info.innerHTML = correctCount + " / 4 칸이 맞았습니다. 빨간 테두리 칸을 다시 살펴보고 카드를 옮겨 보세요.";
-    }
-  });
-
-  newBtn.addEventListener("click", reset);
-  reset();
-})();
-
-/* TAB0-b 통신 지연시간 계산기 */
-(function () {
-  var canvas = document.getElementById("c0b");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var C = 299792.458; // km/s
-  var slider = document.getElementById("c0b-d");
-  var val = document.getElementById("c0b-d-val");
-  var info = document.getElementById("c0b-info");
-
-  document.querySelectorAll("#c0b-preset button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      document.querySelectorAll("#c0b-preset button").forEach(function (x) { x.classList.toggle("on", x === b); });
-      slider.value = b.getAttribute("data-d");
-      update();
-    });
-  });
-  slider.addEventListener("input", function () {
-    document.querySelectorAll("#c0b-preset button").forEach(function (x) { x.classList.remove("on"); });
-    update();
-  });
-
-  function fmtTime(sec) {
-    if (sec < 60) return sec.toFixed(1) + "초";
-    if (sec < 3600) return (sec / 60).toFixed(1) + "분";
-    if (sec < 86400) return (sec / 3600).toFixed(2) + "시간";
-    return (sec / 86400).toFixed(2) + "일";
-  }
-
-  function render(distKm, oneWaySec) {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    var x0 = 70, x1 = W - 70, y = H / 2 - 10;
-    ctx.strokeStyle = cssVar("--line"); ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
-    ctx.fillStyle = cssVar("--cold"); ctx.font = "28px Segoe UI"; ctx.textAlign = "center";
-    ctx.fillText("🛰️", x0, y - 20);
-    ctx.fillText("📡", x1, y - 20);
-    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist");
-    ctx.fillText("탐사선", x0, y + 26);
-    ctx.fillText("지구(관제소)", x1, y + 26);
-
-    // animated pulse traveling along the line, speed scaled to log(distance) for visibility
-    var t = (Date.now() / 1000) % 2.4;
-    var frac = Math.min(1, t / 2.2);
-    var px = x0 + frac * (x1 - x0);
-    ctx.fillStyle = cssVar("--coral");
-    ctx.beginPath(); ctx.arc(px, y, 6, 0, Math.PI * 2); ctx.fill();
-
-    ctx.font = "700 13px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.textAlign = "center";
-    ctx.fillText("편도 지연 " + fmtTime(oneWaySec) + " · 왕복(응답까지) " + fmtTime(oneWaySec * 2), (x0 + x1) / 2, y - 60);
-  }
-
-  var rafId = null;
-  function loop() {
-    var d = +slider.value;
-    render(d, d / C);
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function update() {
-    var d = +slider.value;
-    val.textContent = d.toLocaleString();
-    var oneWay = d / C;
-    var note;
-    if (oneWay < 2) note = "지연이 매우 짧아 실시간 원격 조종(조이스틱 조작)이 가능한 수준입니다.";
-    else if (oneWay < 60) note = "몇 초~몇십 초의 지연이 있어, 사람이 직접 실시간으로 조작하기엔 다소 불편합니다(예: 달 탐사).";
-    else if (oneWay < 3600) note = "지연이 분 단위이므로, 화성 탐사 로버처럼 '미리 계획한 명령을 한꺼번에 보내고 결과를 기다리는' 방식으로 운영해야 합니다.";
-    else note = "지연이 시간~일 단위여서 실시간 조작은 불가능하며, 탐사선이 스스로 판단하는 자율 기능이 반드시 필요합니다.";
-    info.innerHTML = "거리 " + d.toLocaleString() + "만 km, 빛의 속력(약 " + C.toLocaleString() + " km/s) 기준 편도 신호 지연은 <b>" + fmtTime(oneWay) + "</b>, 명령을 보내고 응답을 받기까지(왕복)는 <b>" + fmtTime(oneWay * 2) + "</b>입니다. " + note;
-  }
-  slider.addEventListener("input", update);
-  update();
-  loop();
-})();
-
-})();
-</script>
-
-<script>
-(function () {
-  window.sthUnit("psp-1-1");
-  window.sthWork({
-    mount: "wk",
-    unitLabel: "[행성우주과학] 우주 탐사와 태양 활동",
-    items: [
-      {
-            "id": "w1",
-            "label": "태양 활동이 지구에 닿는 경로",
-            "hint": "흑점 수가 늘 때 지구에서 무슨 일이 생기는지, 중간 과정을 빠뜨리지 말고 순서대로 쓰세요.",
-            "ph": ""
-      },
-      {
-            "id": "w2",
-            "label": "감시가 필요한 이유",
-            "hint": "우주 위험 감시 기술이 왜 재난 대비인지, 구체적 사례 하나를 들어 쓰세요.",
-            "ph": ""
-      },
-      {
-            "id": "w3",
-            "label": "아직 헷갈리는 것",
-            "hint": "다음 시간에 여기서부터 시작합니다.",
-            "ph": ""
-      }
-]
-  });
-})();
-</script>
+<script src="../assets/story.js"></script>
+<script src="../assets/share-config.js"></script>
+<script src="../assets/share.js"></script>
+<script src="episodes.js"></script>
 </body>
 </html>
