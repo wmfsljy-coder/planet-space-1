@@ -5,19 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>태양계 천체와 외계 행성 — 관측 스테이션</title>
 <link rel="stylesheet" href="../assets/theme.css">
-<style>
-  .mission-cards { display: flex; gap: 10px; flex-wrap: wrap; padding: 18px 20px 0; }
-  .mission-card { flex: 1 1 160px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12px; line-height: 1.55; color: var(--mist); cursor: pointer; transition: all .15s; }
-  .mission-card:hover { border-color: var(--teal-dim); }
-  .mission-card.selected { border-color: var(--teal); box-shadow: 0 0 0 2px var(--teal) inset; }
-  .mission-slots { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px 0; }
-  .mission-slot { flex: 1 1 160px; min-height: 90px; border: 1.5px dashed var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: all .15s; }
-  .mission-slot .slot-title { font-size: 12.5px; font-weight: 700; color: var(--foam); margin-bottom: 6px; }
-  .mission-slot .slot-body { font-size: 11.5px; line-height: 1.5; color: var(--mist); }
-  .mission-slot.filled { border-style: solid; background: var(--panel-2); }
-  .mission-slot.correct { border-color: var(--teal); }
-  .mission-slot.wrong { border-color: var(--coral); }
-</style>
+<link rel="stylesheet" href="../assets/story.css">
 </head>
 <body>
 
@@ -28,625 +16,346 @@
       <div class="eyebrow" style="margin-top:8px">Ⅰ-2 · 우주 탐사와 행성계</div>
       <h1 class="display">태양계 천체와<br>외계 행성</h1>
     </div>
-    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 케플러 법칙</button>
-    <button class="tab-btn" data-tab="1"><span class="num">02</span> 행성과 소천체</button>
-    <button class="tab-btn" data-tab="2"><span class="num">03</span> 외계 행성계 탐사</button>
+    <button class="tab-btn active" data-tab="0"><span class="num">01</span> 8분의 오차</button>
+    <button class="tab-btn" data-tab="1"><span class="num">02</span> 명왕성의 자격 심사</button>
+    <button class="tab-btn" data-tab="2"><span class="num">03</span> 별이 흔들렸다</button>
     <button class="tab-btn" data-tab="3"><span class="num">04</span> 정리하기</button>
+    <button class="tab-btn" data-tab="4"><span class="num">05</span> 우리 반</button>
   </nav>
 
   <main>
+    <!-- =====================================================================
+         01 케플러 법칙 — 이야기 「8분의 오차」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="0">
       <div class="stage-head">
-        <div class="eyebrow">01 · 행성 운동의 세 가지 규칙</div>
-        <h2 class="display">케플러 법칙</h2>
-        <p>이심률 슬라이더로 타원 궤도의 모양을, 재생 버튼으로 같은 시간 동안 쓸고 지나가는 면적이 항상 같다는 제2법칙(면적 속도 일정 법칙)을 확인해 보세요.</p>
-      
-        <span class="std-chip">12행우01-03</span><span class="std-chip">12행우01-04</span><span class="std-chip">12행우01-05</span><div class="std-note"><b>[12행우01-03]</b> 태양계를 지배하는 힘이 태양의 중력임을 이해하고, 케플러의 세 가지 법칙을 이용하여 태양계 구성 천체들의 운동을 설명할 수 있다.<br><b>[12행우01-04]</b> 행성과 소천체의 정의를 구분하여 이해하고, 소천체 탐사 자료를 통해 이들의 특징을 추론할 수 있다.<br><b>[12행우01-05]</b> 외계 행성계 탐사의 원리를 이해하고, 외계 행성에 생명체가 존재할 수 있는 조건과 외계 생명체의 존재 가능성에 대해 논증할 수 있다.</div><div class="terms"><b>케플러 법칙</b><b>소천체</b><b>시선속도법</b><b>생명 가능 지대</b></div>
-      </div>
-      <div class="stage-card">
-        <div class="canvas-wrap"><canvas id="c0" width="900" height="420"></canvas></div>
-        <div class="controls">
-          <div class="ctrl-group">
-            <div class="ctrl-label">궤도 이심률<span class="val" id="c0-e-val">0.4</span></div>
-            <input type="range" id="c0-e" min="0" max="0.8" step="0.05" value="0.4">
-          </div>
-        </div>
-        <div class="info-card" id="c0-info"></div>
+        <div class="eyebrow">01 · 케플러 법칙 · 이야기 한 편</div>
+        <h2 class="display">8분의 오차</h2>
+        <p>1601년, 케플러는 스승 티코 브라헤가 20년 동안 맨눈으로 쌓아 올린 화성 관측 자료를 물려받습니다. 그런데 원 궤도로 아무리 맞춰도 <b>8분(각)</b>이 남았습니다. 이 작은 어긋남 하나를 놓지 않은 끝에 행성 운동의 세 법칙이 나왔습니다. 그 계산을 직접 해 봅니다.</p>
+        <span class="std-chip">12행우01-03</span><div class="std-note"><b>[12행우01-03]</b> 태양계를 지배하는 힘이 태양의 중력임을 이해하고, 케플러의 세 가지 법칙을 이용하여 태양계 구성 천체들의 운동을 설명할 수 있다.</div><p class="std-note" style="margin-top:6px">※ 성취기준은 2022 개정 과학과 교육과정 원문입니다. 이 과목은 학생용 교과서만 있어 오개념 지도 상자는 싣지 못했습니다.</p><div class="terms"><b>타원 궤도 법칙</b><b>면적 속도 일정 법칙</b><b>조화 법칙</b><b>이심률</b><b>태양의 중력</b></div>
       </div>
 
-      <div class="stage-head" style="margin-top:30px;">
-        <div class="eyebrow">🔎 미션 · 케플러 법칙으로 데이터 해석하기</div>
-        <h2 class="display" style="font-size:20px;">이 천체의 공전 주기는 몇 년일까요?</h2>
-        <p>케플러 제3법칙(조화 법칙)에 따르면 공전 주기 T(년)와 궤도 반지름 a(AU) 사이에는 T² = a³의 관계가 성립합니다. 새로 발견된 천체의 궤도 반지름을 보고 공전 주기로 가장 알맞은 값을 선택해 보세요.</p>
+      <div class="episode" id="ep1">
+        <section class="scene" data-title="1601년, 물려받은 관측 노트">
+          <div class="story narr"><div class="who">🔭</div><div class="say"><span class="name">이야기</span>덴마크의 천문학자 <b>티코 브라헤</b>는 망원경이 발명되기 전 사람입니다. 그런데도 거대한 사분의로 행성의 위치를 <b>2분(각) 안팎</b>의 정밀도로 20년 넘게 기록했습니다. 1601년 그가 세상을 떠나자, 조수였던 <b>케플러</b>가 그 관측 노트를 물려받았습니다.</div></div>
+          <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“화성부터 손대 보자. 태양을 중심에 둔 <b>원 궤도</b>로 계산하면… 거의 맞는다. 거의. 그런데 하늘에서 <b>8분</b>이 끝내 남는군. 티코의 관측이 2분까지 믿을 만하니, 이 8분은 관측 탓이 아니야.”</div></div>
+          <div class="case-file"><b class="k">증거 ①</b> 티코의 관측 정밀도 약 <b>2분(각)</b> — 1분(각) = 1/60도<br><b class="k">증거 ②</b> 원 궤도 모형과 화성의 실제 위치가 최대 <b>8분</b> 어긋난다<br><b class="k">증거 ③</b> 화성까지의 거리를 여러 번 삼각 측량해 보니 <b>때마다 달랐다</b> — 가장 가까울 때 약 1.38 AU, 가장 멀 때 약 1.67 AU</div>
+          <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“조사관님, 여기서 물러나면 편합니다. 8분쯤은 못 본 척해도 아무도 모르니까요. 그런데 그 8분이 정말 하찮은 걸까요? 먼저 조사관님 생각부터 적어 두시죠.”</div></div>
+          <div class="gate loose" id="g1"></div>
+        </section>
+
+        <section class="scene" data-title="제1법칙 — 궤도의 모양을 직접 그려 보자">
+          <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“거리가 때마다 다르다면, 궤도는 원이 아닙니다. 화성까지의 거리를 여덟 방향에서 잰 자료가 여기 있어요. 태양을 <b>한 초점</b>에 두고 <b>이심률</b>을 바꿔 가며, 계산한 곡선이 관측점 여덟 개를 모두 지나가게 해 보세요. 긴반지름은 1.524 AU로 고정해 두었습니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="a-orbit" width="900" height="420"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">화성 궤도의 이심률 e<span class="val" id="a-ecc-val">0.000</span></div>
+                <input type="range" id="a-ecc" min="0" max="0.3" step="0.002" value="0">
+              </div>
+            </div>
+            <div class="info-card" id="a-orbit-info"></div>
+          </div>
+          <div class="mission" id="m1-2"><span class="m-tag">미션</span>관측점과의 <b>최대 어긋남을 0.010 AU 이하</b>로 줄이는 이심률을 찾으세요. 너무 작아도(원에 가까워도), 너무 커도 통과하지 못합니다.</div>
+        </section>
+
+        <section class="scene" data-title="제2법칙 — 같은 시간에 쓸고 간 넓이 재기">
+          <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“모양은 찾았습니다. 이제 <b>빠르기</b>예요. 태양과 화성을 잇는 선분이 <b>60일 동안 쓸고 지나간 부채꼴</b>의 넓이를 재 봅시다. 출발 자리를 바꿔 가며 두 번 재면 무언가 보일 겁니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="a-area" width="900" height="390"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">재기 시작할 자리 (근일점에서 잰 각도)<span class="val" id="a-start-val">0°</span></div>
+                <input type="range" id="a-start" min="0" max="350" step="10" value="0">
+              </div>
+            </div>
+            <div class="toggle-row" style="margin:0 22px 14px;"><button class="btn primary" id="a-sweep" type="button">▶ 60일 동안 쓸어 보기</button></div>
+            <div class="info-card" id="a-area-info">출발 자리를 정하고 버튼을 누르세요. 여러 번 잴 수 있습니다.</div>
+          </div>
+          <div class="mission" id="m1-3"><span class="m-tag">미션</span>두 자리에서 각각 60일을 쓸어 넓이를 재고 비교하세요.<ul><li id="m1-3a">근일점 부근(0°~30° 또는 330°~350°)에서 한 번</li><li id="m1-3b">원일점 부근(150°~210°)에서 한 번</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="제3법칙 — 여덟 행성을 한 줄에 꿰다">
+          <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“1618년, 마지막 법칙입니다. 행성들의 긴반지름 a와 공전 주기 P를 <b>양쪽 다 로그 눈금</b>으로 찍어 보세요. 점들이 한 직선 위에 놓입니다. 그 직선의 기울기가 <b>P = a<sup>n</sup></b>의 n이에요. n을 찾아보시죠.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="a-law3" width="900" height="400"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">지수 n (P = a<sup>n</sup>)<span class="val" id="a-n-val">1.00</span></div>
+                <input type="range" id="a-n" min="1" max="2" step="0.05" value="1">
+              </div>
+            </div>
+            <div class="info-card" id="a-law3-info"></div>
+          </div>
+
+          <div class="stage-card" style="margin-top:16px">
+            <div class="stage-head" style="padding:18px 22px 0;">
+              <div class="eyebrow">응용 · 되돌아오는 손님</div>
+              <h2 class="display" style="font-size:20px;">핼리 혜성은 얼마나 멀리까지 나가는가</h2>
+              <p>핼리 혜성은 약 <b>76년</b>마다 태양 가까이 돌아옵니다. 주기를 알면 조화 법칙으로 궤도 긴반지름을 거꾸로 구할 수 있습니다.</p>
+            </div>
+            <div class="canvas-wrap"><canvas id="a-halley" width="900" height="300"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">핼리 혜성 궤도의 긴반지름 a (AU)<span class="val" id="a-ha-val">1.0</span></div>
+                <input type="range" id="a-ha" min="1" max="40" step="0.1" value="1">
+              </div>
+            </div>
+            <div class="info-card" id="a-halley-info"></div>
+          </div>
+
+          <div class="stage-card" style="margin-top:16px"><div id="a-q1"></div></div>
+
+          <div class="mission" id="m1-4"><span class="m-tag">미션</span>세 가지를 모두 해내세요. (슬라이더는 하나씩 맞추면 됩니다)<ul><li id="m1-4a">지수 n을 맞춰 아홉 천체의 주기 예측 오차를 모두 <b>5% 이내</b>로</li><li id="m1-4b">핼리 혜성의 주기가 <b>76년(±1년)</b>이 되는 긴반지름 찾기</li><li id="m1-4c">아래 물음에 답하기</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="결말 — 8분이 연 문">
+          <div class="ending">
+            <h4>🔎 버려도 됐을 8분이 하늘의 모양을 바꿨다</h4>
+            <p>케플러가 8분을 못 본 척했다면, 원 궤도 모형은 그대로 남았을 것입니다. 그는 대신 궤도의 모양 자체를 의심했고, <b>제1법칙</b>(행성은 태양을 한 초점으로 하는 타원 궤도를 돈다), <b>제2법칙</b>(태양과 행성을 잇는 선분이 같은 시간 동안 쓸고 가는 넓이는 일정하다), <b>제3법칙</b>(공전 주기의 제곱은 긴반지름의 세제곱에 비례한다, P² ∝ a³)을 차례로 찾아냈습니다.</p>
+            <p>여러분이 찾은 <b>n = 1.5</b>는 곧 P² = a³입니다. 그리고 이 관계가 수성부터 명왕성, 심지어 핼리 혜성까지 <b>똑같이</b> 성립한다는 것은, 이들이 모두 <b>하나의 같은 힘</b>에 매여 있다는 뜻이었습니다. 70여 년 뒤 뉴턴은 그 힘이 거리의 제곱에 반비례하는 <b>만유인력</b>임을 보였고, a³/P² 이라는 공통의 값이 바로 <b>태양의 질량</b>으로 정해진다는 것까지 밝혔습니다. 태양계를 지배하는 힘은 태양의 중력입니다.</p>
+            <div class="vs" id="a-vs"></div>
+            <span class="stamp">사건 파일 ① 해결</span>
+          </div>
+          <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: 이 화면의 궤도 맞추기는 긴반지름을 1.524 AU로 <b>고정</b>하고 이심률만 바꾸는 단순화한 모형입니다. 케플러는 실제로는 긴반지름과 이심률, 궤도면의 방향까지 함께 맞추며 수백 쪽의 계산을 했습니다. 또 행성의 궤도 요소는 다른 행성의 중력 때문에 아주 조금씩 변합니다. 표에 쓴 값은 오늘날의 평균값입니다.</div>
+          <div class="stage-card" style="padding:6px 0 4px;margin-top:16px"><div id="wk1"></div></div>
+        </section>
       </div>
-      <div class="stage-card">
-        <div class="info-card" id="c0m-data" style="margin:18px 20px 0;"></div>
-        <div class="seg" id="c0m-choices" style="margin:14px 20px 0;"></div>
-        <div class="toggle-row" style="margin:14px 20px 0;">
-          <button class="chip" id="c0m-check">정답 확인</button>
-          <button class="chip" id="c0m-new">새 천체 자료</button>
-        </div>
-        <div class="info-card" id="c0m-info">보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.</div>
-      </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
     </section>
 
+    <!-- =====================================================================
+         02 행성과 소천체 — 이야기 「명왕성의 자격 심사」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="1" hidden>
       <div class="stage-head">
-        <div class="eyebrow">02 · 태양계를 이루는 천체들</div>
-        <h2 class="display">행성과 소천체의 특징</h2>
-        <p>천체를 클릭해 지구형 행성, 목성형 행성, 소천체의 특징을 비교해 보세요.</p>
-      </div>
-      <div class="stage-card">
-        <div class="canvas-wrap"><canvas id="c1" width="900" height="380"></canvas></div>
-        <div class="info-card" id="c1-info">천체를 클릭해 보세요.</div>
+        <div class="eyebrow">02 · 행성과 소천체 · 이야기 한 편</div>
+        <h2 class="display">명왕성의 자격 심사</h2>
+        <p>2006년 8월, 국제천문연맹(IAU) 총회에서 명왕성은 행성 자리에서 내려왔습니다. 갑자기 작아진 것도, 궤도가 바뀐 것도 아닌데 말이죠. 심사 위원이 되어 후보 천체들을 직접 판정하고, 탐사선이 보내온 자료에서 소천체의 속까지 읽어 냅니다.</p>
+        <span class="std-chip">12행우01-04</span><div class="std-note"><b>[12행우01-04]</b> 행성과 소천체의 정의를 구분하여 이해하고, 소천체 탐사 자료를 통해 이들의 특징을 추론할 수 있다.</div><div class="terms"><b>IAU 행성 정의</b><b>왜소행성</b><b>소행성과 혜성</b><b>평균 밀도</b><b>돌무더기 천체</b></div>
       </div>
 
-      <div class="stage-card" style="margin-top:14px;">
-        <div class="stage-head" style="padding:16px 20px 0;">
-          <div class="eyebrow">심화 · 실제 반지름·질량 데이터로 계산하기</div>
-          <h2 class="display" style="font-size:20px;">행성 밀도와 표면 중력 계산기</h2>
-        </div>
-        <div class="canvas-wrap"><canvas id="c1b" width="900" height="320"></canvas></div>
-        <div class="controls">
-          <div class="ctrl-group" style="flex:1 1 100%">
-            <div class="ctrl-label">행성 선택<span class="val" id="c1b-name-val">수성</span></div>
-            <input type="range" id="c1b-idx" min="0" max="7" step="1" value="0">
+      <div class="episode" id="ep2">
+        <section class="scene" data-title="2005년, 명왕성보다 무거운 것이 나왔다">
+          <div class="story narr"><div class="who">🪐</div><div class="say"><span class="name">이야기</span>1930년에 발견된 명왕성은 76년 동안 아홉 번째 행성이었습니다. 그런데 1992년부터 해왕성 바깥 <b>카이퍼대</b>에서 얼음 천체가 줄줄이 발견되더니, 2005년에는 <b>에리스</b>가 나왔습니다. 크기는 명왕성과 비슷한데 <b>질량은 더 컸습니다.</b></div></div>
+          <div class="case-file"><b class="k">후보 A</b> 명왕성 — 지름 <b>2,377 km</b>, 질량 1.30×10²² kg, 카이퍼대를 돈다<br><b class="k">후보 B</b> 에리스 — 지름 <b>2,326 km</b>, 질량 1.65×10²² kg (명왕성보다 약 27% 무겁다)<br><b class="k">후보 C</b> 세레스 — 지름 <b>939 km</b>, 1801년 발견 당시 한동안 ‘행성’으로 불렸다<br><b class="k">문제</b> 에리스를 행성으로 인정하면, 카이퍼대에서 앞으로 나올 수십 개도 모두 행성이 된다</div>
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">IAU 심사 위원 유진</span>“총회장은 둘로 갈렸어요. 행성을 <b>열두 개로 늘리자</b>는 안과, <b>기준을 새로 세우자</b>는 안. 조사관님이라면 어느 쪽에 표를 던지겠습니까? 그전에 하나만 여쭙죠.”</div></div>
+          <div class="gate loose" id="g2"></div>
+        </section>
+
+        <section class="scene" data-title="심사대 — IAU 세 가지 조건">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">유진</span>“2006년 총회가 정한 행성의 조건은 셋입니다. ① <b>태양을 직접 돈다</b>(다른 천체의 위성이 아니다), ② <b>자기 중력으로 둥근 모양</b>(정역학 평형)을 이룬다, ③ <b>자기 궤도 주변을 치웠다</b>. ①②만 만족하면 <b>왜소행성</b>, ①만 만족하면 <b>태양계 소천체</b>입니다.”</div></div>
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">유진</span>“③은 눈으로는 못 봅니다. 그래서 <b>궤도 정리 지수 μ</b>를 씁니다. 자기 질량을 <b>같은 궤도 영역을 함께 도는 다른 천체들의 질량 합</b>으로 나눈 값이에요. μ가 1보다 훨씬 크면 그 자리의 주인이라는 뜻이죠. 슬라이더로 후보를 하나씩 심사대에 올려 보세요.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-iau" width="900" height="430"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">심사대에 올릴 천체<span class="val" id="b-obj-val">달</span></div>
+                <input type="range" id="b-obj" min="0" max="9" step="1" value="0">
+              </div>
+            </div>
+            <div class="info-card" id="b-iau-info"></div>
           </div>
-        </div>
-        <div class="stat-row">
-          <div class="stat-box"><div class="lbl">평균 밀도</div><div class="num" id="c1b-density">—</div></div>
-          <div class="stat-box"><div class="lbl">표면 중력(지구=1)</div><div class="num" id="c1b-gravity">—</div></div>
-          <div class="stat-box"><div class="lbl">분류</div><div class="num" id="c1b-class">—</div></div>
-        </div>
-        <div class="info-card" id="c1b-info"></div>
-      </div>
+          <div class="mission" id="m2-2"><span class="m-tag">미션</span>다음 세 가지에 해당하는 천체를 각각 찾아 심사대에 올리세요.<ul><li id="m2-2a">세 조건을 <b>모두</b> 만족하는 천체 → 행성</li><li id="m2-2b">①②는 만족하지만 <b>③만</b> 만족하지 못하는 천체 → 왜소행성</li><li id="m2-2c">①은 만족하지만 <b>②부터</b> 만족하지 못하는 천체 → 태양계 소천체</li></ul></div>
+        </section>
 
-      <div class="stage-head" style="margin-top:30px;">
-        <div class="eyebrow">🔎 미션 · 관측 특징으로 행성 맞히기</div>
-        <h2 class="display" style="font-size:20px;">이 관측 기록은 어떤 행성일까요?</h2>
-        <p>천체 망원경으로 관측한 특징 카드를 클릭해 선택한 뒤, 알맞은 행성 칸을 클릭해 짝지어 보세요.</p>
+        <section class="scene" data-title="행성 비교실 — 밀도가 알려 주는 속">
+          <div class="story"><div class="who">👨‍🚀</div><div class="say"><span class="name">비교실 연구원 태오</span>“행성끼리도 한 덩어리가 아닙니다. 겉보기 크기 말고 <b>평균 밀도</b>를 보세요. 밀도 = 질량 ÷ 부피(4/3·π·r³), 표면 중력 = G·질량 ÷ 반지름²로 직접 계산합니다. 아래 막대그래프에 <b>기준선</b>을 그어 여덟 행성을 두 무리로 갈라 보시죠.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-dens" width="900" height="420"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group">
+                <div class="ctrl-label">자세히 볼 천체<span class="val" id="b-body-val">수성</span></div>
+                <input type="range" id="b-body" min="0" max="11" step="1" value="0">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">분류 기준 밀도 (g/cm³)<span class="val" id="b-cut-val">0.5</span></div>
+                <input type="range" id="b-cut" min="0.5" max="6" step="0.1" value="0.5">
+              </div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-box"><div class="lbl">평균 밀도</div><div class="num" id="b-d1">—</div></div>
+              <div class="stat-box"><div class="lbl">표면 중력(지구=1)</div><div class="num" id="b-d2">—</div></div>
+              <div class="stat-box"><div class="lbl">분류</div><div class="num" id="b-d3">—</div></div>
+            </div>
+            <div class="info-card" id="b-dens-info"></div>
+          </div>
+          <div class="stage-card" style="margin-top:16px">
+            <div class="stage-head" style="padding:18px 22px 0;">
+              <div class="eyebrow">관측 기록 맞히기</div>
+              <h2 class="display" style="font-size:20px;">이 기록은 어느 행성인가</h2>
+              <p>망원경 관측 기록 넉 장이 뒤섞였습니다. 기록을 하나 고른 뒤 알맞은 행성 상자를 누르세요.</p>
+            </div>
+            <div id="b-sort1"></div>
+          </div>
+          <div class="mission" id="m2-3"><span class="m-tag">미션</span><ul><li id="m2-3a">기준선을 옮겨 <b>지구형 행성 4개와 목성형 행성 4개</b>를 정확히 갈라내세요.</li><li id="m2-3b">관측 기록 4장을 알맞은 행성에 맞추세요.</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="소천체 탐사 — 돌무더기와 거꾸로 선 꼬리">
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">탐사 관제사 서린</span>“소행성 차례입니다. 일본의 <b>하야부사2</b>는 류구에서, 미국의 <b>오시리스-렉스</b>는 베누에서 표본을 가져왔어요. 탐사선이 붙잡힌 궤도로 질량을, 사진으로 크기를 알아냈더니 <b>평균 밀도가 1.19 g/cm³</b>밖에 안 됐습니다. 그런데 가져온 돌 알갱이 자체의 밀도는 약 <b>2.7 g/cm³</b>예요.”</div></div>
+          <div class="case-file"><b class="k">류구</b> 평균 반지름 약 <b>448 m</b>, 질량 약 <b>4.5×10¹¹ kg</b> → 평균 밀도 1.19 g/cm³<br><b class="k">베누</b> 평균 반지름 약 <b>245 m</b>, 질량 약 <b>7.3×10¹⁰ kg</b> → 평균 밀도 1.19 g/cm³<br><b class="k">표본</b> 두 천체에서 가져온 돌 알갱이의 밀도 약 <b>2.7 g/cm³</b></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-rubble" width="900" height="300"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">속에 들어 있는 빈틈의 비율(공극률)<span class="val" id="b-por-val">0%</span></div>
+                <input type="range" id="b-por" min="0" max="80" step="1" value="0">
+              </div>
+            </div>
+            <div class="info-card" id="b-por-info"></div>
+          </div>
+          <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">서린</span>“혜성도 봅시다. 다들 꼬리가 <b>진행 방향 뒤로</b> 끌린다고 생각하죠. 자동차 매연처럼요. 정말 그럴까요? 핼리 혜성을 궤도 위에서 움직여 보세요. 꼬리는 태양풍과 복사압에 밀려납니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="b-comet" width="900" height="400"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">궤도 위의 자리 (근일점에서 잰 각도)<span class="val" id="b-pos-val">0°</span></div>
+                <input type="range" id="b-pos" min="0" max="350" step="10" value="0">
+              </div>
+            </div>
+            <div class="info-card" id="b-comet-info"></div>
+          </div>
+          <div class="mission" id="m2-4"><span class="m-tag">미션</span><ul><li id="m2-4a">공극률을 조절해 평균 밀도를 <b>1.19 g/cm³(±0.03)</b>로 맞추세요.</li><li id="m2-4b">혜성의 꼬리가 <b>진행 방향의 앞쪽</b>을 향하는 자리를 찾으세요.</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="결말 — 행성 여덟, 그리고 나머지 모두">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">유진</span>“심사는 끝났습니다. 마지막으로 보고서에 붙일 <b>소천체 분류표</b>를 채워 주세요. 카드를 하나 고르고 들어갈 상자를 누르면 됩니다.”</div></div>
+          <div class="stage-card"><div id="b-sort2"></div></div>
+          <div id="b-end-wrap" hidden>
+            <div class="ending" style="margin-top:16px">
+              <h4>🔎 명왕성은 작아서 쫓겨난 것이 아니다</h4>
+              <p>명왕성이 걸린 것은 <b>세 번째 조건</b>이었습니다. 명왕성의 μ는 <b>0.077</b> — 자기 궤도 영역에 자기 질량의 <b>약 13배</b>나 되는 다른 천체가 그대로 남아 있다는 뜻입니다. 지구의 μ는 170만. 같은 자리의 주인이라고 말할 수 있는 수준이 전혀 다릅니다. 2006년 IAU는 ①②③을 모두 만족하면 <b>행성</b>, ①②만 만족하면 <b>왜소행성</b>, ①만 만족하면 <b>태양계 소천체</b>로 정했고, 명왕성·에리스·세레스는 왜소행성이 되었습니다.</p>
+              <p>탐사 자료는 겉모습 너머를 알려 줍니다. 평균 밀도 1.19 g/cm³ 에 돌 알갱이 밀도가 2.7 g/cm³ 이라면, 류구와 베누는 속이 절반 넘게 빈 <b>돌무더기(rubble pile)</b>입니다. 큰 천체가 부서진 조각들이 약한 중력으로 다시 헐겁게 모인 것이죠. 혜성의 꼬리도 마찬가지입니다. 꼬리는 진행 방향이 아니라 <b>태양의 반대쪽</b>으로 뻗기 때문에, 태양에서 멀어지는 동안에는 꼬리가 <b>앞장서서</b> 갑니다.</p>
+              <div class="vs" id="b-vs"></div>
+              <span class="stamp">사건 파일 ② 해결</span>
+            </div>
+            <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: IAU 결의문에는 “궤도 주변을 치웠다”는 말만 있고 <b>구체적인 수치 기준은 없습니다.</b> 이 화면의 μ 값은 소터(S. Soter)가 2006년에 제안한 지표로, 기준선 1은 판정을 돕기 위해 그은 것입니다. 또 정역학 평형 여부는 크기만으로 딱 잘라 정해지지 않아, 베스타처럼 판단이 갈리는 천체도 있습니다. 공극률 계산도 천체 전체가 고르게 성기다고 본 단순화한 모형입니다.</div>
+            <div class="stage-card" style="padding:6px 0 4px"><div id="wk2"></div></div>
+          </div>
+        </section>
       </div>
-      <div class="stage-card">
-        <div class="mission-cards" id="c1m-cards"></div>
-        <div class="mission-slots" id="c1m-slots"></div>
-        <div class="toggle-row" style="margin:14px 20px 0;">
-          <button class="chip" id="c1m-check">채점하기</button>
-          <button class="chip" id="c1m-new">카드 새로 섞기</button>
-        </div>
-        <div class="info-card" id="c1m-info">카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.</div>
-      </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
     </section>
 
+    <!-- =====================================================================
+         03 외계 행성계 탐사 — 이야기 「별이 흔들렸다」
+         ===================================================================== -->
     <section class="tab-panel" data-panel="2" hidden>
       <div class="stage-head">
-        <div class="eyebrow">03 · 태양계 밖 행성 찾기</div>
-        <h2 class="display">외계 행성계 탐사</h2>
-        <p>중심별의 표면 온도 슬라이더를 조절해 액체 물이 존재할 수 있는 '생명 가능 지대'가 어떻게 달라지는지 확인해 보세요.</p>
-      </div>
-      <div class="stage-card">
-        <div class="canvas-wrap"><canvas id="c2" width="900" height="380"></canvas></div>
-        <div class="controls">
-          <div class="ctrl-group">
-            <div class="ctrl-label">중심별 표면 온도(K)<span class="val" id="c2-t-val">5800</span></div>
-            <input type="range" id="c2-t" min="3000" max="10000" step="100" value="5800">
-          </div>
-        </div>
-        <div class="info-card" id="c2-info"></div>
+        <div class="eyebrow">03 · 외계 행성계 탐사 · 이야기 한 편</div>
+        <h2 class="display">별이 흔들렸다</h2>
+        <p>1995년 10월, 스위스의 두 천문학자가 태양과 비슷한 별을 도는 첫 외계 행성을 발표했습니다. 그런데 계산해 보니 목성만 한 행성이 별에서 수성보다 훨씬 가까운 곳을 <b>4일</b>에 한 바퀴씩 돌고 있었습니다. 관측 자료를 직접 맞춰 그 행성을 다시 찾아내고, 생명이 살 만한 자리를 따져 봅니다.</p>
+        <span class="std-chip">12행우01-05</span><div class="std-note"><b>[12행우01-05]</b> 외계 행성계 탐사의 원리를 이해하고, 외계 행성에 생명체가 존재할 수 있는 조건과 외계 생명체의 존재 가능성에 대해 논증할 수 있다.</div><div class="terms"><b>시선 속도법</b><b>식 현상(통과)법</b><b>미세 중력 렌즈법</b><b>생명 가능 지대</b><b>뜨거운 목성</b></div>
       </div>
 
-      <div class="stage-head" style="margin-top:30px;">
-        <div class="eyebrow">🔎 미션 · 생명 가능 지대 판정하기</div>
-        <h2 class="display" style="font-size:20px;">이 행성은 생명 가능 지대 안에 있을까요?</h2>
-        <p>중심별의 표면 온도와 행성의 궤도 반지름 자료가 주어집니다. 별이 뜨거울수록 생명 가능 지대는 멀고 넓어진다는 원리를 이용해 이 행성의 위치를 판정해 보세요.</p>
+      <div class="episode" id="ep3">
+        <section class="scene" data-title="1995년, 페가수스자리 51">
+          <div class="story narr"><div class="who">✨</div><div class="say"><span class="name">이야기</span>프랑스 남부 오트프로방스 천문대. <b>미셸 마요르</b>와 <b>디디에 쿠엘로</b>는 별빛 스펙트럼의 흡수선 위치를 정밀하게 재는 장치를 만들었습니다. 51번째 별인 <b>페가수스자리 51</b>을 겨눴을 때, 흡수선이 <b>4일 남짓 주기로</b> 짧은 쪽과 긴 쪽을 왔다 갔다 했습니다. 두 사람은 2019년 이 공로로 노벨 물리학상을 받았습니다.</div></div>
+          <div class="case-file"><b class="k">관측 대상</b> 페가수스자리 51 — 태양과 비슷한 별, 질량 약 <b>1.11 태양질량</b>, 약 50광년 거리<br><b class="k">관측값</b> 별의 시선 속도가 <b>±56 m/s</b>(사람이 걷는 속도의 60배쯤)로 오르내린다<br><b class="k">되풀이 주기</b> 약 <b>4.2일</b></div>
+          <div class="story"><div class="who">🧑‍🏫</div><div class="say"><span class="name">관측소장</span>“별이 우리 쪽으로 다가왔다 멀어졌다 하고 있습니다. 조사관, 무엇이 별을 흔들고 있을까요?”</div></div>
+          <div class="gate loose" id="g3"></div>
+        </section>
+
+        <section class="scene" data-title="시선 속도법 — 흔들림에서 행성을 꺼내다">
+          <div class="story"><div class="who">🧑‍🏫</div><div class="say"><span class="name">관측소장</span>“별과 행성은 서로 끌어당기며 <b>공통 질량 중심</b>을 함께 돕니다. 별도 작은 원을 그리죠. 그 움직임 가운데 <b>우리 시선 방향 성분</b>이 스펙트럼의 도플러 이동으로 나타납니다. 행성의 <b>공전 주기</b>는 곡선이 되풀이되는 간격, <b>행성의 질량</b>은 곡선의 <b>높이(진폭)</b>가 알려 줍니다. 주기부터 맞춰 보세요.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="c-rv" width="900" height="410"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group">
+                <div class="ctrl-label">행성의 공전 주기 (일)<span class="val" id="c-p-val">10.00</span></div>
+                <input type="range" id="c-p" min="1" max="20" step="0.05" value="10">
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">행성의 질량 (목성질량)<span class="val" id="c-mp-val">1.00</span></div>
+                <input type="range" id="c-mp" min="0.05" max="3" step="0.01" value="1">
+              </div>
+            </div>
+            <div class="info-card" id="c-rv-info"></div>
+          </div>
+          <div class="mission" id="m3-2"><span class="m-tag">미션</span>계산한 곡선이 관측점을 지나가게 만드세요. (두 슬라이더를 하나씩 맞추면 됩니다)<ul><li id="m3-2a">되풀이 주기를 <b>4.2일(±0.1일)</b>에 맞추기</li><li id="m3-2b">곡선의 진폭을 관측값 <b>56 m/s(±1.5)</b>에 맞추기</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="식 현상법 — 별빛이 얼마나 가려졌나">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">관측 천문학자 하윤</span>“시선 속도법은 질량을 줍니다. 크기는요? 1999년, <b>HD 209458</b>이라는 별에서 행성이 <b>별 앞을 가로지르는</b> 장면이 처음 잡혔습니다. 이때 밝기가 줄어든 깊이는 곧 <b>가려진 면적의 비율</b>이에요. 즉 (행성 반지름 ÷ 별 반지름)²입니다.”</div></div>
+          <div class="stage-card">
+            <div class="canvas-wrap"><canvas id="c-tr" width="900" height="420"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">행성의 반지름 (지구 반지름 배)<span class="val" id="c-rp-val">1.0</span></div>
+                <input type="range" id="c-rp" min="1" max="25" step="0.5" value="1">
+              </div>
+            </div>
+            <div class="toggle-row" style="margin:0 22px 14px;"><button class="btn primary" id="c-tr-run" type="button">▶ 통과 관측하기</button></div>
+            <div class="info-card" id="c-tr-info"></div>
+          </div>
+          <div class="stage-card" style="margin-top:16px"><div id="c-q1"></div></div>
+          <div class="mission" id="m3-3"><span class="m-tag">미션</span><ul><li id="m3-3a">밝기 감소 깊이를 관측값 <b>1.40%(±0.06%p)</b>에 맞추는 행성 반지름을 찾으세요.</li><li id="m3-3b">아래 물음에 답하세요.</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="생명 가능 지대 — 물이 액체로 있을 수 있는 띠">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">하윤</span>“이제 본론입니다. 별에서 너무 가까우면 물이 끓어 날아가고, 너무 멀면 얼어붙습니다. 그 사이의 띠를 <b>생명 가능 지대</b>라고 해요. 경계는 별의 <b>광도</b>가 정합니다. 광도는 별의 반지름과 표면 온도로 계산하고, 경계 거리는 광도의 제곱근에 비례합니다.”</div></div>
+          <div class="stage-card">
+            <div class="toggle-row" style="padding:18px 22px 0;"><div class="seg" id="c-star"></div></div>
+            <div class="canvas-wrap" style="margin-top:16px"><canvas id="c-hz" width="900" height="420"></canvas></div>
+            <div class="controls">
+              <div class="ctrl-group" style="flex:1 1 100%">
+                <div class="ctrl-label">살펴볼 궤도의 반지름 (AU)<span class="val" id="c-r-val">0.1778</span></div>
+                <input type="range" id="c-r" min="0" max="100" step="1" value="50">
+              </div>
+            </div>
+            <div class="info-card" id="c-hz-info"></div>
+          </div>
+          <div class="stage-card" style="margin-top:16px"><div id="c-q2"></div></div>
+          <div class="mission" id="m3-4"><span class="m-tag">미션</span><ul><li id="m3-4a">☀️ 태양을 고르고, 궤도를 생명 가능 지대 안에 넣어 보세요.</li><li id="m3-4b">🔴 TRAPPIST-1을 고르고, 생명 가능 지대 안의 궤도를 찾으세요.</li><li id="m3-4c">아래 물음에 답하세요.</li></ul></div>
+        </section>
+
+        <section class="scene" data-title="결말 — 우리는 무엇으로 찾고, 무엇을 말할 수 있나">
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">하윤</span>“찾는 방법이 하나 더 있습니다. <b>미세 중력 렌즈법</b>이에요. 앞을 지나가는 별과 그 행성의 중력이 뒤쪽 먼 별의 빛을 휘게 해 잠깐 모아 줍니다. 그러면 배경별이 확 밝아졌다가 되돌아오죠. 별에서 멀리 떨어진 행성, 아주 가벼운 행성까지 찾을 수 있지만 <b>같은 일이 두 번 일어나지 않는다</b>는 약점이 있습니다.”</div></div>
+          <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">하윤</span>“마지막 정리입니다. 관측 기록 아홉 개를 탐사 방법별로 나눠 주세요.”</div></div>
+          <div class="stage-card"><div id="c-sort"></div></div>
+          <div id="c-end-wrap" hidden>
+            <div class="ending" style="margin-top:16px">
+              <h4>🔎 별의 흔들림, 별빛의 깜빡임, 그리고 휘어진 빛</h4>
+              <p>외계 행성은 대개 직접 보이지 않습니다. 그래서 우리는 <b>별에 나타난 자국</b>을 읽습니다. <b>시선 속도법</b>은 별의 흔들림에서 행성의 <b>질량</b>과 공전 주기를, <b>식 현상(통과)법</b>은 밝기 감소의 깊이에서 행성의 <b>반지름</b>을, 두 방법을 함께 쓰면 <b>평균 밀도</b>를 알려 줍니다. <b>미세 중력 렌즈법</b>은 멀리 떨어진 행성까지 찾아냅니다.</p>
+              <p>생명 가능 지대는 <b>액체 상태의 물</b>이 있을 수 있는 거리의 띠일 뿐, 그 안에 있다고 생명체가 있다는 뜻은 아닙니다. 금성도 태양계 생명 가능 지대의 안쪽 가장자리 가까이 있지만 표면은 460℃가 넘습니다. 대기의 양과 성분, 물의 존재, 자기장, 중심별의 안정성 같은 조건이 함께 맞아야 합니다. 그래서 오늘날의 논의는 “있다/없다”가 아니라 <b>어떤 조건이 얼마나 갖춰졌는지를 근거로 따지는 일</b>입니다.</p>
+              <div class="vs" id="c-vs"></div>
+              <span class="stamp">사건 파일 ③ 해결</span>
+            </div>
+            <div class="info-card" style="margin:0 0 14px">📎 과학자의 눈: 시선 속도법으로 얻는 질량은 궤도면이 얼마나 기울었는지 모르기 때문에 <b>최소 질량</b>입니다. 이 화면은 궤도면이 시선 방향과 나란하고 궤도가 원이라고 본 단순화한 모형입니다. 생명 가능 지대의 경계(광도 제곱근의 0.95배~1.37배)도 대기 조건을 어떻게 가정하느냐에 따라 연구마다 달라집니다. 더 넉넉하게 잡는 기준을 쓰면 TRAPPIST-1의 d·f·g도 후보에 들어옵니다.</div>
+            <div class="stage-card" style="padding:6px 0 4px"><div id="wk3"></div></div>
+          </div>
+        </section>
       </div>
-      <div class="stage-card">
-        <div class="info-card" id="c2m-data" style="margin:18px 20px 0;"></div>
-        <div class="seg" id="c2m-choices" style="margin:14px 20px 0;">
-          <button data-c="hot">생명 가능 지대보다 안쪽(너무 뜨거움)</button>
-          <button data-c="hz">생명 가능 지대 안</button>
-          <button data-c="cold">생명 가능 지대보다 바깥쪽(너무 추움)</button>
-        </div>
-        <div class="toggle-row" style="margin:14px 20px 0;">
-          <button class="chip" id="c2m-check">정답 확인</button>
-          <button class="chip" id="c2m-new">새 행성계 자료</button>
-        </div>
-        <div class="info-card" id="c2m-info">보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.</div>
-      </div>
+      <p class="teacher-note">교사용: 주소 끝에 <a href="?open=1">?open=1</a> 을 붙이면 모든 장면이 열립니다.</p>
     </section>
 
+    <!-- ===================================================================== 04 정리하기 -->
     <section class="tab-panel" data-panel="3" hidden>
       <div class="stage-head">
-        <div class="eyebrow">04 · 오늘 알아낸 것을 문장으로</div>
+        <div class="eyebrow">04 · 세 사건을 하나로</div>
         <h2 class="display">정리하기</h2>
-        <p>조작한 것을 말이나 글로 옮기지 않으면 남지 않습니다. 아래를 채우고 <b>답안 복사</b>를 눌러 제출하세요. 쓰는 동안 자동으로 저장됩니다.</p>
+        <p>세 이야기의 결과가 아래에 모입니다. 세 사건을 꿰는 한 문장을 쓰고 <b>답안 복사</b>를 눌러 제출하세요. 쓰는 동안 자동으로 저장됩니다.</p>
       </div>
       <div class="stage-card" style="padding:6px 0 4px"><div id="wk"></div></div>
+    </section>
+
+    <!-- ===================================================================== 05 우리 반 -->
+    <section class="tab-panel" data-panel="4" hidden>
+      <div class="stage-head">
+        <div class="eyebrow">05 · 같은 반 친구들과 나누기</div>
+        <h2 class="display">우리 반</h2>
+        <p>내가 해결한 사건과 찾아낸 값을 우리 반에 올리고, 친구들은 어떤 답을 냈는지 살펴보세요. <b>올리기 버튼을 눌렀을 때만</b> 공유됩니다. 실명 대신 별명을 쓰세요.</p>
+      </div>
+      <div class="stage-card"><div id="share"></div></div>
     </section>
   </main>
 </div>
 
 <button class="theme-toggle" id="themeToggle">라이트 모드</button>
 <script src="../assets/theme.js"></script>
-<script>
-(function () {
-"use strict";
-
-/* TAB0 케플러법칙 */
-(function () {
-  var canvas = document.getElementById("c0");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var ecc = 0.4;
-  var info = document.getElementById("c0-info");
-  document.getElementById("c0-e").addEventListener("input", function (e) { ecc = +e.target.value; document.getElementById("c0-e-val").textContent = ecc.toFixed(2); render(); });
-
-  function render() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    var cx = W / 2, cy = H / 2, a = 300, b = a * Math.sqrt(1 - ecc * ecc), c = Math.sqrt(a * a - b * b);
-    ctx.strokeStyle = cssVar("--line"); ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.ellipse(cx, cy, a, b, 0, 0, 7); ctx.stroke();
-    ctx.fillStyle = cssVar("--coral"); ctx.beginPath(); ctx.arc(cx + c, cy, 12, 0, 7); ctx.fill();
-    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--mist"); ctx.textAlign = "center"; ctx.fillText("태양(초점)", cx + c, cy + 28);
-
-    // two equal-area sectors: near perihelion (fast, short arc) and near aphelion (slow, long arc)
-    function pointAt(angle) { return { x: cx + a * Math.cos(angle), y: cy + b * Math.sin(angle) }; }
-    drawSector(0, 0.5, cssVar("--teal"));
-    drawSector(Math.PI, Math.PI + 1.7, cssVar("--violet"));
-
-    function drawSector(a0, a1, color) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(cx + c, cy);
-      for (var t = a0; t <= a1; t += 0.02) {
-        var p = pointAt(t);
-        ctx.lineTo(p.x, p.y);
-      }
-      ctx.closePath();
-      ctx.fillStyle = color; ctx.globalAlpha = .4; ctx.fill();
-      ctx.restore();
-    }
-    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--teal"); ctx.textAlign = "left";
-    ctx.fillText("근일점 부근: 짧은 시간, 빠른 속도", cx + a - 260, cy - b - 20);
-    ctx.fillStyle = cssVar("--violet");
-    ctx.fillText("원일점 부근: 같은 시간, 느린 속도, 넓은 면적", cx - a + 10, cy + b + 30);
-
-    info.innerHTML = "<b>제1법칙(타원 궤도 법칙)</b>: 행성은 태양을 한 초점으로 하는 타원 궤도를 그립니다(이심률 " + ecc.toFixed(2) + "). <b>제2법칙(면적 속도 일정 법칙)</b>: 태양과 행성을 잇는 선분이 같은 시간 동안 쓸고 지나가는 면적은 항상 같습니다 — 그림의 두 색칠된 부채꼴 면적이 같습니다. 이 때문에 행성은 태양에 가까운 근일점에서 더 빠르게, 먼 원일점에서 더 느리게 움직입니다. <b>제3법칙(조화 법칙)</b>: 공전 주기의 제곱은 궤도 긴반지름의 세제곱에 비례합니다(T² ∝ a³).";
-  }
-  render();
-})();
-
-/* TAB0 미션 — 케플러 법칙으로 데이터 해석하기 */
-(function () {
-  var dataEl = document.getElementById("c0m-data");
-  var choicesEl = document.getElementById("c0m-choices");
-  var checkBtn = document.getElementById("c0m-check");
-  var newBtn = document.getElementById("c0m-new");
-  if (!dataEl) return;
-
-  var a = 4, trueT = 8;
-  var picked = null, choices = [];
-
-  function shuffle(arr) {
-    var arr2 = arr.slice();
-    for (var i = arr2.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = arr2[i]; arr2[i] = arr2[j]; arr2[j] = tmp;
-    }
-    return arr2;
-  }
-
-  function newQuestion() {
-    a = 1 + Math.round(Math.random() * 24) / 2;
-    trueT = Math.round(Math.pow(a, 1.5) * 10) / 10;
-    dataEl.innerHTML = "새로 발견된 천체의 궤도 긴반지름은 <b>a = " + a + " AU</b>입니다.";
-    var decoys = [];
-    while (decoys.length < 3) {
-      var factor = 0.5 + Math.random() * 1.5;
-      var d = Math.round(trueT * factor * 10) / 10;
-      if (Math.abs(d - trueT) > trueT * 0.15 && decoys.indexOf(d) === -1 && d > 0) decoys.push(d);
-    }
-    choices = shuffle([trueT].concat(decoys));
-    picked = null;
-    renderChoices();
-    var info = document.getElementById("c0m-info");
-    info.style.color = "";
-    info.textContent = "보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.";
-  }
-
-  function renderChoices() {
-    choicesEl.innerHTML = "";
-    choices.forEach(function (t) {
-      var btn = document.createElement("button");
-      btn.className = picked === t ? "on" : "";
-      btn.textContent = t + "년";
-      btn.addEventListener("click", function () { picked = t; renderChoices(); });
-      choicesEl.appendChild(btn);
-    });
-  }
-
-  checkBtn.addEventListener("click", function () {
-    var info = document.getElementById("c0m-info");
-    if (picked === null) {
-      info.style.color = "";
-      info.textContent = "먼저 보기 중 하나를 선택하세요.";
-      return;
-    }
-    if (picked === trueT) {
-      info.style.color = "var(--teal)";
-      info.innerHTML = "<b>정답입니다!</b> T² = a³이므로 T = a^1.5 = " + a + "^1.5 ≈ " + trueT + "년입니다.";
-    } else {
-      info.style.color = "var(--coral)";
-      info.innerHTML = "다시 생각해 보세요. 정답은 <b>" + trueT + "년</b>입니다. T = a^1.5 관계를 이용해 계산해 보세요.";
-    }
-  });
-
-  newBtn.addEventListener("click", newQuestion);
-  newQuestion();
-})();
-
-/* TAB1 행성과 소천체 */
-(function () {
-  var canvas = document.getElementById("c1");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var info = document.getElementById("c1-info");
-  var bodies = [
-    { icon: "🪨", name: "지구형 행성", desc: "수성·금성·지구·화성. 크기가 작고 밀도가 크며(암석·금속 위주), 표면이 단단하고 위성 수가 적습니다.", x: 150 },
-    { icon: "🪐", name: "목성형 행성", desc: "목성·토성·천왕성·해왕성. 크기가 크고 밀도가 작으며(기체·얼음 위주), 고리와 많은 위성을 가집니다.", x: 400 },
-    { icon: "☄️", name: "혜성", desc: "얼음과 먼지로 이루어져 태양에 가까워지면 꼬리가 생깁니다. 태양계 외곽(카이퍼대·오르트구름)에서 옵니다.", x: 650 },
-    { icon: "🌑", name: "소행성·왜소행성", desc: "주로 화성과 목성 사이(소행성대)에 분포하는 암석질 천체입니다. 명왕성처럼 구형에 가깝지만 행성 지위를 얻지 못한 것을 왜소행성이라 합니다.", x: 850 }
-  ];
-  canvas.addEventListener("click", function (e) {
-    var rect = canvas.getBoundingClientRect();
-    var scaleX = canvas._w / rect.width;
-    var mx = (e.clientX - rect.left) * scaleX;
-    bodies.forEach(function (b) { if (Math.abs(mx - b.x) < 110) info.innerHTML = "<b>" + b.icon + " " + b.name + "</b> — " + b.desc; });
-  });
-  function render() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    bodies.forEach(function (b) {
-      ctx.save();
-      ctx.strokeStyle = cssVar("--line"); ctx.fillStyle = cssVar("--panel-2");
-      ctx.fillRect(b.x - 100, 100, 200, 160);
-      ctx.strokeRect(b.x - 100, 100, 200, 160);
-      ctx.restore();
-      ctx.font = "44px Segoe UI"; ctx.textAlign = "center"; ctx.fillText(b.icon, b.x, 190);
-      ctx.font = "700 12px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.fillText(b.name, b.x, 235);
-    });
-  }
-  render();
-})();
-
-/* TAB1-b 행성 밀도·중력 계산기 */
-(function () {
-  var canvas = document.getElementById("c1b");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var slider = document.getElementById("c1b-idx");
-  var nameVal = document.getElementById("c1b-name-val");
-  var densityEl = document.getElementById("c1b-density");
-  var gravityEl = document.getElementById("c1b-gravity");
-  var classEl = document.getElementById("c1b-class");
-  var info = document.getElementById("c1b-info");
-
-  var G = 6.674e-11;
-  var planets = [
-    { name: "수성", r: 2439.7, m: 0.330, color: "--mist" },
-    { name: "금성", r: 6051.8, m: 4.87, color: "--coral" },
-    { name: "지구", r: 6371.0, m: 5.97, color: "--cold" },
-    { name: "화성", r: 3389.5, m: 0.642, color: "--coral" },
-    { name: "목성", r: 69911, m: 1898, color: "--foam" },
-    { name: "토성", r: 58232, m: 568, color: "--foam" },
-    { name: "천왕성", r: 25362, m: 86.8, color: "--teal" },
-    { name: "해왕성", r: 24622, m: 102, color: "--teal" }
-  ];
-  var earthG = 9.8;
-
-  function calc(p) {
-    var rM = p.r * 1000;
-    var massKg = p.m * 1e24;
-    var volume = (4 / 3) * Math.PI * Math.pow(rM, 3);
-    var density = massKg / volume / 1000; // g/cm^3
-    var g = G * massKg / (rM * rM);
-    return { density: density, g: g, gRel: g / earthG };
-  }
-
-  var maxR = planets[4].r; // Jupiter scale reference
-
-  function render(idx) {
-    var p = planets[idx];
-    var c = calc(p);
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-
-    var cx = W / 2, cy = H / 2 + 10;
-    var scale = 130 / Math.sqrt(maxR);
-    var rPx = Math.max(10, Math.sqrt(p.r) * scale);
-    ctx.beginPath(); ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
-    ctx.fillStyle = cssVar(p.color); ctx.fill();
-    ctx.strokeStyle = cssVar("--line"); ctx.stroke();
-
-    // earth reference circle overlay for comparison (dashed)
-    var rEarthPx = Math.max(4, Math.sqrt(planets[2].r) * scale);
-    ctx.save(); ctx.setLineDash([3, 3]); ctx.strokeStyle = cssVar("--mist");
-    ctx.beginPath(); ctx.arc(cx, cy, rEarthPx, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-
-    ctx.font = "700 16px Segoe UI"; ctx.fillStyle = cssVar("--foam"); ctx.textAlign = "center";
-    ctx.fillText(p.name, cx, cy - rPx - 20);
-    ctx.font = "10px Segoe UI"; ctx.fillStyle = cssVar("--mist");
-    ctx.fillText("점선 = 지구 크기 비교", cx, cy + rPx + 26);
-    ctx.font = "11px Segoe UI";
-    ctx.fillText("반지름 " + p.r.toLocaleString() + " km · 질량(지구=1) " + (p.m / planets[2].m).toFixed(2), cx, H - 16);
-  }
-
-  function update() {
-    var idx = Math.round(+slider.value);
-    var p = planets[idx];
-    var c = calc(p);
-    nameVal.textContent = p.name;
-    densityEl.textContent = c.density.toFixed(2) + " g/cm³";
-    gravityEl.textContent = c.gRel.toFixed(2) + "배";
-    var isRocky = c.density > 3;
-    classEl.textContent = isRocky ? "지구형(암석)" : "목성형(기체·얼음)";
-    render(idx);
-    info.innerHTML = "밀도 = 질량 ÷ 부피(4/3·π·r³), 표면 중력 = G × 질량 ÷ 반지름² (G = 6.674×10⁻¹¹) 공식으로 직접 계산한 값입니다. " + p.name + "은(는) 평균 밀도 <b>" + c.density.toFixed(2) + " g/cm³</b>로 " + (isRocky ? "지구형 행성처럼 암석·금속 위주의 단단한 구조" : "목성형 행성처럼 기체·얼음 위주의 가벼운 구조") + "임을 알 수 있고, 표면 중력은 지구의 <b>" + c.gRel.toFixed(2) + "배</b>입니다.";
-  }
-  slider.addEventListener("input", update);
-  update();
-})();
-
-/* TAB1 미션 — 관측 특징으로 행성 맞히기 */
-(function () {
-  var cardsEl = document.getElementById("c1m-cards");
-  var slotsEl = document.getElementById("c1m-slots");
-  var checkBtn = document.getElementById("c1m-check");
-  var newBtn = document.getElementById("c1m-new");
-  if (!cardsEl) return;
-
-  var slotNames = { mercury: "수성", mars: "화성", jupiter: "목성", saturn: "토성" };
-  var slotOrder = ["mercury", "mars", "jupiter", "saturn"];
-  var clues = {
-    mercury: "태양에 가장 가까우며 대기가 거의 없고, 표면이 크레이터로 뒤덮여 달과 비슷한 모습입니다.",
-    mars: "붉은 사막 같은 표면과 극지방의 하얀 극관이 두드러지며, 거대한 화산과 협곡 지형이 관측됩니다.",
-    jupiter: "태양계에서 가장 크고, 대적점이라는 거대한 소용돌이와 여러 개의 얇은 고리, 많은 위성을 가지고 있습니다.",
-    saturn: "뚜렷하고 화려한 고리 시스템이 가장 크게 발달했으며, 가장 큰 위성인 타이탄은 두꺼운 대기를 가지고 있습니다."
-  };
-
-  var pool = [];
-  var slots = {};
-  var selected = null;
-
-  function shuffle(arr) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-    }
-    return a;
-  }
-
-  function reset() {
-    pool = shuffle(slotOrder.slice());
-    slots = { mercury: null, mars: null, jupiter: null, saturn: null };
-    selected = null;
-    var info = document.getElementById("c1m-info");
-    info.style.color = "";
-    info.textContent = "카드를 클릭해 선택한 뒤, 놓을 칸을 클릭하세요.";
-    render();
-  }
-
-  function render() {
-    cardsEl.innerHTML = "";
-    pool.forEach(function (key) {
-      var card = document.createElement("div");
-      card.className = "mission-card" + (selected === key ? " selected" : "");
-      card.textContent = clues[key];
-      card.addEventListener("click", function () {
-        selected = (selected === key) ? null : key;
-        render();
-      });
-      cardsEl.appendChild(card);
-    });
-
-    slotsEl.innerHTML = "";
-    slotOrder.forEach(function (targetKey) {
-      var slot = document.createElement("div");
-      var filledKey = slots[targetKey];
-      slot.className = "mission-slot" + (filledKey ? " filled" : "");
-      var title = document.createElement("div");
-      title.className = "slot-title";
-      title.textContent = slotNames[targetKey];
-      slot.appendChild(title);
-      var body = document.createElement("div");
-      body.className = "slot-body";
-      body.textContent = filledKey ? clues[filledKey] : "여기를 클릭해 선택한 카드를 놓으세요.";
-      slot.appendChild(body);
-      slot.addEventListener("click", function () {
-        if (filledKey) {
-          pool.push(filledKey);
-          slots[targetKey] = null;
-          render();
-        } else if (selected) {
-          slots[targetKey] = selected;
-          pool = pool.filter(function (k) { return k !== selected; });
-          selected = null;
-          render();
-        }
-      });
-      slotsEl.appendChild(slot);
-    });
-  }
-
-  checkBtn.addEventListener("click", function () {
-    var info = document.getElementById("c1m-info");
-    if (pool.length > 0) {
-      info.style.color = "";
-      info.textContent = "아직 배치하지 않은 카드가 있습니다. 4장을 모두 알맞은 칸에 놓아 주세요.";
-      return;
-    }
-    var correctCount = 0;
-    slotsEl.querySelectorAll(".mission-slot").forEach(function (slotEl, i) {
-      var targetKey = slotOrder[i];
-      var ok = slots[targetKey] === targetKey;
-      slotEl.classList.remove("correct", "wrong");
-      slotEl.classList.add(ok ? "correct" : "wrong");
-      if (ok) correctCount++;
-    });
-    if (correctCount === 4) {
-      info.style.color = "var(--teal)";
-      info.innerHTML = "<b>4장 모두 정답입니다!</b> 표면 상태와 고리·위성 등 관측 특징으로 행성의 종류를 구별할 수 있습니다.";
-    } else {
-      info.style.color = "var(--coral)";
-      info.innerHTML = correctCount + " / 4 칸이 맞았습니다. 빨간 테두리 칸을 다시 살펴보고 카드를 옮겨 보세요.";
-    }
-  });
-
-  newBtn.addEventListener("click", reset);
-  reset();
-})();
-
-/* TAB2 외계행성 */
-(function () {
-  var canvas = document.getElementById("c2");
-  var ctx = setupCanvas(canvas);
-  var W = canvas._w, H = canvas._h;
-  var temp = 5800;
-  var info = document.getElementById("c2-info");
-  document.getElementById("c2-t").addEventListener("input", function (e) { temp = +e.target.value; document.getElementById("c2-t-val").textContent = temp; render(); });
-
-  function tempToColor(t) {
-    if (t > 8000) return "#c8d8ff";
-    if (t > 6000) return "#fff6df";
-    if (t > 5000) return "#ffe9b3";
-    return "#ff7a5c";
-  }
-  function render() {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = cssVar("--panel"); ctx.fillRect(0, 0, W, H);
-    var cx = 130, cy = H / 2;
-    var luminosityFactor = Math.pow(temp / 5800, 4);
-    var habZoneMid = 150 * Math.sqrt(luminosityFactor);
-    var habZoneWidth = habZoneMid * 0.35;
-
-    ctx.fillStyle = tempToColor(temp); ctx.beginPath(); ctx.arc(cx, cy, 40, 0, 7); ctx.fill();
-
-    ctx.save();
-    ctx.strokeStyle = cssVar("--teal"); ctx.globalAlpha = .35; ctx.lineWidth = habZoneWidth * 2;
-    ctx.beginPath(); ctx.arc(cx, cy, habZoneMid, 0, Math.PI * 2); ctx.stroke();
-    ctx.restore();
-    ctx.font = "11px Segoe UI"; ctx.fillStyle = cssVar("--teal"); ctx.textAlign = "left";
-    ctx.fillText("생명 가능 지대(액체 물이 있을 수 있는 거리)", cx + habZoneMid + habZoneWidth + 20, cy);
-
-    // orbit markers
-    [0.6, 1.0, 1.6].forEach(function (f, i) {
-      var r = habZoneMid * f * 0.7 + (i - 1) * 0;
-    });
-    var earthLikeR = habZoneMid;
-    ctx.save(); ctx.strokeStyle = cssVar("--line"); ctx.setLineDash([3, 3]);
-    ctx.beginPath(); ctx.arc(cx, cy, earthLikeR, 0, 7); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-    ctx.fillStyle = cssVar("--cold"); ctx.beginPath(); ctx.arc(cx + earthLikeR, cy, 6, 0, 7); ctx.fill();
-
-    info.innerHTML = "중심별의 표면 온도가 " + temp + "K일 때, 광도는 태양의 약 " + luminosityFactor.toFixed(2) + "배입니다. 별이 <b>뜨거울수록(광도가 클수록) 생명 가능 지대는 멀고 넓어지며</b>, 차가울수록 별에 가깝고 좁아집니다. 외계 행성은 주로 <b>식 현상법</b>(행성이 별 앞을 지나며 별빛이 살짝 어두워지는 것을 관측)이나 <b>시선 속도법</b>(행성의 중력으로 별이 미세하게 흔들리는 것을 관측)으로 찾습니다.";
-  }
-  render();
-})();
-
-/* TAB2 미션 — 생명 가능 지대 판정하기 */
-(function () {
-  var dataEl = document.getElementById("c2m-data");
-  var choicesEl = document.getElementById("c2m-choices");
-  var checkBtn = document.getElementById("c2m-check");
-  var newBtn = document.getElementById("c2m-new");
-  if (!dataEl) return;
-
-  var trueKey = "hz";
-  var temp = 5800, orbit = 1.0;
-  var picked = null;
-  var seg = choicesEl.querySelectorAll("button");
-
-  seg.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      picked = btn.dataset.c;
-      seg.forEach(function (b) { b.classList.toggle("on", b === btn); });
-    });
-  });
-
-  var labels = { hot: "생명 가능 지대보다 안쪽(너무 뜨거움)", hz: "생명 가능 지대 안", cold: "생명 가능 지대보다 바깥쪽(너무 추움)" };
-
-  function classify(t, orb) {
-    var luminosityFactor = Math.pow(t / 5800, 4);
-    var hzMid = Math.pow(t / 5800, 2);
-    var low = hzMid * 0.65, high = hzMid * 1.35;
-    if (orb < low) return "hot";
-    if (orb > high) return "cold";
-    return "hz";
-  }
-
-  function newQuestion() {
-    temp = 3200 + Math.round(Math.random() * 68) * 100;
-    orbit = Math.round((0.2 + Math.random() * 4.8) * 10) / 10;
-    trueKey = classify(temp, orbit);
-    dataEl.innerHTML = "중심별의 표면 온도는 <b>" + temp + " K</b>, 이 행성의 궤도 반지름은 <b>" + orbit.toFixed(1) + " AU</b>입니다.";
-    picked = null;
-    seg.forEach(function (b) { b.classList.remove("on"); });
-    var info = document.getElementById("c2m-info");
-    info.style.color = "";
-    info.textContent = "보기 중 하나를 선택한 뒤 [정답 확인]을 눌러 보세요.";
-  }
-
-  checkBtn.addEventListener("click", function () {
-    var info = document.getElementById("c2m-info");
-    if (picked === null) {
-      info.style.color = "";
-      info.textContent = "먼저 보기 중 하나를 선택하세요.";
-      return;
-    }
-    if (picked === trueKey) {
-      info.style.color = "var(--teal)";
-      info.innerHTML = "<b>정답입니다!</b> " + labels[trueKey] + "에 해당합니다. 별이 뜨거울수록(광도가 클수록) 생명 가능 지대는 멀고 넓어집니다.";
-    } else {
-      info.style.color = "var(--coral)";
-      info.innerHTML = "다시 생각해 보세요. 정답은 <b>" + labels[trueKey] + "</b>입니다.";
-    }
-  });
-
-  newBtn.addEventListener("click", newQuestion);
-  newQuestion();
-})();
-
-})();
-</script>
-
-<script>
-(function () {
-  window.sthUnit("psp-1-2");
-  window.sthWork({
-    mount: "wk",
-    unitLabel: "[행성우주과학] 태양계 천체와 외계 행성",
-    items: [
-      {
-            "id": "w1",
-            "label": "케플러 제3법칙 확인",
-            "hint": "행성 하나를 골라 공전 주기와 궤도 긴반지름을 넣어 T²과 a³이 비례하는지 계산으로 확인하고, 결과를 쓰세요.",
-            "ph": ""
-      },
-      {
-            "id": "w2",
-            "label": "외계 행성을 찾는 방법",
-            "hint": "시선속도법과 식(통과)법 중 하나를 골라, 무엇을 관측해 무엇을 알아내는지 쓰세요.",
-            "ph": ""
-      },
-      {
-            "id": "w3",
-            "label": "아직 헷갈리는 것",
-            "hint": "다음 시간에 여기서부터 시작합니다.",
-            "ph": ""
-      }
-]
-  });
-})();
-</script>
+<script src="../assets/story.js"></script>
+<script src="../assets/share-config.js"></script>
+<script src="../assets/share.js"></script>
+<script src="episodes.js"></script>
 </body>
 </html>
