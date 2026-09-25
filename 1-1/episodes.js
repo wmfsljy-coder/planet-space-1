@@ -249,7 +249,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       ctx.fillStyle = v("--teal-100"); ctx.globalAlpha = .6; ctx.fillRect(x0, gy - 32, sx - x0, 30); ctx.globalAlpha = 1;
       text(ctx, "지구에서 사진으로 확인 가능한 25 m", x0 + 4, gy - 40, { s: 10.5, w: "800", c: v("--teal-700") });
       /* 목표 */
-      text(ctx, "🪨", x1, gy - 12, { s: 20, a: "center" });
+      text(ctx, "🪨", x1 + 28, gy - 12, { s: 20, a: "center" });   /* 로버가 닿아도 바위가 가려지지 않게 살짝 옆에 */
       text(ctx, "삼각주 바위 900 m", x1, gy + 22, { s: 11, w: "800", a: "right", c: v("--ink") });
       /* 로버 */
       var rx = x0 + r.pos / GOAL * (x1 - x0);
@@ -512,7 +512,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       });
 
       /* 시간 축 0~72시간 */
-      var tx0 = 90, tx1 = 790, ty = 320;
+      var tx0 = 90, tx1 = 790, ty = 300;
       ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(tx0, ty); ctx.lineTo(tx1, ty); ctx.stroke();
       for (var g = 0; g <= 72; g += 12) {
@@ -534,8 +534,8 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       var hxp = tx0 + hh / 72 * (tx1 - tx0);
       ctx.fillStyle = v("--brand");
       ctx.beginPath(); ctx.moveTo(hxp, ty - 2); ctx.lineTo(hxp - 7, ty - 16); ctx.lineTo(hxp + 7, ty - 16); ctx.closePath(); ctx.fill();
-      text(ctx, "보호 모드 " + hh + "h", Math.max(hxp - 6, 96), ty + 40, { s: 11, w: "800", a: "right", c: v("--brand-700") });
-      text(ctx, "L1 감시 위성이 벌어 주는 여유 시간 " + fmtTime(t.l1), 860, 356, { s: 11.5, w: "800", a: "right", c: v("--teal-700") });
+      text(ctx, "보호 모드 " + hh + "h", Math.max(hxp - 6, 96), ty + 58, { s: 11, w: "800", a: "right", c: v("--brand-700") });
+      text(ctx, "L1 감시 위성이 벌어 주는 여유 시간 " + fmtTime(t.l1), 860, 372, { s: 11.5, w: "800", a: "right", c: v("--teal-700") });
     }
     canvas._redraw = draw;
 
@@ -715,7 +715,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       ctx.fillRect(bx0 + 40, cyv, 120, by1 - cyv);
       text(ctx, fmtE(kt), bx0 + 100, cyv - 10, { s: 17, w: "900", a: "center", c: v(kt >= 1e5 ? "--rose-700" : "--amber-700") });
       text(ctx, "충돌 에너지 (TNT 환산, 로그 눈금)", bx0, by0 - 20, { s: 11.5, w: "800", c: v("--mist") });
-      text(ctx, "100 Mt", bx1 - 4, ypos(1e5) + 14, { s: 10.5, w: "800", a: "right", c: v("--rose-700") });
+      text(ctx, "100 Mt", bx0 + 170, ypos(1e5) + 14, { s: 10.5, w: "800", c: v("--rose-700") });
       ctx.strokeStyle = v("--rose"); ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(bx0, ypos(1e5)); ctx.lineTo(bx1, ypos(1e5)); ctx.stroke();
     }
@@ -769,7 +769,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       /* 밀지 않았을 때의 경로 : 지구 정면 */
       ctx.strokeStyle = v("--rose"); ctx.lineWidth = 2.5; ctx.setLineDash([7, 5]);
       ctx.beginPath(); ctx.moveTo(60, ey); ctx.lineTo(ex - er, ey); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "밀지 않았을 때 — 충돌", 62, ey - 10, { s: 11, w: "800", c: v("--rose-700") });
+      text(ctx, "밀지 않았을 때 — 충돌", 62, ey + 18, { s: 11, w: "800", c: v("--rose-700") });
 
       /* 밀었을 때 */
       var offPx = Math.min(330, s / SCALE);

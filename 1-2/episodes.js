@@ -523,7 +523,7 @@ function solveKepler(e, M) {
 
       /* μ 로그 막대 */
       var bx0 = 60, bx1 = 850, by = 330;
-      text(ctx, "궤도 정리 지수 μ (자기 질량 ÷ 같은 궤도 영역의 다른 천체 질량 합) — 로그 눈금", bx0, by - 22, { s: 11.5, w: "800", c: v("--mist") });
+      text(ctx, "궤도 정리 지수 μ (자기 질량 ÷ 같은 궤도 영역의 다른 천체 질량 합) — 로그 눈금", bx0, by - 44, { s: 11.5, w: "800", c: v("--mist") });
       line(ctx, bx0, by + 30, bx1, by + 30, v("--line"), 1.5);
       function mx(m) { return bx0 + (Math.log(clamp(m, 0.01, 1e7)) / Math.LN10 + 2) / 9 * (bx1 - bx0); }
       [0.01, 0.1, 1, 100, 10000, 1000000].forEach(function (m) {
@@ -621,8 +621,8 @@ function solveKepler(e, M) {
       text(ctx, "(원의 크기는 제곱근 눈금)", cx, base + 82, { s: 10, c: v("--mist"), a: "center" });
 
       /* 오른쪽 — 밀도 막대 */
-      var x0 = 400, x1 = 840, y0 = 30, rowH = 29;
-      text(ctx, "평균 밀도 (g/cm³)", x0, y0 - 12, { s: 12, w: "900" });
+      var x0 = 400, x1 = 840, y0 = 40, rowH = 28;
+      text(ctx, "평균 밀도 (g/cm³)", x0, y0 - 28, { s: 12, w: "900" });
       function bx(dd) { return x0 + clamp(dd / 6, 0, 1) * (x1 - x0); }
       [0, 1, 2, 3, 4, 5, 6].forEach(function (t) {
         line(ctx, bx(t), y0, bx(t), y0 + 12 * rowH, v("--line"), 1, [3, 4]);
@@ -636,7 +636,7 @@ function solveKepler(e, M) {
         if (on) ring(ctx, x0 - 26, yy + 9, 5, v("--brand"), 2.5);
       });
       line(ctx, bx(cut), y0 - 4, bx(cut), y0 + 12 * rowH, v("--amber"), 3);
-      text(ctx, "기준 " + cut.toFixed(1), bx(cut), y0 - 12, { s: 11, w: "900", c: v("--amber-700"), a: "center" });
+      text(ctx, "기준 " + cut.toFixed(1), bx(cut), y0 - 10, { s: 11, w: "900", c: v("--amber-700"), a: "center" });
       text(ctx, "위 8줄만 행성입니다. 아래 4줄은 왜소행성·소행성.", x1, y0 + 12 * rowH + 34, { s: 10.5, c: v("--mist"), a: "right" });
 
       $("b-d1").textContent = d.toFixed(2) + " g/cm³";
