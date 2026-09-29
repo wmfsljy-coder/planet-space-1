@@ -918,7 +918,9 @@ window.sthWork({
   recap: [
     { key: "r1", label: "① 22분 늦게 닿는 명령" },
     { key: "r2", label: "② 8분 20초 뒤의 첫 신호" },
-    { key: "r3", label: "③ 빗나가게 하라" }
+    { key: "r3", label: "③ 빗나가게 하라" },
+    { key: "rQuiz", label: "수준별 문제" },
+    { key: "rLab", label: "응용 실험실" }
   ],
   items: [
     { id: "all", label: "세 기록을 꿰는 한 문장", hint: "화성까지의 22분, 태양 폭풍의 사흘, 소행성의 20년. 세 이야기에 공통으로 들어 있는 것을 ‘거리’와 ‘시간’이라는 말을 넣어 한 문장으로 쓰세요." },
@@ -932,7 +934,9 @@ window.sthShare({
   rows: [
     { key: "r1", label: "① 22분 늦게 닿는 명령" },
     { key: "r2", label: "② 8분 20초 뒤의 첫 신호" },
-    { key: "r3", label: "③ 빗나가게 하라" }
+    { key: "r3", label: "③ 빗나가게 하라" },
+    { key: "rQuiz", label: "수준별 문제" },
+    { key: "rLab", label: "응용 실험실" }
   ],
   line: { id: "all", label: "세 기록을 꿰는 한 문장" }
 });
