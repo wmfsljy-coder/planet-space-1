@@ -6,7 +6,7 @@
 "use strict";
 var S = (window.REAL_SSN || { rows: [] }).rows.filter(function (r) { return r[2] === 12; });   /* 열두 달이 다 있는 해만 */
 function val(y) { for (var i = 0; i < S.length; i++) if (S[i][0] === y) return S[i][1]; return null; }
-var PK = []; S.forEach(function (r) { if (r[0] < 1755 || r[0] > S[S.length - 1][0] - 2) return; var ok = true; for (var k = r[0] - 4; k <= r[0] + 4; k++) { var v = val(k); if (v != null && v > r[1]) ok = false; } if (ok) PK.push(r[0]); });
+var PK = []; S.forEach(function (r) { if (r[0] < 1755 || r[0] > S[S.length - 1][0] - 1) return; var ok = true; for (var k = r[0] - 4; k <= r[0] + 4; k++) { var v = val(k); if (v != null && v > r[1]) ok = false; } if (ok) PK.push(r[0]); });
 var P1900 = PK.filter(function (y) { return y >= 1900; }), MEAN = P1900.length > 1 ? (P1900[P1900.length - 1] - P1900[0]) / (P1900.length - 1) : 11;
 var C25 = S.filter(function (r) { return r[0] >= 2020; }).reduce(function (b, r) { return r[1] > b[1] ? r : b; }, [2024, 0]);
 var C24 = S.filter(function (r) { return r[0] >= 2009 && r[0] <= 2018; }).reduce(function (b, r) { return r[1] > b[1] ? r : b; }, [2014, 0]);
@@ -33,7 +33,7 @@ window.sthLab({
   {
     id: "r1", tag: "실제 자료 · 태양 활동 주기", title: "태양 활동은 몇 년마다 되풀이될까", short: "흑점 주기",
     who: "☀️", name: "태양 관측소",
-    say: "“1749년부터 사람들이 태양의 흑점을 세어 왔어요. 흑점이 많을수록 태양 활동(플레어, 코로나 질량 방출)이 활발합니다. 아래는 해마다 평균한 <b>실제 흑점 수</b>입니다. 1900년 이후의 봉우리(극대기)를 세어, 태양 활동이 <b>평균 몇 년마다</b> 되풀이되는지 구해 주세요.”",
+    say: "“1749년부터 달마다 센 흑점 수 기록이 남아 있어요(망원경 관측은 1610년 무렵부터). 흑점이 많을수록 태양 활동(플레어, 코로나 질량 방출)이 활발합니다. 아래는 해마다 평균한 <b>실제 흑점 수</b>입니다. 1900년 이후의 봉우리(극대기)를 세어, 태양 활동이 <b>평균 몇 년마다</b> 되풀이되는지 구해 주세요.”",
     predict: {
       q: "흑점 수는 시간에 따라 어떻게 변할까요?",
       options: ["㉠ 해마다 비슷하다", "㉡ 늘었다 줄었다를 약 11년마다 되풀이한다", "㉢ 100년에 한 번 크게 늘어난다"],
@@ -46,7 +46,7 @@ window.sthLab({
         var from = view === "m" ? 1895 : 1749, to = S[S.length - 1][0];
         var p = chart(H, ctx, W, cv.H, from, to, null);
         if (view === "m") for (var y = P1900[0], k = 0; y <= to; y += g, k++) H.dash(ctx, p.X(y), 24, p.X(y), cv.H - 36, H.v("--amber-700"), 1.2);
-        H.rows(ctx, 680, 60, [["내 답 (평균 간격)", g.toFixed(1) + " 년", null, true], ["노란 점선", P1900[0] + "년부터 그 간격마다"]], 60);
+        H.rows(ctx, 680, 60, [["내 답 (평균 간격)", g.toFixed(1) + " 년", null, true], [view === "m" ? "노란 점선" : "", view === "m" ? P1900[0] + "년부터 그 간격마다" : ""]], 60);
       }
       cv.canvas._redraw = draw;
       api.seg({ label: "보기", value: "m", options: [{ v: "m", t: "1895년 이후" }, { v: "all", t: "1749년부터 전체" }], onPick: function (x) { view = x; draw(); } });
