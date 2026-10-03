@@ -84,7 +84,8 @@ window.sthLab({
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "연도", min: 2020, max: S[S.length - 1][0], step: 1, value: 2020, fmt: function (x) { return x + "년"; }, onInput: function (x) { y = x; api.changed(); draw(); } });
-      api.info("가장 최근 해는 열두 달이 다 모인 해까지만 넣었습니다. " + SRC);
+      api.info("가장 최근 해는 열두 달이 다 모인 해까지만 넣었습니다. " + SRC
+        + "<div data-link='{\"id\":\"kasa-sw\",\"title\":\"우주항공청 우주환경센터 (교과서 연결 자료)\",\"src\":\"우주항공청 · 비상교육 행성우주과학 18쪽\",\"url\":\"https://spaceweather.kasa.go.kr/\",\"ask\":\"첫 화면의 ‘경보 등급’에서 지금의 R(태양 X선)·S(태양 입자)·G(지자기 폭풍) 단계를 적고, 최근 경보 알림 하나가 무엇이었는지 적어 오세요.\"}'></div>");
       draw();
       return {
         judge: function () {

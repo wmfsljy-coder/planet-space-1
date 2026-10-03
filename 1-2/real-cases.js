@@ -40,7 +40,7 @@ window.sthLab({
       cv.canvas._redraw = draw;
       api.slider({ label: "통과 방법의 비율", min: 0, max: 100, step: 1, value: 20, fmt: function (x) { return x + " %"; }, onInput: function (x) { g = x; api.changed(); draw(); } });
       api.info("비율(%) = 통과 방법 개수 ÷ 전체 × 100. " + SRC
-        + "<div data-link='{\"id\":\"exo-count\",\"title\":\"NASA 외계 행성 자료실 — 발견 수\",\"src\":\"NASA / IPAC\",\"url\":\"https://exoplanetarchive.ipac.caltech.edu/\",\"ask\":\"첫 화면에 나오는 지금의 확인된 외계 행성 수(Confirmed Planets)를 적고, 이 사례의 숫자보다 몇 개 늘었는지 적어 오세요.\"}'></div>");
+        + "<div data-link='{\"id\":\"nasa-exoplanets\",\"title\":\"NASA 외계 행성 탐사 (교과서 연결 자료)\",\"src\":\"미국 항공우주국 · 비상교육 행성우주과학 부록 QR 목록\",\"url\":\"https://science.nasa.gov/exoplanets/\",\"ask\":\"첫 화면에서 지금까지 확인된 외계 행성이 몇 개를 넘었다고 하는지 적고, 이 사례의 숫자(6,375 개)와 비교해 오세요.\"}'></div>");
       draw();
       return {
         judge: function () {
