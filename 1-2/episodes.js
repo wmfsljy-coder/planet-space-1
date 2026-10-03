@@ -1329,7 +1329,8 @@ window.sthWork({
     { key: "r2", label: "② 명왕성의 자격 심사" },
     { key: "r3", label: "③ 별이 흔들렸다" },
     { key: "rQuiz", label: "수준별 문제" },
-    { key: "rLab", label: "응용 실험실" }
+    { key: "rLab", label: "응용 실험실" },
+    { key: "rReal", label: "실제 자료" }
   ],
   items: [
     { id: "all", label: "세 사건을 꿰는 한 문장", hint: "8분의 어긋남, μ = 0.077, 56 m/s의 흔들림. 세 이야기 모두 <b>작은 값 하나를 끝까지 따져 물은 일</b>에서 시작했습니다. 이 점이 드러나게, ‘관측’과 ‘정의(또는 모형)’라는 말을 넣어 한 문장으로 쓰세요." },
@@ -1345,7 +1346,8 @@ window.sthShare({
     { key: "r2", label: "② 명왕성의 자격 심사" },
     { key: "r3", label: "③ 별이 흔들렸다" },
     { key: "rQuiz", label: "수준별 문제" },
-    { key: "rLab", label: "응용 실험실" }
+    { key: "rLab", label: "응용 실험실" },
+    { key: "rReal", label: "실제 자료" }
   ],
   line: { id: "all", label: "세 사건을 꿰는 한 문장" }
 });
