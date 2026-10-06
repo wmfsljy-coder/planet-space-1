@@ -14,7 +14,7 @@ var AU_KM = 149597870.7;         // 1 AU
 function $(id) { return document.getElementById(id); }
 function v(name) { return window.cssVar(name); }
 function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
-function log10(x) { return Math.log(x) / Math.LN10; }   /* 구형 기기에는 Math.log10 이 없다 */
+function log10(x) { return Math.log(x) / Math.LN10; }   /* 구형 기기에는 Math.log10이 없다 */
 function done(id) { var e = $(id); if (e) e.classList.add("done"); }
 function paper(ctx, W, H) { ctx.clearRect(0, 0, W, H); ctx.fillStyle = v("--panel"); ctx.fillRect(0, 0, W, H); }
 function text(ctx, s, x, y, o) {
@@ -129,12 +129,12 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       { n: "해왕성", d: 29 * AU_KM },
       { n: "보이저 1호 (2025년 무렵)", d: 167 * AU_KM }
     ];
-    function dist(i) { return 30000 * Math.pow(10, 6 * i / 400); }   // 3만 km ~ 300억 km, 로그 눈금
+    function dist(i) { return 30000 * Math.pow(10, 6 * i / 400); }   // 3만 km~300억 km, 로그 눈금
 
     function draw() {
       paper(ctx, W, H);
       var d = dist(idx), one = d / C_KMS;
-      text(ctx, "전파 신호 지연 시간 계산기 — 전파는 빛과 같은 속력 " + Math.round(C_KMS).toLocaleString() + " km/s 로 달립니다", 40, 28, { s: 13, w: "800" });
+      text(ctx, "전파 신호 지연 시간 계산기 — 전파는 빛과 같은 속력 " + Math.round(C_KMS).toLocaleString() + " km/s로 달립니다", 40, 28, { s: 13, w: "800" });
 
       /* 왼쪽 : 대표 천체 표 */
       text(ctx, "목표", 46, 60, { s: 11, w: "800", c: v("--mist") });
@@ -198,7 +198,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       if (!got.b && one >= 1200) { got.b = ch = true; }
       if (!got.c && one >= 43200) { got.c = ch = true; }
       if (ch) { window.sthState("a3", got); mission(); }
-      $("a-delay-info").innerHTML = "거리 <b>" + fmtKm(d) + "</b> (" + fmtAU(d) + ") 에서는 편도 지연이 <b>" + fmtTime(one) + "</b>, 왕복은 <b>" + fmtTime(one * 2) + "</b> 입니다. " +
+      $("a-delay-info").innerHTML = "거리 <b>" + fmtKm(d) + "</b> (" + fmtAU(d) + ") 에서는 편도 지연이 <b>" + fmtTime(one) + "</b>, 왕복은 <b>" + fmtTime(one * 2) + "</b>입니다. " +
         (one < 2 ? "지연이 몇 초도 되지 않아 화면을 보며 실시간으로 조종할 수 있습니다. 달 탐사차가 여기에 해당합니다."
           : (one < 300 ? "지연이 몇 분이라, 조이스틱으로 조종하면 이미 늦습니다. 하루치 명령을 <b>묶어서</b> 보내고 결과를 기다리는 방식이라야 합니다."
             : "지연이 몇 시간에서 하루가 넘습니다. 사람이 끼어들 틈이 없으므로, 탐사선이 <b>스스로 판단하는 기능</b>이 반드시 있어야 합니다."));
@@ -486,7 +486,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       text(ctx, "태양", 50, 88, { s: 10.5, a: "center", c: v("--mist") });
       text(ctx, "🌍", 830, 62, { s: 22, a: "center" });
       text(ctx, "지구", 830, 88, { s: 10.5, a: "center", c: v("--mist") });
-      var lx = x1 - (L1_KM / AU_KM) * (x1 - x0) * 12;    // L1 은 보기 좋게 과장해 표시
+      var lx = x1 - (L1_KM / AU_KM) * (x1 - x0) * 12;    // L1은 보기 좋게 과장해 표시
       ctx.strokeStyle = v("--teal"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(lx, 46); ctx.lineTo(lx, 250); ctx.stroke(); ctx.setLineDash([]);
       text(ctx, "L1 감시 위성", lx, 40, { s: 10.5, w: "800", a: "center", c: v("--teal-700") });
@@ -573,7 +573,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       if (running) return;
       running = true; $("b-run").disabled = true;
       var k = 0;
-      (function step() {                                   // rAF 는 가려진 탭에서 멈추므로 setTimeout 을 쓴다
+      (function step() {                                   // rAF는 가려진 탭에서 멈추므로 setTimeout을 쓴다
         k++; clock = k / 60 * 72; draw();
         if (k < 60) window.setTimeout(step, 24);
         else { clock = 72; running = false; $("b-run").disabled = false; draw(); }
@@ -589,7 +589,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
     buckets: [
       { id: "x", label: "플레어의 X선", sub: "8분 20초 만에 도착" },
       { id: "p", label: "고에너지 입자", sub: "수십 분 ~ 수 시간" },
-      { id: "c", label: "코로나 질량 방출", sub: "1 ~ 3일 · 지자기 폭풍" },
+      { id: "c", label: "코로나 질량 방출", sub: "1~3일 · 지자기 폭풍" },
       { id: "w", label: "태양풍 강화", sub: "이어지는 입자의 흐름" }
     ],
     items: [
@@ -677,7 +677,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
     function draw() {
       paper(ctx, W, H);
       var E = energyJ(d), kt = E / KT;
-      text(ctx, "충돌 에너지 계산 — 밀도 3,000 kg/m³, 충돌 속도 19 km/s 로 고정", 40, 28, { s: 13, w: "800" });
+      text(ctx, "충돌 에너지 계산 — 밀도 3,000 kg/m³, 충돌 속도 19 km/s로 고정", 40, 28, { s: 13, w: "800" });
 
       /* 왼쪽 : 크기 비교 */
       text(ctx, "점선 = 지름 25 m. 이보다 작으면 대부분 대기에서 부서진다", 40, 56, { s: 10.5, w: "800", c: v("--teal-700") });
@@ -700,7 +700,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
 
       /* 오른쪽 : 로그 눈금 에너지 막대 */
       var bx0 = 380, bx1 = 830, by0 = 90, by1 = 285;
-      function ypos(k) { return by1 - clamp((log10(k) + 1) / 9, 0, 1) * (by1 - by0); }   // 0.1 kt ~ 1e8 kt
+      function ypos(k) { return by1 - clamp((log10(k) + 1) / 9, 0, 1) * (by1 - by0); }   // 0.1 kt~1e8 kt
       ctx.strokeStyle = v("--line"); ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(bx0, by0); ctx.lineTo(bx0, by1); ctx.lineTo(bx1, by1); ctx.stroke();
       MARK.forEach(function (m) {
@@ -735,7 +735,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       if (!got.a && kt >= 400 && kt <= 700) { got.a = ch = true; }
       if (!got.b && kt >= 1e5) { got.b = ch = true; }
       if (ch) { window.sthState("c2", got); mission(); }
-      $("c-energy-info").innerHTML = "지름 <b>" + d + " m</b> 인 암석질 소행성이 초속 19 km로 부딪치면 충돌 에너지는 <b>" + fmtE(kt) + "</b> (TNT 환산) 입니다. " +
+      $("c-energy-info").innerHTML = "지름 <b>" + d + " m</b> 인 암석질 소행성이 초속 19 km로 부딪치면 충돌 에너지는 <b>" + fmtE(kt) + "</b> (TNT 환산)입니다. " +
         (d <= 25 ? "이 정도 크기는 대부분 대기를 뚫지 못하고 <b>공중에서 터집니다.</b> 크레이터는 남지 않지만, 2013년 첼랴빈스크처럼 충격파만으로도 큰 피해가 납니다."
           : (kt < 1e5 ? "대기를 뚫고 지표에 닿아 크레이터를 만들 수 있는 크기입니다. 떨어지는 곳이 도시라면 재난이 됩니다."
             : "<b>도시 하나를 통째로 없앨 수 있는 규모</b>입니다. 이런 크기는 미리 찾아내 궤도를 바꾸는 것 말고는 방법이 없습니다."));
@@ -786,7 +786,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
 
       /* 아래 : 필요량과 비교 막대 (로그 눈금) */
       var bx0 = 70, bx1 = 830, by = 270;
-      function xpos(km) { return bx0 + clamp((log10(Math.max(km, 10)) - 1) / 5, 0, 1) * (bx1 - bx0); }   // 10 km ~ 1,000,000 km
+      function xpos(km) { return bx0 + clamp((log10(Math.max(km, 10)) - 1) / 5, 0, 1) * (bx1 - bx0); }   // 10 km~1,000,000 km
       ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(bx1, by); ctx.stroke();
       [10, 100, 1000, 10000, 100000, 1000000].forEach(function (g) {
@@ -897,7 +897,7 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
   function finish() {
     var best = window.sthState("c3best");
     window.sthState("r3", best
-      ? "완료 · 충돌 " + best.t + "년 전 " + best.dv + " mm/s 로 밀어 " + best.s.toLocaleString() + " km 빗나감"
+      ? "완료 · 충돌 " + best.t + "년 전 " + best.dv + " mm/s로 밀어 " + best.s.toLocaleString() + " km 빗나감"
       : "완료 · 지구 접근 천체 편향 훈련");
   }
   ep.onShow(function (i) { if (i === 4) vs(); });
