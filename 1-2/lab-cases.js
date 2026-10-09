@@ -101,7 +101,7 @@ window.sthLab({
         H.rows(ctx, 360, 292, [["목성 주기 ÷ 소행성 주기", ratio.toFixed(2) + " (목표 " + RES[res].t + " = " + RES[res].k + ")", Math.abs(a - gap(RES[res].k)) <= 0.02 ? "--green-700" : null]], 40);
       }
       cv.canvas._redraw = draw;
-      api.seg({ label: "공명 비율 (목성 : 소행성의 공전 횟수)", value: "r31", options: [{ v: "r31", t: "3 : 1" }, { v: "r52", t: "5 : 2" }, { v: "r21", t: "2 : 1" }], onPick: function (x) { res = x; draw(); } });
+      api.seg({ label: "공명 비율 (소행성 : 목성의 공전 횟수)", value: "r31", options: [{ v: "r31", t: "3 : 1" }, { v: "r52", t: "5 : 2" }, { v: "r21", t: "2 : 1" }], onPick: function (x) { res = x; draw(); } });
       api.slider({ label: "궤도 긴반지름", min: 2.0, max: 3.5, step: 0.01, value: 2.2, fmt: function (x) { return x.toFixed(2) + " AU"; }, onInput: function (x) { a = x; draw(); } });
       api.info("조화 법칙: 태양 둘레를 도는 천체는 T(년)² = a(AU)³. 목성이 1바퀴 돌 때 소행성이 3바퀴 돌면 3 : 1 공명입니다.");
       draw();

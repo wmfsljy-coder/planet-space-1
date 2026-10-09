@@ -52,7 +52,7 @@ window.sthLab({
       api.seg({ label: "보기", value: "m", options: [{ v: "m", t: "1895년 이후" }, { v: "all", t: "1749년부터 전체" }], onPick: function (x) { view = x; draw(); } });
       api.slider({ label: "극대기 사이 평균 간격", min: 5, max: 20, step: 0.1, value: 5, fmt: function (x) { return x.toFixed(1) + " 년"; }, onInput: function (x) { g = x; api.changed(); draw(); } });
       api.info("노란 점선이 봉우리들에 차례로 겹치게 해 보세요. " + SRC
-        + "<div data-link='{\"id\":\"swpc-cycle\",\"title\":\"NOAA 우주기상예보센터 — 태양 주기 진행\",\"src\":\"미국 해양대기청\",\"url\":\"https://www.swpc.noaa.gov/products/solar-cycle-progression\",\"ask\":\"그래프에서 이번 25주기의 흑점 수가 지금 늘고 있는지 줄고 있는지, 가장 최근 달의 흑점 수가 몇인지 적어 오세요.\"}'></div>");
+        + "<div data-link='{\"id\":\"swpc-cycle\",\"title\":\"NOAA 우주기상예보센터 — 태양 주기 진행\",\"src\":\"미국 해양대기청\",\"url\":\"https://www.spaceweather.gov/products/solar-cycle-progression\",\"ask\":\"그래프에서 이번 25주기의 흑점 수가 지금 늘고 있는지 줄고 있는지, 가장 최근 달의 흑점 수가 몇인지 적어 오세요.\"}'></div>");
       draw();
       return {
         judge: function () {

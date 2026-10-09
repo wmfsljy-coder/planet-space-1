@@ -87,7 +87,7 @@ window.sthLab({
       draw();
       return {
         judge: function () {
-          if (Math.abs(g - SHORT) <= 3) return { ok: true, msg: "약 " + SHORT.toFixed(0) + "% 가 100일보다 짧습니다. 지구 같은 1년 주기 행성은 아주 드물게 찾혔어요." };
+          if (Math.abs(g - SHORT) <= 3) return { ok: true, msg: "약 " + SHORT.toFixed(0) + "% 가 100일보다 짧습니다. 지구 같은 1년 주기 행성은 아주 드물게만 발견됐어요." };
           return { ok: false, msg: g + "% 는 " + (g < SHORT ? "적습니다" : "많습니다") + ". 파란 막대들의 합을 구해 보세요." };
         }
       };

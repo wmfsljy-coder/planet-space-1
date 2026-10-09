@@ -112,7 +112,7 @@ window.sthLab({
         judge: function () {
           if (Math.abs(v - TV) > 40) return { ok: false, msg: "속도 " + v + " km/s — 2시간 동안 12 R☉ 를 간 속도와 맞지 않습니다." };
           if (Math.abs(t - TT) > 2) return { ok: false, msg: "속도는 맞았습니다. 남은 거리 ÷ 속도를 시간으로 다시 계산해 보세요." };
-          return { ok: true, msg: "약 " + Math.round(TV) + " km/s → 12시에서 약 " + TT.toFixed(0) + "시간 뒤(모레 새벽 무렵) 도착. 전력망은 부하를 줄이고, 위성은 안전 모드로 대비합니다." };
+          return { ok: true, msg: "약 " + Math.round(TV) + " km/s → 12시에서 약 " + TT.toFixed(0) + "시간 뒤(내일 밤 9시 무렵) 도착. 전력망은 부하를 줄이고, 위성은 안전 모드로 대비합니다." };
         }
       };
     },
