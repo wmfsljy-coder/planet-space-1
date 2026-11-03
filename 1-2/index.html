@@ -49,13 +49,14 @@
         <section class="scene" data-title="제1법칙 — 궤도의 모양을 직접 그려 보자">
           <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“거리가 때마다 다르다면, 궤도는 원이 아닙니다. 화성까지의 거리를 여덟 방향에서 잰 자료가 여기 있어요. 태양을 <b>한 초점</b>에 두고 <b>이심률</b>을 바꿔 가며, 계산한 곡선이 관측점 여덟 개를 모두 지나가게 해 보세요. 긴반지름은 1.524 AU로 고정해 두었습니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="a-orbit" width="900" height="420"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="a-orbit" width="900" height="420"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">화성 궤도의 이심률 e<span class="val" id="a-ecc-val">0.000</span></div>
                 <input type="range" id="a-ecc" min="0" max="0.3" step="0.002" value="0">
               </div>
             </div>
+            <div class="toggle-row" style="margin:0 22px 14px;"><button type="button" class="btn sm" id="a-orbit-play">⏸ 화성 멈추기</button></div>
             <div class="info-card" id="a-orbit-info"></div>
           </div>
           <div class="mission" id="m1-2"><span class="m-tag">미션</span>관측점과의 <b>최대 어긋남을 0.010 AU 이하</b>로 줄이는 이심률을 찾으세요. 너무 작아도(원에 가까워도), 너무 커도 통과하지 못합니다.</div>
@@ -64,7 +65,7 @@
         <section class="scene" data-title="제2법칙 — 같은 시간에 쓸고 간 넓이 재기">
           <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“모양은 찾았습니다. 이제 <b>빠르기</b>예요. 태양과 화성을 잇는 선분이 <b>60일 동안 쓸고 지나간 부채꼴</b>의 넓이를 재 봅시다. 출발 자리를 바꿔 가며 두 번 재면 무언가 보일 겁니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="a-area" width="900" height="390"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="a-area" width="900" height="390"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">재기 시작할 자리 (근일점에서 잰 각도)<span class="val" id="a-start-val">0°</span></div>
@@ -80,7 +81,7 @@
         <section class="scene" data-title="제3법칙 — 여덟 행성을 한 줄에 꿰다">
           <div class="story"><div class="who">🧑‍🔬</div><div class="say"><span class="name">케플러</span>“1618년, 마지막 법칙입니다. 행성들의 긴반지름 a와 공전 주기 P를 <b>양쪽 다 로그 눈금</b>으로 찍어 보세요. 점들이 한 직선 위에 놓입니다. 그 직선의 기울기가 <b>P = a<sup>n</sup></b>의 n이에요. n을 찾아보시죠.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="a-law3" width="900" height="400"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="a-law3" width="900" height="400"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">지수 n (P = a<sup>n</sup>)<span class="val" id="a-n-val">1.00</span></div>
@@ -96,7 +97,7 @@
               <h2 class="display" style="font-size:20px;">핼리 혜성은 얼마나 멀리까지 나가는가</h2>
               <p>핼리 혜성은 약 <b>76년</b>마다 태양 가까이 돌아옵니다. 주기를 알면 조화 법칙으로 궤도 긴반지름을 거꾸로 구할 수 있습니다.</p>
             </div>
-            <div class="canvas-wrap"><canvas id="a-halley" width="900" height="300"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="a-halley" width="900" height="320"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label"><span data-view="eyes:1p_halley" data-ask="핼리 혜성은 지금 태양에 다가오는 중일까, 멀어지는 중일까?">핼리 혜성</span> 궤도의 긴반지름 a (AU)<span class="val" id="a-ha-val">1.0</span></div>
@@ -149,7 +150,7 @@
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">유진</span>“2006년 총회가 정한 행성의 조건은 셋입니다. ① <b>태양을 직접 돈다</b>(다른 천체의 위성이 아니다), ② <b>자기 중력으로 둥근 모양</b>(<span data-view="law:정역학적 평형">정역학 평형</span>)을 이룬다, ③ <b>자기 궤도 주변을 치웠다</b>. ①②만 만족하면 <b>왜소행성</b>, ①만 만족하면 <b>태양계 소천체</b>입니다.”</div></div>
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">유진</span>“③은 눈으로는 못 봅니다. 그래서 <b>궤도 정리 지수 μ</b>를 씁니다. 자기 질량을 <b>같은 궤도 영역을 함께 도는 다른 천체들의 질량 합</b>으로 나눈 값이에요. μ가 1보다 훨씬 크면 그 자리의 주인이라는 뜻이죠. 슬라이더로 후보를 하나씩 심사대에 올려 보세요.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-iau" width="900" height="430"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="b-iau" width="900" height="430"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">심사대에 올릴 천체<span class="val" id="b-obj-val">달</span></div>
@@ -164,7 +165,7 @@
         <section class="scene" data-title="행성 비교실 — 밀도가 알려 주는 속">
           <div class="story"><div class="who">👨‍🚀</div><div class="say"><span class="name">비교실 연구원 태오</span>“행성끼리도 한 덩어리가 아닙니다. 겉보기 크기 말고 <b>평균 밀도</b>를 보세요. 밀도 = 질량 ÷ 부피(4/3·π·r³), 표면 중력 = G·질량 ÷ 반지름²로 직접 계산합니다. 아래 막대그래프에 <b>기준선</b>을 그어 여덟 행성을 두 무리로 갈라 보시죠.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-dens" width="900" height="420"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="b-dens" width="900" height="420"></canvas></div>
             <div class="controls">
               <div class="ctrl-group">
                 <div class="ctrl-label">자세히 볼 천체<span class="val" id="b-body-val">수성</span></div>
@@ -197,7 +198,7 @@
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">탐사 관제사 서린</span>“소행성 차례입니다. 일본의 <b>하야부사2</b>는 <span data-view="eyes:162173_ryugu" data-ask="류구는 공처럼 둥글까, 다른 모양일까?">류구</span>에서, 미국의 <b>오시리스-렉스</b>는 <span data-view="eyes:101955_bennu" data-ask="베누의 표면은 매끈할까, 울퉁불퉁할까?">베누</span>에서 표본을 가져왔어요. 탐사선이 붙잡힌 궤도로 질량을, 사진으로 크기를 알아냈더니 <b>평균 밀도가 1.19 g/cm³</b>밖에 안 됐습니다. 그런데 가져온 돌 알갱이 자체의 밀도는 약 <b>2.7 g/cm³</b>예요.”</div></div>
           <div class="case-file"><b class="k">류구</b> 평균 반지름 약 <b>448 m</b>, 질량 약 <b>4.5×10¹¹ kg</b> → 평균 밀도 1.19 g/cm³<br><b class="k">베누</b> 평균 반지름 약 <b>245 m</b>, 질량 약 <b>7.3×10¹⁰ kg</b> → 평균 밀도 1.19 g/cm³<br><b class="k">표본</b> 두 천체에서 가져온 돌 알갱이의 밀도 약 <b>2.7 g/cm³</b></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-rubble" width="900" height="300"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="b-rubble" width="900" height="300"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">속에 들어 있는 빈틈의 비율(공극률)<span class="val" id="b-por-val">0%</span></div>
@@ -208,7 +209,7 @@
           </div>
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">서린</span>“혜성도 봅시다. 다들 꼬리가 <b>진행 방향 뒤로</b> 끌린다고 생각하죠. 자동차 매연처럼요. 정말 그럴까요? 핼리 혜성을 궤도 위에서 움직여 보세요. 꼬리는 태양풍과 복사압에 밀려납니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-comet" width="900" height="400"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="b-comet" width="900" height="400"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">궤도 위의 자리 (근일점에서 잰 각도)<span class="val" id="b-pos-val">0°</span></div>
@@ -261,8 +262,10 @@
         <section class="scene" data-title="시선 속도법 — 흔들림에서 행성을 꺼내다">
           <div class="story"><div class="who">🧑‍🏫</div><div class="say"><span class="name">관측소장</span>“별과 행성은 서로 끌어당기며 <b>공통 질량 중심</b>을 함께 돕니다. 별도 작은 원을 그리죠. 그 움직임 가운데 <b>우리 시선 방향 성분</b>이 스펙트럼의 <span data-view="law:도플러 효과">도플러 이동</span>으로 나타납니다. 행성의 <b>공전 주기</b>는 곡선이 되풀이되는 간격, <b>행성의 질량</b>은 곡선의 <b>높이(진폭)</b>가 알려 줍니다. 주기부터 맞춰 보세요.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="c-rv" width="900" height="410"></canvas></div>
-            <div class="controls">
+            <div class="canvas-wrap stage"><canvas id="c-rv" width="900" height="410"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="c-rv-read"></div>
+              <div>
               <div class="ctrl-group">
                 <div class="ctrl-label">행성의 공전 주기 (일)<span class="val" id="c-p-val">10.00</span></div>
                 <input type="range" id="c-p" min="1" max="20" step="0.05" value="10">
@@ -270,6 +273,8 @@
               <div class="ctrl-group">
                 <div class="ctrl-label">행성의 질량 (목성질량)<span class="val" id="c-mp-val">1.00</span></div>
                 <input type="range" id="c-mp" min="0.05" max="3" step="0.01" value="1">
+              </div>
+              <button type="button" class="btn sm" id="c-rv-play" style="margin-top:10px">⏸ 별 멈추기</button>
               </div>
             </div>
             <div class="info-card" id="c-rv-info"></div>
@@ -280,7 +285,7 @@
         <section class="scene" data-title="식 현상법 — 별빛이 얼마나 가려졌나">
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">관측 천문학자 하윤</span>“<span data-view="law:도플러 분광학">시선 속도법</span>은 질량을 줍니다. 크기는요? 1999년, <b>HD 209458</b>이라는 별에서 행성이 <b>별 앞을 가로지르는</b> 장면이 처음 잡혔습니다. 이때 밝기가 줄어든 깊이는 곧 <b>가려진 면적의 비율</b>이에요. 즉 (행성 반지름 ÷ 별 반지름)²입니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="c-tr" width="900" height="420"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="c-tr" width="900" height="420"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">행성의 반지름 (지구 반지름 배)<span class="val" id="c-rp-val">1.0</span></div>
@@ -298,9 +303,10 @@
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">하윤</span>“이제 본론입니다. 별에서 너무 가까우면 물이 끓어 날아가고, 너무 멀면 얼어붙습니다. 그 사이의 띠를 <b><span data-view="law:생명체 거주가능 영역">생명 가능 지대</span></b>라고 해요. 경계는 별의 <b>광도</b>가 정합니다. 광도는 별의 반지름과 표면 온도로 계산하고, 경계 거리는 광도의 제곱근에 비례합니다.”</div></div>
           <div class="stage-card">
             <div class="toggle-row" style="padding:18px 22px 0;"><div class="seg" id="c-star"></div></div>
-            <div class="canvas-wrap" style="margin-top:16px"><canvas id="c-hz" width="900" height="420"></canvas></div>
-            <div class="controls">
-              <div class="ctrl-group" style="flex:1 1 100%">
+            <div class="canvas-wrap stage" style="margin-top:16px"><canvas id="c-hz" width="900" height="420"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="c-hz-read"></div>
+              <div class="ctrl-group">
                 <div class="ctrl-label">살펴볼 궤도의 반지름 (AU)<span class="val" id="c-r-val">0.1778</span></div>
                 <input type="range" id="c-r" min="0" max="100" step="1" value="50">
               </div>
@@ -386,6 +392,7 @@
 <script src="../assets/account.js"></script>
 <script src="episodes.js"></script>
 <script src="worked.js"></script>
+<script src="handoff.js"></script>
 <script src="quiz-items.js"></script>
 <script src="../assets/review.js"></script>
 <script src="../assets/peer.js"></script>

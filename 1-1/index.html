@@ -56,11 +56,15 @@
         <section class="scene" data-title="명령은 언제 도착하는가">
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“이제 아까 그 11분의 정체를 직접 재 봅시다. 거리를 바꿔 가며 <b>편도 지연</b>과 <b>왕복 지연</b>이 얼마나 되는지 확인하세요. 화성은 공전하면서 지구와의 거리가 <b>0.37 AU에서 2.67 AU까지</b> 크게 달라집니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="a-c-delay" width="900" height="330"></canvas></div>
-            <div class="controls">
-              <div class="ctrl-group" style="flex:1 1 100%">
-                <div class="ctrl-label">지구에서 목표까지의 거리<span class="val" id="a-d-val">—</span></div>
-                <input type="range" id="a-d" min="0" max="400" step="1" value="150">
+            <div class="canvas-wrap stage"><canvas id="a-c-delay" width="900" height="350"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="a-read"></div>
+              <div>
+                <div class="ctrl-group">
+                  <div class="ctrl-label">지구에서 목표까지의 거리<span class="val" id="a-d-val">—</span></div>
+                  <input type="range" id="a-d" min="0" max="400" step="1" value="150">
+                </div>
+                <button type="button" class="btn sm" id="a-play" style="margin-top:10px">⏸ 신호 멈추기</button>
               </div>
             </div>
             <div class="info-card" id="a-delay-info"></div>
@@ -71,7 +75,7 @@
         <section class="scene" data-title="로버에게 보낼 하루치 명령">
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“자, 실전입니다. 로버가 <b>900 m</b> 떨어진 삼각주 바위까지 <b>30솔(화성의 하루) 안에</b> 가야 합니다. 지연 때문에 명령은 하루에 한 번뿐이에요. 지구에서 사진으로 안전을 확인할 수 있는 거리는 로버 앞 <b>25 m</b>까지. 그보다 멀리 가라고 시키면 보지도 못한 땅을 밟게 됩니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="a-c-rover" width="900" height="340"></canvas></div>
+            <div class="canvas-wrap stage"><canvas id="a-c-rover" width="900" height="360"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">하루치 명령 — “오늘은 몇 m 전진하라”<span class="val" id="a-L-val">20 m</span></div>
@@ -121,11 +125,15 @@
         <section class="scene" data-title="태양을 11년 동안 지켜보기">
           <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“예보의 시작은 <b>흑점 세기</b>입니다. 400년 전 <span data-view="who:갈릴레오 갈릴레이">갈릴레이</span> 때부터 사람들이 세어 온 숫자죠. 태양 관측 화면의 시간을 11년 동안 돌려 보세요. 흑점이 가장 적을 때와 가장 많을 때를 직접 찾아내야 합니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-c-sun" width="900" height="360"></canvas></div>
-            <div class="controls">
-              <div class="ctrl-group" style="flex:1 1 100%">
-                <div class="ctrl-label">태양 활동 주기 진행(년)<span class="val" id="b-y-val">2.5</span></div>
-                <input type="range" id="b-y" min="0" max="11" step="0.5" value="2.5">
+            <div class="canvas-wrap stage"><canvas id="b-c-sun" width="900" height="360"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="b-read"></div>
+              <div>
+                <div class="ctrl-group">
+                  <div class="ctrl-label">태양 활동 주기 진행(년)<span class="val" id="b-y-val">2.5</span></div>
+                  <input type="range" id="b-y" min="0" max="11" step="0.5" value="2.5">
+                </div>
+                <button type="button" class="btn sm" id="b-sun-play" style="margin-top:10px">⏸ 태양 자전 멈추기</button>
               </div>
             </div>
             <div class="info-card" id="b-sun-info"></div>
@@ -138,8 +146,10 @@
           <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“방금 극대기의 큰 흑점 무리에서 <b>X급 플레어</b>가 터졌습니다. 그런데 태양 폭풍은 한 덩어리로 오지 않아요. <b>세 가지가 서로 다른 속력으로</b> 따로따로 도착합니다. 코로나그래프로 잰 <span data-view="sun:c3" data-ask="코로나그래프는 왜 가운데의 태양을 원판으로 가릴까?">코로나 질량 방출(CME)</span>의 속력을 넣고, 각각 언제 닿는지 계산하세요.”</div></div>
           <div class="story"><div class="who">👩‍💼</div><div class="say"><span class="name">전력 회사 담당자</span>“예보관님, 저희는 경보를 받으면 송전망을 <b>보호 모드</b>로 돌립니다. 다만 보호 모드에서는 보낼 수 있는 전력이 줄어 손해가 커요. <b>너무 일찍 돌려도, 너무 늦게 돌려도 안 됩니다.</b> 폭풍이 닿기 <b>6시간 안쪽</b>에 시작하도록 시각을 잡아 주세요.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="b-c-storm" width="900" height="380"></canvas></div>
-            <div class="controls">
+            <div class="canvas-wrap stage"><canvas id="b-c-storm" width="900" height="390"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="b-storm-read"></div>
+              <div>
               <div class="ctrl-group">
                 <div class="ctrl-label">관측된 CME의 속력<span class="val" id="b-v-val">1,200 km/s</span></div>
                 <input type="range" id="b-v" min="600" max="3000" step="50" value="1200">
@@ -148,8 +158,9 @@
                 <div class="ctrl-label">송전망 보호 모드를 켤 시각 — 폭발 후<span class="val" id="b-h-val">0시간</span></div>
                 <input type="range" id="b-h" min="0" max="72" step="1" value="0">
               </div>
+              <button class="btn primary" id="b-run" type="button" style="margin-top:10px">▶ 폭발 순간부터 지켜보기</button>
+              </div>
             </div>
-            <div class="toggle-row" style="margin:0 22px 14px;"><button class="btn primary" id="b-run" type="button">▶ 폭발 순간부터 지켜보기</button></div>
             <div class="info-card" id="b-storm-info"></div>
           </div>
           <div class="mission" id="b-m3"><span class="m-tag">미션</span>속력 슬라이더와 시각 슬라이더를 <b>하나씩</b> 움직여 세 가지를 끝내세요.<ul><li id="b-m3a">이틀이 넘게 걸리는 <b>느린 CME</b> 만들어 보기</li><li id="b-m3b">하루 안에 닿는 <b>빠른 CME</b> 만들어 보기</li><li id="b-m3c">지금 속력에 맞추어 <b>보호 모드 시각</b> 잡기 (도착 6시간 전 ~ 도착 시각)</li></ul></div>
@@ -198,9 +209,10 @@
         <section class="scene" data-title="얼마나 큰 것이 얼마나 위험한가">
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“먼저 상대를 알아야죠. 소행성이 가진 <b>운동 에너지</b>가 그대로 충돌 에너지가 됩니다. 지름을 바꿔 가며 에너지가 어떻게 달라지는지 보세요. 지름이 <b>2배</b>가 되면 에너지는 몇 배가 될까요?”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="c-c-energy" width="900" height="340"></canvas></div>
-            <div class="controls">
-              <div class="ctrl-group" style="flex:1 1 100%">
+            <div class="canvas-wrap stage"><canvas id="c-c-energy" width="900" height="370"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="c-read"></div>
+              <div class="ctrl-group">
                 <div class="ctrl-label">소행성의 지름<span class="val" id="c-d-val">60 m</span></div>
                 <input type="range" id="c-d" min="10" max="1000" step="10" value="60">
               </div>
@@ -214,8 +226,10 @@
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“영화처럼 폭파하지 않습니다. <b>살짝 밀어 속력만 아주 조금 바꿔 주면</b> 됩니다. 소행성은 그 뒤로 수천 번 공전하면서 조금씩 제자리에서 어긋나, 약속 장소에 늦게 도착하게 되거든요. 밀어 주는 힘이 같아도 <b>일찍 밀수록 어긋남이 훨씬 커집니다.</b>”</div></div>
           <div class="story"><div class="who">👨‍🔧</div><div class="say"><span class="name">충돌체 설계 기술자</span>“다만 조건이 있습니다. 속도 변화를 <b>40 mm/s보다 크게</b> 주려면 그만큼 세게 들이받아야 하는데, 그러면 소행성이 부서져 <b>여러 조각이 쏟아질</b> 위험이 있어요. 40 mm/s 이하로 맞춰 주세요.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap"><canvas id="c-c-dart" width="900" height="340"></canvas></div>
-            <div class="controls">
+            <div class="canvas-wrap stage"><canvas id="c-c-dart" width="900" height="380"></canvas></div>
+            <div class="sim-side">
+              <div class="readout" id="c-dart-read"></div>
+              <div>
               <div class="ctrl-group">
                 <div class="ctrl-label">충돌 몇 년 전에 밀어 줄까<span class="val" id="c-t-val">5년 전</span></div>
                 <input type="range" id="c-t" min="1" max="20" step="1" value="5">
@@ -223,6 +237,8 @@
               <div class="ctrl-group">
                 <div class="ctrl-label">충돌체가 주는 속도 변화<span class="val" id="c-dv-val">5 mm/s</span></div>
                 <input type="range" id="c-dv" min="0" max="80" step="1" value="5">
+              </div>
+              <button type="button" class="btn sm" id="c-play" style="margin-top:10px">⏸ 소행성 멈추기</button>
               </div>
             </div>
             <div class="info-card" id="c-dart-info"></div>
@@ -307,6 +323,7 @@
 <script src="../assets/account.js"></script>
 <script src="episodes.js"></script>
 <script src="worked.js"></script>
+<script src="handoff.js"></script>
 <script src="quiz-items.js"></script>
 <script src="../assets/review.js"></script>
 <script src="../assets/peer.js"></script>

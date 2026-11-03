@@ -40,6 +40,35 @@ function fmtKm(d) {
 }
 function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10 ? a.toFixed(2) : a.toFixed(1))) + " AU"; }
 
+/* 그림 도구(무대) */
+var K = window.sthKit, KC = K.C, REDUCE = K.REDUCE;
+function playBtn(id, on, onTxt, offTxt, set) {
+  var b = $(id); if (!b) return;
+  b.textContent = on ? onTxt : offTxt;
+  b.addEventListener("click", function () { on = !on; set(on); b.textContent = on ? onTxt : offTxt; });
+}
+/* 울퉁불퉁한 암석 덩어리(소행성·바위) */
+function rock(ctx, x, y, r, seed, light, dark) {
+  var R = K.rng(seed || 3), n = 14, pts = [], i;
+  for (i = 0; i < n; i++) pts.push(1 + (R() - .5) * .22);
+  ctx.save();
+  ctx.beginPath();
+  for (i = 0; i <= n; i++) {
+    var a = i / n * 6.2832, rr = r * pts[i % n];
+    if (i) ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); else ctx.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+  }
+  ctx.closePath();
+  var g = ctx.createRadialGradient(x - r * .4, y - r * .45, r * .08, x, y, r * 1.1);
+  g.addColorStop(0, light || "#c9b8a2"); g.addColorStop(.55, dark ? "#6f5f50" : "#7a6a5a"); g.addColorStop(1, dark || "#2a221c");
+  ctx.fillStyle = g; ctx.fill(); ctx.clip();
+  for (i = 0; i < 6; i++) {
+    var cx = x + (R() - .5) * r * 1.2, cy = y + (R() - .5) * r * 1.2, cr = r * (.08 + R() * .16);
+    ctx.fillStyle = "rgba(20,14,10,.35)"; ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fill();
+    ctx.strokeStyle = "rgba(255,240,220,.18)"; ctx.lineWidth = Math.max(.8, r * .03); ctx.beginPath(); ctx.arc(cx + cr * .15, cy + cr * .15, cr, 3.6, 5.6); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 /* =========================================================================
    이야기 ① 22분 늦게 닿는 명령
    ========================================================================= */
@@ -130,57 +159,90 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       { n: "보이저 1호 (2025년 무렵)", d: 167 * AU_KM }
     ];
     function dist(i) { return 30000 * Math.pow(10, 6 * i / 400); }   // 3만 km~300억 km, 로그 눈금
+    /* 그림용: 천체 모양·짧은 이름·이름표 위/아래 */
+    var LOOK = [
+      { s: "달", up: 1, f: function (x, y) { K.planet(ctx, x, y, 5, "#d6d6d6", "#4b4e55"); } },
+      { s: "화성 최근접", up: 1, f: function (x, y) { K.planet(ctx, x, y, 5.5, "#ec8a5c", "#5a2412"); } },
+      { s: "태양", up: 0, f: function (x, y) { K.sun(ctx, x, y, 5); } },
+      { s: "화성 최원", up: 1, f: function (x, y) { K.planet(ctx, x, y, 5.5, "#ec8a5c", "#5a2412"); } },
+      { s: "목성", up: 0, f: function (x, y) { K.planet(ctx, x, y, 8, "#ead2ad", "#7a5634"); } },
+      { s: "해왕성", up: 0, f: function (x, y) { K.planet(ctx, x, y, 6.5, "#8cc0ff", "#1d3f8a"); } },
+      { s: "보이저 1호", up: 1, f: function (x, y) { K.glow(ctx, x, y, 2, "rgba(220,235,255,.95)", 4); } }
+    ];
+    var playing = !REDUCE, ph = REDUCE ? 1 : 0;
+    function shortT(sec) { return sec < 60 ? sec.toFixed(1) + "초" : (sec < 3600 ? Math.round(sec / 60) + "분" : Math.round(sec / 3600) + "시간"); }
 
     function draw() {
-      paper(ctx, W, H);
+      ctx.clearRect(0, 0, W, H);
       var d = dist(idx), one = d / C_KMS;
-      text(ctx, "전파 신호 지연 시간 계산기 — 전파는 빛과 같은 속력 " + Math.round(C_KMS).toLocaleString() + " km/s로 달립니다", 40, 28, { s: 13, w: "800" });
-
-      /* 왼쪽 : 대표 천체 표 */
-      text(ctx, "목표", 46, 60, { s: 11, w: "800", c: v("--mist") });
-      text(ctx, "거리", 350, 60, { s: 11, w: "800", c: v("--mist"), a: "right" });
-      text(ctx, "편도 지연", 520, 60, { s: 11, w: "800", c: v("--mist"), a: "right" });
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(40, 68); ctx.lineTo(520, 68); ctx.stroke();
+      /* ── 위: 지구에서 목표까지 ── */
+      var TH = 182, ty = 112, x0 = 92, x1 = 846;
+      function X(dd) { return x0 + clamp(log10(dd / 30000) / 6, 0, 1) * (x1 - x0); }
+      K.stage(ctx, 0, 0, W, TH, "space", { seed: 21, title: "지구에서 보낸 전파가 목표에 닿기까지" });
+      K.warn(ctx, W - 16, 28, "⚠ 거리는 10배씩 커지는 눈금", "right");
+      ctx.strokeStyle = "rgba(200,210,255,.28)"; ctx.lineWidth = 1.2; ctx.setLineDash([3, 5]);
+      ctx.beginPath(); ctx.moveTo(62, ty); ctx.lineTo(x1 + 8, ty); ctx.stroke(); ctx.setLineDash([]);
+      var mx = X(d);
+      /* 신호가 지나간 길 */
+      var bg = ctx.createLinearGradient(62, 0, mx, 0); bg.addColorStop(0, "rgba(127,211,255,.55)"); bg.addColorStop(1, "rgba(127,211,255,.12)");
+      ctx.strokeStyle = bg; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(62, ty); ctx.lineTo(mx, ty); ctx.stroke();
       REF.forEach(function (r, k) {
-        var yy = 90 + k * 25;
-        var near = Math.abs(Math.log(r.d / d)) < 0.12;
-        if (near) { ctx.fillStyle = v("--brand-100"); ctx.fillRect(40, yy - 15, 480, 22); }
-        text(ctx, r.n, 46, yy, { s: 12, w: near ? "800" : "500", c: near ? v("--brand-700") : v("--ink") });
-        text(ctx, fmtKm(r.d), 350, yy, { s: 12, a: "right", c: v("--mist") });
-        text(ctx, fmtTime(r.d / C_KMS), 520, yy, { s: 12, w: "800", a: "right", c: near ? v("--brand-700") : v("--ink") });
+        var x = X(r.d), L = LOOK[k], near = Math.abs(Math.log(r.d / d)) < 0.12;
+        L.f(x, ty);
+        K.pill(ctx, L.s + " · " + shortT(r.d / C_KMS), x, L.up ? ty - 22 : ty + 34, { s: 11, a: "center", c: near ? KC.yellow : KC.mute, box: [0, W] });
       });
+      K.earth(ctx, 46, ty, 15);
+      K.pill(ctx, "지구", 46, ty + 40, { a: "center", c: KC.blue });
+      /* 전파 펄스 */
+      var px = 62 + (mx - 62) * ph;
+      for (var j = 0; j < 3; j++) {
+        ctx.strokeStyle = "rgba(127,211,255," + (.75 - j * .22) + ")"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(px - j * 7, ty, 9 + j * 3, -.7, .7); ctx.stroke();
+      }
+      K.glow(ctx, px, ty, 2.6, "rgba(127,211,255,.95)", 4);
+      /* 지금 목표 */
+      ctx.strokeStyle = KC.yellow; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(mx, ty, 12, 0, 6.2832); ctx.stroke();
+      [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (q) { ctx.beginPath(); ctx.moveTo(mx + q[0] * 9, ty + q[1] * 9); ctx.lineTo(mx + q[0] * 16, ty + q[1] * 16); ctx.stroke(); });
+      K.line(ctx, { x: mx, y: ty - 16 }, { x: mx, y: 66 }, KC.yellow, 1, [2, 3], .7);
+      K.pill(ctx, "지금 목표 · " + fmtKm(d), mx, 62, { a: "center", s: 11.5, c: KC.yellow, box: [0, W] });
 
-      /* 오른쪽 : 현재 값 */
-      ctx.fillStyle = v("--card-2"); ctx.beginPath(); ctx.roundRect(570, 52, 300, 190, 16); ctx.fill();
-      text(ctx, "지금 고른 거리", 720, 78, { s: 11.5, c: v("--mist"), a: "center" });
-      text(ctx, fmtKm(d), 720, 106, { s: 20, w: "900", a: "center", c: v("--ink") });
-      text(ctx, fmtAU(d), 720, 128, { s: 12.5, a: "center", c: v("--mist") });
-      text(ctx, "편도 지연", 600, 162, { s: 12, c: v("--mist") });
-      text(ctx, fmtTime(one), 860, 162, { s: 15, w: "900", a: "right", c: v("--teal-700") });
-      text(ctx, "왕복 (명령 → 응답)", 600, 196, { s: 12, c: v("--mist") });
-      text(ctx, fmtTime(one * 2), 860, 196, { s: 17, w: "900", a: "right", c: v("--coral-700") });
-      text(ctx, one < 2 ? "실시간 조종이 가능한 수준" : (one < 300 ? "실시간 조종은 불편, 계획 명령이 필요" : "실시간 조종 불가능, 자율 기능이 필수"),
-        720, 226, { s: 11.5, a: "center", c: v("--mist") });
-
-      /* 아래 : 로그 눈금 자 */
-      var rx0 = 50, rx1 = 850, ry = 290;
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(rx0, ry); ctx.lineTo(rx1, ry); ctx.stroke();
-      REF.forEach(function (r) {
-        var t = log10(r.d / 30000) / 6;
-        if (t < 0 || t > 1) return;
-        var x = rx0 + t * (rx1 - rx0);
-        ctx.strokeStyle = v("--mist"); ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(x, ry - 6); ctx.lineTo(x, ry + 6); ctx.stroke();
+      /* ── 아래: 걸리는 시간 ── */
+      var BY = TH + 8, ax0 = 60, ax1 = 840, ay = 286;
+      function T(sec) { return ax0 + clamp(log10(sec / 0.1) / 6.4, 0, 1) * (ax1 - ax0); }
+      K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 4, title: "신호가 걸리는 시간 (10배씩 커지는 눈금)" });
+      [[0.1, 2, "rgba(63,211,163,.22)", KC.green, "실시간 조종 가능"], [2, 300, "rgba(255,211,107,.18)", KC.yellow, "하루치 명령을 묶어 보내기"], [300, 251000, "rgba(255,107,129,.18)", KC.red, "탐사선의 자율 기능 필수"]].forEach(function (z) {
+        ctx.fillStyle = z[2]; ctx.fillRect(T(z[0]), ay - 24, T(z[1]) - T(z[0]), 24);
+        K.t(ctx, z[4], (T(z[0]) + T(z[1])) / 2, ay - 8, { s: 11, a: "center", c: z[3] });
       });
-      var mx = rx0 + (idx / 400) * (rx1 - rx0);
-      ctx.fillStyle = v("--brand");
-      ctx.beginPath(); ctx.arc(mx, ry, 8, 0, Math.PI * 2); ctx.fill();
-      text(ctx, "가까움", rx0, ry + 26, { s: 11, c: v("--mist") });
-      text(ctx, "멂 (로그 눈금)", rx1, ry + 26, { s: 11, c: v("--mist"), a: "right" });
+      ctx.strokeStyle = KC.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ax0, ay); ctx.lineTo(ax1, ay); ctx.stroke();
+      [[0.1, "0.1초"], [1, "1초"], [10, "10초"], [60, "1분"], [600, "10분"], [3600, "1시간"], [86400, "1일"]].forEach(function (q) {
+        var gx = T(q[0]); ctx.strokeStyle = KC.line; ctx.beginPath(); ctx.moveTo(gx, ay); ctx.lineTo(gx, ay + 5); ctx.stroke();
+        K.t(ctx, q[1], gx, ay + 18, { s: 10.5, a: "center", c: KC.mute, w: "600" });
+      });
+      var o1 = T(one), o2 = T(one * 2);
+      K.line(ctx, { x: o1, y: 254 }, { x: o1, y: ay }, KC.blue, 1.5, [3, 3]);
+      K.line(ctx, { x: o2, y: ay }, { x: o2, y: 316 }, KC.orange, 1.5, [3, 3]);
+      K.glow(ctx, o1, ay, 4, "rgba(127,211,255,.95)", 3.5);
+      K.glow(ctx, o2, ay, 4, "rgba(255,179,92,.95)", 3.5);
+      K.pill(ctx, "편도 " + fmtTime(one), o1 + 6, 250, { s: 11.5, a: "right", c: KC.blue, box: [0, W] });
+      K.pill(ctx, "왕복(명령 → 응답) " + fmtTime(one * 2), o2 - 6, 330, { s: 11.5, c: KC.orange, box: [0, W] });
+      readout(d, one);
+    }
+    function readout(d, one) {
+      var e = $("a-read"); if (!e) return;
+      e.innerHTML = "<span class='k'>거리</span><span class='v b'>" + fmtKm(d) + "</span><span class='sub'>" + fmtAU(d) + " · 빛의 속력 299,792 km/s</span>" +
+        "<span class='k'>편도</span><span class='v y'>" + fmtTime(one) + "</span>" +
+        "<span class='k'>왕복</span><span class='v r'>" + fmtTime(one * 2) + "</span>" +
+        "<span class='ok " + (one < 2 ? "g" : "r") + "'>" + (one < 2 ? "실시간 조종이 가능한 수준" : (one < 300 ? "실시간 조종은 불편 · 계획 명령이 필요" : "실시간 조종 불가능 · 자율 기능이 필수")) + "</span>";
     }
     canvas._redraw = draw;
+    playBtn("a-play", playing, "⏸ 신호 멈추기", "▶ 신호 보내기", function (on) { playing = on; });
+    K.animate(canvas, function (dt) {
+      if (!playing) return;
+      var one = dist(idx) / C_KMS, dur = 700 + 480 * clamp(log10(one / 0.1), 0, 6.4);
+      ph += dt / dur; if (ph > 1) ph = 0; draw();
+    });
 
     function mission() {
       if (got.a) done("a-m3a");
@@ -230,57 +292,97 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
       return { crash: crash, per: per, path: path, pos: pos, sol: pos >= GOAL ? path.length - 1 : 0 };
     }
 
-    function draw() {
-      paper(ctx, W, H);
-      var r = run();
-      text(ctx, "화성 예제로 분화구 — 로버에서 삼각주 바위까지 900 m", 40, 28, { s: 13, w: "800" });
-
-      /* 지형 */
-      var x0 = 55, x1 = 845, gy = 120;
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x1, gy); ctx.stroke();
-      ctx.fillStyle = v("--coral-100");
-      ROCK.forEach(function (m) {
-        var xx = x0 + m / GOAL * (x1 - x0);
-        ctx.beginPath(); ctx.arc(xx, gy - 5, 5, 0, Math.PI * 2); ctx.fill();
+    var shown = null, target = 0, wheel = 0;
+    function roverPic(x, y, crash) {
+      ctx.save(); ctx.translate(x, y); if (crash) ctx.rotate(-.28);
+      /* 돌리와 바퀴 */
+      ctx.strokeStyle = "#9aa3ad"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-15, -6); ctx.lineTo(-6, -13); ctx.lineTo(6, -13); ctx.lineTo(15, -6); ctx.stroke();
+      [-15, 0, 15].forEach(function (wx) {
+        var wg = ctx.createRadialGradient(wx - 1.5, -6.5, .5, wx, -5, 5.5); wg.addColorStop(0, "#8d949c"); wg.addColorStop(1, "#24282e");
+        ctx.fillStyle = wg; ctx.beginPath(); ctx.arc(wx, -5, 5.2, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(wx, -5); ctx.lineTo(wx + Math.cos(wheel) * 4.5, -5 + Math.sin(wheel) * 4.5); ctx.stroke();
       });
-      /* 지구에서 확인할 수 있는 범위 */
-      var sx = x0 + Math.min(SAFE, GOAL) / GOAL * (x1 - x0);
-      ctx.fillStyle = v("--teal-100"); ctx.globalAlpha = .6; ctx.fillRect(x0, gy - 32, sx - x0, 30); ctx.globalAlpha = 1;
-      text(ctx, "지구에서 사진으로 확인 가능한 25 m", x0 + 4, gy - 40, { s: 10.5, w: "800", c: v("--teal-700") });
-      /* 목표 */
-      text(ctx, "🪨", x1 + 28, gy - 12, { s: 20, a: "center" });   /* 로버가 닿아도 바위가 가려지지 않게 살짝 옆에 */
-      text(ctx, "삼각주 바위 900 m", x1, gy + 22, { s: 11, w: "800", a: "right", c: v("--ink") });
+      /* 몸통(금속) */
+      var bg = ctx.createLinearGradient(0, -24, 0, -13); bg.addColorStop(0, "#f3f5f8"); bg.addColorStop(.5, "#c3cad3"); bg.addColorStop(1, "#7c8693");
+      ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(-19, -24, 38, 11, 3); ctx.fill();
+      ctx.fillStyle = "#5b6370"; ctx.fillRect(-19, -16, 38, 2);
+      /* 돌기둥과 카메라 */
+      ctx.strokeStyle = "#d7dce3"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(10, -24); ctx.lineTo(10, -40); ctx.stroke();
+      ctx.fillStyle = "#e6e9ee"; ctx.beginPath(); ctx.roundRect(5, -46, 13, 7, 2); ctx.fill();
+      ctx.fillStyle = "#1c2230"; ctx.beginPath(); ctx.arc(15, -42.5, 1.8, 0, 6.2832); ctx.fill();
+      ctx.restore();
+      if (!crash) K.glow(ctx, x + 15 + 2, y - 42.5, 1.2, "rgba(127,211,255,.9)", 3);
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var r = run();
+      target = r.pos; if (shown === null || REDUCE) shown = target;
+      var TH = 190, x0 = 60, x1 = 822, gy = 140;
+      function X(m) { return x0 + clamp(m, 0, GOAL) / GOAL * (x1 - x0); }
+      /* ── 위: 화성 표면 ── */
+      K.stage(ctx, 0, 0, W, TH, "night", { seed: 5 });
+      ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, TH, 14); ctx.clip();
+      var sky = ctx.createLinearGradient(0, 0, 0, 118); sky.addColorStop(0, "#170d1c"); sky.addColorStop(.6, "#4a2522"); sky.addColorStop(1, "#8e4a2c");
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, 118);
+      ctx.fillStyle = "#5b2a1a"; ctx.beginPath(); ctx.moveTo(0, 118);
+      for (var hx = 0; hx <= W; hx += 30) ctx.lineTo(hx, 108 - 10 * Math.sin(hx / 70) - 6 * Math.sin(hx / 23));
+      ctx.lineTo(W, 124); ctx.lineTo(0, 124); ctx.fill();
+      var gr = ctx.createLinearGradient(0, 116, 0, TH); gr.addColorStop(0, "#9a5230"); gr.addColorStop(1, "#3b190d");
+      ctx.fillStyle = gr; ctx.fillRect(0, 116, W, TH - 116);
+      var RR = K.rng(19);
+      for (var pb = 0; pb < 70; pb++) { ctx.fillStyle = "rgba(40,15,6," + (.2 + RR() * .3) + ")"; ctx.beginPath(); ctx.ellipse(RR() * W, 124 + RR() * (TH - 124), 1 + RR() * 3, .6 + RR(), 0, 0, 6.2832); ctx.fill(); }
+      ctx.restore();
+      K.pill(ctx, "화성 예제로 분화구 · 로버에서 삼각주 바위까지 900 m", 16, 28, { s: 13, c: KC.orange });
+      /* 지구에서 확인한 안전 구간 */
+      var sx = X(SAFE);
+      var sz = ctx.createLinearGradient(0, gy - 30, 0, gy + 6); sz.addColorStop(0, "rgba(63,211,163,0)"); sz.addColorStop(1, "rgba(63,211,163,.45)");
+      ctx.fillStyle = sz; ctx.fillRect(x0 - 20, gy - 30, sx - x0 + 20, 36);
+      ctx.strokeStyle = KC.green; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(sx, gy - 34); ctx.lineTo(sx, gy + 6); ctx.stroke(); ctx.setLineDash([]);
+      K.pill(ctx, "지구에서 사진으로 확인한 안전 구간 25 m", x0 - 30, 66, { s: 11, c: KC.green });
+      /* 바퀴 자국 */
+      var rx = X(shown);
+      ctx.strokeStyle = "rgba(40,14,4,.55)"; ctx.lineWidth = 2;
+      [gy + 2, gy + 6].forEach(function (yy) { ctx.beginPath(); ctx.moveTo(x0 - 15, yy); ctx.lineTo(rx - 15, yy); ctx.stroke(); });
+      /* 바위들 */
+      ROCK.forEach(function (m, k) { rock(ctx, X(m), gy - 2, 4 + (k % 3) * 1.6, 30 + k, "#d08a60", "#3a160a"); });
+      /* 삼각주 바위(퇴적층) */
+      var ox = x1 + 22, oy = gy + 4;
+      ctx.save(); ctx.beginPath(); ctx.moveTo(ox - 18, oy); ctx.lineTo(ox - 12, oy - 34); ctx.lineTo(ox + 8, oy - 42); ctx.lineTo(ox + 30, oy - 30); ctx.lineTo(ox + 36, oy); ctx.closePath(); ctx.clip();
+      ['#c98a5e', '#a8663f', '#d9a274', '#8f5233', '#c07a50', '#7d4428'].forEach(function (c, k) { ctx.fillStyle = c; ctx.fillRect(ox - 20, oy - 44 + k * 7.5, 60, 7.5); });
+      ctx.restore();
+      K.pill(ctx, "삼각주 바위 · 900 m", W - 14, gy + 36, { s: 11.5, a: "right", c: KC.yellow });
       /* 로버 */
-      var rx = x0 + r.pos / GOAL * (x1 - x0);
-      text(ctx, "🤖", rx, gy - 10, { s: 20, a: "center" });
-      ctx.strokeStyle = v("--brand"); ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.moveTo(x0, gy + 8); ctx.lineTo(rx, gy + 8); ctx.stroke();
-      text(ctx, Math.round(r.pos) + " m", x0 + 4, gy + 40, { s: 12, w: "800", c: v("--brand-700") });
+      var crashNow = r.crash && Math.abs(shown - target) < 1;
+      roverPic(rx, gy, crashNow);
+      if (crashNow) { K.glow(ctx, rx + 22, gy - 8, 5, "rgba(255,107,129,.9)", 4); K.pill(ctx, "충돌! 보지 못한 바위", rx + 34, gy - 50, { s: 11.5, c: KC.red }); }
+      K.pill(ctx, "로버 · " + Math.round(shown) + " m", rx, gy + 36, { s: 11.5, a: "center", c: KC.blue, box: [0, W - 190] });
 
-      /* 30솔 진행 그래프 */
-      var gx0 = 55, gx1 = 845, gy0 = 175, gy1 = 305;
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(gx0, gy1); ctx.lineTo(gx1, gy1); ctx.stroke();
-      ctx.strokeStyle = v("--amber"); ctx.setLineDash([6, 5]);
-      ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(gx1, gy0); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "목표 900 m", gx1 - 4, gy0 - 8, { s: 11, w: "800", a: "right", c: v("--amber-700") });
-      for (var s2 = 0; s2 <= SOLS; s2 += 10) {
-        var tx = gx0 + s2 / SOLS * (gx1 - gx0);
-        text(ctx, s2 + "솔", tx, gy1 + 18, { s: 10.5, c: v("--mist"), a: "center" });
-      }
-      ctx.fillStyle = v(r.pos >= GOAL ? "--teal" : (r.crash ? "--rose" : "--brand"));
+      /* ── 아래: 30솔 진행 그래프 ── */
+      var BY = TH + 8;
+      K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 9 });
+      K.pill(ctx, "솔마다 쌓인 이동 거리(m)", 16, BY + 26, { s: 13, c: KC.blue });
+      K.pill(ctx, auto ? "🤖 자율 항법 켜짐 · 하루 " + Math.round(r.per) + " m" : "🕹️ 자율 항법 꺼짐 · 하루 " + Math.round(r.per) + " m", W - 16, BY + 26, { s: 12, a: "right", c: auto ? KC.green : KC.mute });
+      var g = K.chart(ctx, { x: 0, y: BY, w: W, h: H - BY, x0: 0, x1: SOLS, y0: 0, y1: GOAL, xt: 6, yt: 3, pl: 58, pr: 24, pt: 44, pb: 28, xf: function (s) { return Math.round(s) + "솔"; } });
+      var col = r.pos >= GOAL ? [KC.green, "rgba(63,211,163,.25)"] : (r.crash ? [KC.red, "rgba(255,107,129,.25)"] : [KC.blue, "rgba(127,211,255,.22)"]);
+      var bw = Math.max(3, (g.R - g.L) / SOLS * .7);
       for (var i = 1; i < r.path.length; i++) {
-        var bx = gx0 + (i - 0.9) / SOLS * (gx1 - gx0), bw = Math.max(3, (gx1 - gx0) / SOLS * 0.75);
-        var bh = clamp(r.path[i] / GOAL, 0, 1) * (gy1 - gy0);
-        ctx.fillRect(bx, gy1 - bh, bw, bh);
+        var bx = g.X(i) - bw / 2, top = g.Y(clamp(r.path[i], 0, GOAL));
+        var bgd = ctx.createLinearGradient(0, top, 0, g.B); bgd.addColorStop(0, col[0]); bgd.addColorStop(1, col[1]);
+        ctx.fillStyle = bgd; ctx.beginPath(); ctx.roundRect(bx, top, bw, g.B - top, [3, 3, 0, 0]); ctx.fill();
       }
-      text(ctx, "솔마다 쌓인 이동 거리", gx0 + 6, gy0 + 16, { s: 11.5, w: "800", c: v("--mist") });
-      text(ctx, auto ? "🤖 자율 항법 켜짐 — 하루 " + Math.round(r.per) + " m" : "🕹️ 자율 항법 꺼짐 — 하루 " + Math.round(r.per) + " m",
-        gx1 - 4, gy0 + 16, { s: 12, w: "800", a: "right", c: auto ? v("--teal-700") : v("--mist") });
+      K.line(ctx, { x: g.L, y: g.Y(GOAL) }, { x: g.R, y: g.Y(GOAL) }, KC.yellow, 1.6, [6, 5]);
+      K.pill(ctx, "목표 900 m", g.L + 8, g.Y(GOAL) + 20, { s: 11, c: KC.yellow });
+      if (r.sol) K.pill(ctx, r.sol + "솔에 도착", g.X(r.sol), g.Y(GOAL) + 20, { s: 11, a: "center", c: KC.green, box: [g.L + 100, g.R] });
       return r;
     }
     canvas._redraw = draw;
+    K.animate(canvas, function (dt) {
+      if (shown === null || Math.abs(shown - target) < .5) { if (shown !== null && shown !== target) { shown = target; draw(); } return; }
+      var step = (target - shown) * Math.min(1, dt / 260);
+      if (Math.abs(step) < .4) step = (target > shown ? 1 : -1) * Math.min(.4 * dt / 33, Math.abs(target - shown));
+      shown += step; wheel += step * .35; draw();
+    });
 
     function update() {
       $("a-L-val").textContent = L + " m";
@@ -356,65 +458,84 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
     function act(yy) { return (1 - Math.cos(yy / 11 * Math.PI * 2)) / 2; }
     function spots(yy) { return Math.round(5 + act(yy) * 160); }
 
+    var rot = 0, spinning = !REDUCE;
     function draw() {
-      paper(ctx, W, H);
+      ctx.clearRect(0, 0, W, H);
       var a = act(y), n = spots(y);
-      text(ctx, "태양 관측 기록 — 흑점 수와 태양 활동 주기(약 11년)", 40, 28, { s: 13, w: "800" });
+      /* ── 왼쪽: 흑점 수 곡선 ── */
+      var LW = 440;
+      K.stage(ctx, 0, 0, LW, H, "lab", { seed: 3, title: "흑점 수(개) · 약 11년 주기" });
+      var g = K.chart(ctx, { x: 0, y: 0, w: LW, h: H, x0: 0, x1: 11, y0: 0, y1: 200, xt: 11, yt: 4, pl: 50, pr: 22, pt: 58, pb: 42, xl: "주기 진행(년)" });
+      var pts = [];
+      for (var p = 0; p <= 220; p++) { var yy = p / 220 * 11; pts.push([yy, spots(yy)]); }
+      var fill = ctx.createLinearGradient(0, g.T, 0, g.B); fill.addColorStop(0, "rgba(255,179,92,.30)"); fill.addColorStop(1, "rgba(255,179,92,0)");
+      ctx.fillStyle = fill; ctx.beginPath(); ctx.moveTo(g.X(0), g.B);
+      pts.forEach(function (q) { ctx.lineTo(g.X(q[0]), g.Y(q[1])); }); ctx.lineTo(g.X(11), g.B); ctx.closePath(); ctx.fill();
+      K.line(ctx, { x: g.L, y: g.Y(150) }, { x: g.R, y: g.Y(150) }, KC.red, 1.3, [5, 4], .85);
+      K.line(ctx, { x: g.L, y: g.Y(10) }, { x: g.R, y: g.Y(10) }, KC.green, 1.3, [5, 4], .85);
+      K.plot(ctx, g, pts, KC.orange);
+      K.pill(ctx, "극대기 기준 150개", g.R - 4, g.Y(150) - 7, { s: 10.5, a: "right", c: KC.red });
+      K.pill(ctx, "극소기 기준 10개", g.R - 4, g.Y(10) - 8, { s: 10.5, a: "right", c: KC.green });
+      var cx = g.X(y), cy = g.Y(n);
+      K.line(ctx, { x: cx, y: cy }, { x: cx, y: g.B }, KC.yellow, 1.2, [3, 3]);
+      K.line(ctx, { x: g.L, y: cy }, { x: cx, y: cy }, KC.yellow, 1.2, [3, 3]);
+      K.glow(ctx, cx, cy, 5, "rgba(255,211,107,.95)", 3.6);
 
-      /* 왼쪽 : 흑점 수 곡선 */
-      var x0 = 70, x1 = 470, y0 = 60, y1 = 285;
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x1, y1); ctx.stroke();
-      [0, 50, 100, 150].forEach(function (g) {
-        var gy = y1 - g / 170 * (y1 - y0);
-        text(ctx, String(g), x0 - 8, gy + 4, { s: 10.5, c: v("--mist"), a: "right" });
-        ctx.strokeStyle = v("--line"); ctx.globalAlpha = .5;
-        ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x1, gy); ctx.stroke(); ctx.globalAlpha = 1;
-      });
-      ctx.strokeStyle = v("--coral"); ctx.lineWidth = 2.5; ctx.beginPath();
-      for (var p = 0; p <= 220; p++) {
-        var yy = p / 220 * 11;
-        var xx = x0 + p / 220 * (x1 - x0), yv = y1 - spots(yy) / 170 * (y1 - y0);
-        if (p === 0) ctx.moveTo(xx, yv); else ctx.lineTo(xx, yv);
-      }
-      ctx.stroke();
-      var cx = x0 + y / 11 * (x1 - x0), cy = y1 - n / 170 * (y1 - y0);
-      ctx.fillStyle = v("--brand"); ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
-      text(ctx, "흑점 수", x0 - 8, y0 - 12, { s: 11, w: "800", c: v("--mist"), a: "right" });
-      text(ctx, "주기 진행 " + y.toFixed(1) + "년", (x0 + x1) / 2, y1 + 22, { s: 11.5, w: "800", a: "center", c: v("--mist") });
-      text(ctx, "0년", x0, y1 + 40, { s: 10.5, c: v("--mist"), a: "center" });
-      text(ctx, "11년", x1, y1 + 40, { s: 10.5, c: v("--mist"), a: "center" });
-
-      /* 오른쪽 : 태양 원판 */
-      var sx = 665, sy = 165, sr = 92;
-      ctx.fillStyle = v("--amber"); ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+      /* ── 오른쪽: 필터 냀 망원경으로 본 태양 ── */
+      var RX = LW + 8, RW = W - RX;
+      K.stage(ctx, RX, 0, RW, H, "space", { seed: 31, title: "필터를 단 망원경으로 본 태양" });
+      var sx = RX + RW / 2, sy = 168, sr = 106;
+      ctx.save(); ctx.beginPath(); ctx.roundRect(RX, 0, RW, H, 14); ctx.clip();
+      var co = ctx.createRadialGradient(sx, sy, sr * .9, sx, sy, sr * (1.35 + a * .45));
+      co.addColorStop(0, "rgba(255,200,120," + (.35 + a * .3) + ")"); co.addColorStop(1, "rgba(255,170,80,0)");
+      ctx.fillStyle = co; ctx.beginPath(); ctx.arc(sx, sy, sr * (1.35 + a * .45), 0, 6.2832); ctx.fill();
+      ctx.restore();
       var seed = Math.round(y * 2) * 7919 + 13;
       function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-      var groups = Math.round(a * 9);
+      /* 홍불(코로나 고리) — 활동이 클 때 */
+      var promN = a > 0.55 ? 3 : (a > 0.3 ? 1 : 0);
+      for (var f = 0; f < promN; f++) {
+        var fa = -2.6 + f * 1.9 + rnd() * .5, hh = sr * (.18 + rnd() * .14);
+        var p1 = { x: sx + Math.cos(fa - .09) * sr, y: sy + Math.sin(fa - .09) * sr }, p2 = { x: sx + Math.cos(fa + .09) * sr, y: sy + Math.sin(fa + .09) * sr };
+        var pc = { x: sx + Math.cos(fa) * (sr + hh * 2), y: sy + Math.sin(fa) * (sr + hh * 2) };
+        ctx.save(); ctx.shadowColor = "rgba(255,90,60,.9)"; ctx.shadowBlur = 10; ctx.strokeStyle = "rgba(255,120,80,.85)"; ctx.lineWidth = 3.5;
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.quadraticCurveTo(pc.x, pc.y, p2.x, p2.y); ctx.stroke(); ctx.restore();
+      }
+      /* 원판: 가장자리 어두움 */
+      var dg = ctx.createRadialGradient(sx - sr * .1, sy - sr * .1, sr * .05, sx, sy, sr);
+      dg.addColorStop(0, "#fff4cf"); dg.addColorStop(.55, "#ffcf62"); dg.addColorStop(.85, "#f39a2c"); dg.addColorStop(1, "#b8510f");
+      ctx.fillStyle = dg; ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 6.2832); ctx.fill();
+      ctx.save(); ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 6.2832); ctx.clip();
+      var GR = K.rng(77);
+      for (var q = 0; q < 380; q++) { var ga = GR() * 6.2832, gd = Math.sqrt(GR()) * sr; ctx.fillStyle = GR() > .5 ? "rgba(255,255,230,.10)" : "rgba(150,60,0,.10)"; ctx.beginPath(); ctx.arc(sx + Math.cos(ga) * gd, sy + Math.sin(ga) * gd, 1.5 + GR() * 2.2, 0, 6.2832); ctx.fill(); }
+      /* 흑점 무리: 주기 초반에는 고위도, 후반에는 적도 가까이(태양 자전을 따라 돈다) */
+      var groups = Math.round(a * 9), latB = (28 - 20 * y / 11) * Math.PI / 180;
       for (var g2 = 0; g2 < groups; g2++) {
-        var ang = rnd() * Math.PI * 2, rr = rnd() * sr * 0.72;
-        var bx = sx + Math.cos(ang) * rr, by = sy + Math.sin(ang) * rr * 0.75;
+        var lon = rnd() * 6.2832, lat = (rnd() > .5 ? 1 : -1) * (latB + (rnd() - .5) * .14);
         for (var k = 0; k < 3; k++) {
-          ctx.fillStyle = v("--abyss");
-          ctx.beginPath(); ctx.arc(bx + (rnd() - 0.5) * 22, by + (rnd() - 0.5) * 14, 2.5 + rnd() * 4, 0, Math.PI * 2); ctx.fill();
+          var lam = lon + rot + (k - 1) * .07 + (rnd() - .5) * .03, la = lat + (rnd() - .5) * .05, size = 2.6 + rnd() * 4.4;
+          var cz = Math.cos(lam) * Math.cos(la);
+          if (cz < .08) continue;
+          var px = sx + sr * Math.cos(la) * Math.sin(lam), py = sy - sr * Math.sin(la);
+          var fx = Math.max(.25, Math.cos(lam));
+          ctx.fillStyle = "rgba(255,250,220,.25)"; ctx.beginPath(); ctx.ellipse(px, py, size * 2.4 * fx, size * 2, 0, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "rgba(120,50,10,.75)"; ctx.beginPath(); ctx.ellipse(px, py, size * 1.5 * fx, size * 1.4, 0, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "#2a1005"; ctx.beginPath(); ctx.ellipse(px, py, size * .75 * fx, size * .7, 0, 0, 6.2832); ctx.fill();
         }
       }
-      if (a > 0.55) {
-        ctx.strokeStyle = v("--rose"); ctx.lineWidth = 3; ctx.globalAlpha = .8;
-        for (var f = 0; f < 3; f++) {
-          var fa = rnd() * Math.PI * 2;
-          ctx.beginPath();
-          ctx.moveTo(sx + Math.cos(fa) * sr, sy + Math.sin(fa) * sr);
-          ctx.lineTo(sx + Math.cos(fa) * (sr + 26), sy + Math.sin(fa) * (sr + 26));
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-      }
-      text(ctx, "흑점 수 " + n + "개", sx, sy + sr + 40, { s: 16, w: "900", a: "center", c: v("--ink") });
-      text(ctx, a >= 0.9 ? "극대기 — 플레어와 코로나 질량 방출이 잦다" : (a <= 0.06 ? "극소기 — 태양이 조용하다" : "극대기와 극소기의 중간"),
-        sx, sy + sr + 62, { s: 11.5, a: "center", c: v("--mist") });
+      ctx.restore();
+      if (a > 0.85) K.glow(ctx, sx - sr * .25, sy - sr * .2, 3, "rgba(255,255,255,.95)", 6);
+      K.pill(ctx, "흑점 수 " + n + "개", sx, sy + sr + 40, { s: 15, a: "center", c: KC.yellow, box: [RX, W] });
+      K.pill(ctx, a >= 0.9 ? "극대기 · 플레어와 코로나 질량 방출이 잦다" : (a <= 0.06 ? "극소기 · 태양이 조용하다" : "극대기와 극소기의 중간"), sx, sy + sr + 68, { s: 11.5, a: "center", c: a >= 0.9 ? KC.red : (a <= 0.06 ? KC.green : KC.mute), box: [RX, W] });
+      if (groups) K.pill(ctx, "검은 점 = 흑점 (둘레보다 어두움)", RX + RW - 14, 62, { s: 10.5, a: "right", c: KC.mute, box: [RX, W] });
+      var e = $("b-read");
+      if (e) e.innerHTML = "<span class='k'>흑점 수</span><span class='v y'>" + n + "개</span>" +
+        "<span class='k'>주기 진행</span><span class='v b'>" + y.toFixed(1) + "년</span><span class='sub'>활동 지수 " + Math.round(a * 100) + "% · 한 주기 약 11년</span>" +
+        (n >= 150 ? "<span class='ok r'>극대기 · 우주 위험이 커지는 때</span>" : (n <= 10 ? "<span class='ok g'>극소기 · 태양이 조용한 때</span>" : ""));
     }
     canvas._redraw = draw;
+    playBtn("b-sun-play", spinning, "⏸ 태양 자전 멈추기", "▶ 태양 자전 보기", function (on) { spinning = on; });
+    K.animate(canvas, function (dt) { if (spinning) { rot += dt * 6.2832 / 24000; draw(); } });
 
     function mission() {
       if (got.lo) done("b-m2a");
@@ -477,65 +598,82 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
     }
 
     function draw() {
-      paper(ctx, W, H);
+      ctx.clearRect(0, 0, W, H);
       var t = times(), arrH = t.c / 3600;
-      text(ctx, "태양 폭풍 추적 화면 — 폭발 순간(0시간)부터", 40, 28, { s: 13, w: "800" });
-
-      var x0 = 90, x1 = 790;
-      text(ctx, "☀️", 50, 62, { s: 24, a: "center" });
-      text(ctx, "태양", 50, 88, { s: 10.5, a: "center", c: v("--mist") });
-      text(ctx, "🌍", 830, 62, { s: 22, a: "center" });
-      text(ctx, "지구", 830, 88, { s: 10.5, a: "center", c: v("--mist") });
-      var lx = x1 - (L1_KM / AU_KM) * (x1 - x0) * 12;    // L1은 보기 좋게 과장해 표시
-      ctx.strokeStyle = v("--teal"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(lx, 46); ctx.lineTo(lx, 250); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "L1 감시 위성", lx, 40, { s: 10.5, w: "800", a: "center", c: v("--teal-700") });
-
-      var lanes = [
-        { n: "플레어의 X선·전파", t: t.x, c: "--amber", d: "빛과 같은 속력" },
-        { n: "고에너지 입자", t: t.p, c: "--violet", d: "광속의 약 " + Math.round(PART_FRAC * 100) + "%로 보면" },
-        { n: "코로나 질량 방출", t: t.c, c: "--coral", d: vc.toLocaleString() + " km/s" }
+      /* ── 위: 태양에서 지구까지 세 가지가 달려오는 모습 ── */
+      var TH = 236, x0 = 96, x1 = 820, lanesY = [92, 142, 192];
+      K.stage(ctx, 0, 0, W, TH, "space", { seed: 13, title: "태양 폭풍 추적 · 폭발 순간(0시간)부터" });
+      K.pill(ctx, "폭발 후 " + (clock >= 72 ? "72" : clock.toFixed(1)) + "시간", W - 16, 28, { s: 12.5, a: "right", c: KC.ink });
+      ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, TH, 14); ctx.clip();
+      K.sun(ctx, 30, 142, 30);
+      ctx.restore();
+      var lx = x1 - (L1_KM / AU_KM) * (x1 - x0) * 12;
+      K.line(ctx, { x: lx, y: 64 }, { x: lx, y: 214 }, KC.green, 1.2, [4, 4], .7);
+      ctx.fillStyle = "#c9d2de"; ctx.fillRect(lx - 3, 58, 6, 7);
+      ctx.fillStyle = "#3a6fd8"; ctx.fillRect(lx - 14, 59, 9, 5); ctx.fillRect(lx + 5, 59, 9, 5);
+      K.pill(ctx, "L1 감시 위성", lx - 18, 60, { s: 10.5, a: "right", c: KC.green });
+      /* 지구와 자기권 */
+      var ex = 860, ey = 142;
+      ctx.strokeStyle = "rgba(127,211,255,.35)"; ctx.lineWidth = 1.4;
+      [26, 38, 50].forEach(function (rr) { ctx.beginPath(); ctx.ellipse(ex + 6, ey, rr * .7, rr * 1.4, 0, Math.PI * .55, Math.PI * 1.45); ctx.stroke(); });
+      var hitC = clamp((clock * 3600) / t.c, 0, 1) >= 1;
+      if (hitC) { var au = ctx.createRadialGradient(ex, ey, 14, ex, ey, 34); au.addColorStop(0, "rgba(63,211,163,.55)"); au.addColorStop(1, "rgba(63,211,163,0)"); ctx.fillStyle = au; ctx.beginPath(); ctx.arc(ex, ey, 34, 0, 6.2832); ctx.fill(); }
+      K.earth(ctx, ex, ey, 15);
+      K.pill(ctx, "지구", ex, ey + 40, { s: 11, a: "center", c: KC.blue, box: [0, W] });
+      K.warn(ctx, 14, TH - 12, "⚠ L1까지의 거리는 12배 과장, 크기는 실제 비율이 아님");
+      var LN = [
+        { n: "플레어의 X선·전파 · 빛과 같은 속력", t: t.x, c: KC.yellow, k: 0 },
+        { n: "고에너지 입자 · 광속의 약 " + Math.round(PART_FRAC * 100) + "%로 보면", t: t.p, c: KC.violet, k: 1 },
+        { n: "코로나 질량 방출 · " + vc.toLocaleString() + " km/s", t: t.c, c: KC.orange, k: 2 }
       ];
-      lanes.forEach(function (ln, k) {
-        var ly = 115 + k * 58;
-        ctx.strokeStyle = v("--line"); ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(x0, ly); ctx.lineTo(x1, ly); ctx.stroke();
-        text(ctx, ln.n, x0, ly - 22, { s: 12, w: "800", c: v(ln.c) });
-        text(ctx, ln.d, x0 + 150, ly - 22, { s: 10.5, c: v("--mist") });
-        text(ctx, "도착 " + fmtTime(ln.t), x1 + 4, ly - 22, { s: 12, w: "800", a: "right", c: v(ln.c) });
-        var frac = clamp((clock * 3600) / ln.t, 0, 1);
-        ctx.strokeStyle = v(ln.c); ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(x0, ly); ctx.lineTo(x0 + frac * (x1 - x0), ly); ctx.stroke();
-        ctx.fillStyle = v(ln.c);
-        ctx.beginPath(); ctx.arc(x0 + frac * (x1 - x0), ly, 6, 0, Math.PI * 2); ctx.fill();
-        if (frac >= 1) text(ctx, "도착", x1 + 4, ly + 16, { s: 10.5, w: "800", a: "right", c: v(ln.c) });
+      LN.forEach(function (ln) {
+        var ly = lanesY[ln.k], frac = clamp((clock * 3600) / ln.t, 0, 1), fx = x0 + frac * (x1 - x0);
+        K.line(ctx, { x: x0, y: ly }, { x: x1, y: ly }, "rgba(200,210,255,.18)", 1, [2, 4]);
+        if (ln.k === 0) {
+          ctx.save(); ctx.shadowColor = KC.yellow; ctx.shadowBlur = 8; ctx.strokeStyle = KC.yellow; ctx.lineWidth = 2; ctx.beginPath();
+          for (var xx = x0; xx <= fx; xx += 3) { var yy = ly + Math.sin((xx - x0) / 7) * 4; if (xx === x0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy); }
+          ctx.stroke(); ctx.restore();
+          K.glow(ctx, fx, ly, 3, "rgba(255,211,107,.95)", 4);
+        } else if (ln.k === 1) {
+          var PR = K.rng(8);
+          for (var q = 0; q < 26; q++) { var u = PR(), qx = x0 + u * (fx - x0), qy = ly + (PR() - .5) * 14; ctx.globalAlpha = .35 + .6 * u; K.glow(ctx, qx, qy, 1.6, "rgba(182,156,255,.95)", 3); }
+          ctx.globalAlpha = 1; K.glow(ctx, fx, ly, 3, "rgba(182,156,255,.95)", 4);
+        } else {
+          var tg = ctx.createLinearGradient(x0, 0, fx, 0); tg.addColorStop(0, "rgba(255,140,60,0)"); tg.addColorStop(1, "rgba(255,140,60,.35)");
+          ctx.fillStyle = tg; ctx.beginPath(); ctx.moveTo(x0, ly - 4); ctx.lineTo(fx, ly - 16); ctx.lineTo(fx, ly + 16); ctx.lineTo(x0, ly + 4); ctx.fill();
+          var cg = ctx.createRadialGradient(fx, ly, 2, fx, ly, 22); cg.addColorStop(0, "rgba(255,235,200,.95)"); cg.addColorStop(.35, "rgba(255,150,70,.8)"); cg.addColorStop(1, "rgba(255,90,50,0)");
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(fx, ly, 16, 22, 0, 0, 6.2832); ctx.fill();
+        }
+        K.pill(ctx, ln.n, x0, ly - 14, { s: 11, c: ln.c });
+        K.pill(ctx, (frac >= 1 ? "도착 ✓ " : "도착까지 ") + fmtTime(ln.t), x1 - 8, ly + 26, { s: 11, a: "right", c: ln.c });
       });
 
-      /* 시간 축 0~72시간 */
-      var tx0 = 90, tx1 = 790, ty = 300;
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(tx0, ty); ctx.lineTo(tx1, ty); ctx.stroke();
-      for (var g = 0; g <= 72; g += 12) {
-        var gx = tx0 + g / 72 * (tx1 - tx0);
-        ctx.strokeStyle = v("--line"); ctx.beginPath(); ctx.moveTo(gx, ty); ctx.lineTo(gx, ty + 6); ctx.stroke();
-        text(ctx, g + "h", gx, ty + 22, { s: 10.5, c: v("--mist"), a: "center" });
-      }
-      /* 안전한 경보 구간 */
+      /* ── 아래: 경보 시각표 ── */
+      var BY = TH + 8, tx0 = 60, tx1 = 860, ty = 356;
+      function TX(h) { return tx0 + clamp(h, 0, 72) / 72 * (tx1 - tx0); }
+      K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 6, title: "경보 시각표 · 폭발 후 0~72시간" });
+      K.pill(ctx, "L1 감시 위성이 벌어 주는 여유 " + fmtTime(t.l1), W - 16, BY + 28, { s: 11.5, a: "right", c: KC.green });
       var aA = clamp(arrH - 6, 0, 72), aB = clamp(arrH, 0, 72);
-      ctx.fillStyle = v("--teal-100");
-      ctx.fillRect(tx0 + aA / 72 * (tx1 - tx0), ty - 24, (aB - aA) / 72 * (tx1 - tx0), 24);
-      text(ctx, "보호 모드를 켜기 알맞은 구간", tx0 + (aA + aB) / 2 / 72 * (tx1 - tx0), ty - 30, { s: 10.5, w: "800", a: "center", c: v("--teal-700") });
-      /* CME 도착 */
-      var cxp = tx0 + clamp(arrH, 0, 72) / 72 * (tx1 - tx0);
-      ctx.strokeStyle = v("--coral"); ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(cxp, ty - 30); ctx.lineTo(cxp, ty + 8); ctx.stroke();
-      text(ctx, "폭풍 도착 " + arrH.toFixed(1) + "h", Math.min(cxp + 6, 780), ty + 40, { s: 11, w: "800", c: v("--coral-700") });
-      /* 내가 고른 시각 */
-      var hxp = tx0 + hh / 72 * (tx1 - tx0);
-      ctx.fillStyle = v("--brand");
-      ctx.beginPath(); ctx.moveTo(hxp, ty - 2); ctx.lineTo(hxp - 7, ty - 16); ctx.lineTo(hxp + 7, ty - 16); ctx.closePath(); ctx.fill();
-      text(ctx, "보호 모드 " + hh + "h", Math.max(hxp - 6, 96), ty + 58, { s: 11, w: "800", a: "right", c: v("--brand-700") });
-      text(ctx, "L1 감시 위성이 벌어 주는 여유 시간 " + fmtTime(t.l1), 860, 372, { s: 11.5, w: "800", a: "right", c: v("--teal-700") });
+      var bandG = ctx.createLinearGradient(0, 310, 0, ty); bandG.addColorStop(0, "rgba(63,211,163,.12)"); bandG.addColorStop(1, "rgba(63,211,163,.42)");
+      ctx.fillStyle = bandG; ctx.fillRect(TX(aA), 310, TX(aB) - TX(aA), ty - 310);
+      K.pill(ctx, "보호 모드를 켜기 알맞은 6시간", TX(aA) - 6, 300, { s: 10.5, a: "right", c: KC.green, box: [0, W] });
+      ctx.strokeStyle = KC.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(tx0, ty); ctx.lineTo(tx1, ty); ctx.stroke();
+      for (var gh = 0; gh <= 72; gh += 12) {
+        var gx = TX(gh); ctx.beginPath(); ctx.moveTo(gx, ty); ctx.lineTo(gx, ty + 5); ctx.stroke();
+        K.t(ctx, gh + "시간", gx, ty + 18, { s: 10.5, a: "center", c: KC.mute, w: "600" });
+      }
+      var cxp = TX(arrH);
+      ctx.save(); ctx.shadowColor = KC.red; ctx.shadowBlur = 6; K.line(ctx, { x: cxp, y: 290 }, { x: cxp, y: ty + 6 }, KC.red, 2.2); ctx.restore();
+      K.pill(ctx, "폭풍 도착 " + arrH.toFixed(1) + "시간", cxp + 6, 300, { s: 11, c: KC.red, box: [0, W] });
+      if (clock < 72) { K.line(ctx, { x: TX(clock), y: 306 }, { x: TX(clock), y: ty }, "#ffffff", 1.5, null, .8); }
+      var hxp = TX(hh), inB = (hh <= arrH && hh >= arrH - 6), hc = inB ? KC.green : KC.blue;
+      ctx.fillStyle = hc; ctx.beginPath(); ctx.moveTo(hxp, ty - 1); ctx.lineTo(hxp - 7, ty - 14); ctx.lineTo(hxp + 7, ty - 14); ctx.closePath(); ctx.fill();
+      K.pill(ctx, "보호 모드 " + hh + "시간", hxp, 336, { s: 11, a: "center", c: hc, box: [0, W] });
+      var e = $("b-storm-read");
+      if (e) e.innerHTML = "<span class='k'>X선</span><span class='v y'>" + fmtTime(t.x) + "</span>" +
+        "<span class='k'>고에너지 입자</span><span class='v b'>" + fmtTime(t.p) + "</span>" +
+        "<span class='k'>코로나 질량 방출</span><span class='v r'>" + arrH.toFixed(1) + "시간</span><span class='sub'>1 AU ÷ " + vc.toLocaleString() + " km/s</span>" +
+        "<span class='ok " + (inB ? "g" : "r") + "'>" + (inB ? "보호 모드 " + hh + "시간 · 알맞은 시각" : (hh > arrH ? "보호 모드 " + hh + "시간 · 너무 늦습니다" : "보호 모드 " + hh + "시간 · 너무 이릅니다")) + "</span>";
     }
     canvas._redraw = draw;
 
@@ -659,64 +797,72 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
   (function () {
     var canvas = $("c-c-energy"), ctx = window.setupCanvas(canvas), W = canvas._w, H = canvas._h;
     var RHO = 3000, V = 19000, KT = 4.184e12;
-    var K = 0.5 * RHO * (Math.PI / 6) * V * V;      // E = K · d³
+    var KE = 0.5 * RHO * (Math.PI / 6) * V * V;     // E = KE · d³
     var d = 60, got = window.sthState("c2") || { a: false, b: false };
     var MARK = [
       { n: "히로시마 원자 폭탄", kt: 15 },
       { n: "2013 첼랴빈스크", kt: 500 },
       { n: "1908 퉁구스카(추정)", kt: 10000 }
     ];
-    function energyJ(dd) { return K * dd * dd * dd; }
+    function energyJ(dd) { return KE * dd * dd * dd; }
     function fmtE(kt) {
       if (kt < 1000) return kt.toFixed(0) + " kt";
       if (kt < 1e6) return (kt / 1000).toFixed(kt < 1e4 ? 1 : 0) + " Mt";
       return (kt / 1e6).toFixed(1) + " Gt";
     }
 
-    function draw() {
-      paper(ctx, W, H);
-      var E = energyJ(d), kt = E / KT;
-      text(ctx, "충돌 에너지 계산 — 밀도 3,000 kg/m³, 충돌 속도 19 km/s로 고정", 40, 28, { s: 13, w: "800" });
-
-      /* 왼쪽 : 크기 비교 */
-      text(ctx, "점선 = 지름 25 m. 이보다 작으면 대부분 대기에서 부서진다", 40, 56, { s: 10.5, w: "800", c: v("--teal-700") });
-      var cx = 175, cy = 185, r = 8 + 100 * Math.sqrt(d / 1000);
-      ctx.fillStyle = v("--coral"); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = v("--abyss"); ctx.globalAlpha = .25;
-      ctx.beginPath(); ctx.arc(cx - r * 0.3, cy - r * 0.25, r * 0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(cx + r * 0.35, cy + r * 0.3, r * 0.22, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
-      /* 25 m 기준 원 */
-      var r25 = 8 + 100 * Math.sqrt(25 / 1000);
-      ctx.strokeStyle = v("--teal"); ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(cx, cy, r25, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "지름 " + d + " m", cx, 312, { s: 16, w: "900", a: "center" });
-      var ton = RHO * (Math.PI / 6) * d * d * d / 1000;
-      var tonTxt = ton < 1e4 ? Math.round(ton).toLocaleString() + " 톤"
+    function tonText(dd) {
+      var ton = RHO * (Math.PI / 6) * dd * dd * dd / 1000;
+      return ton < 1e4 ? Math.round(ton).toLocaleString() + " 톤"
         : (ton < 1e8 ? (ton / 1e4 < 100 ? (ton / 1e4).toFixed(1) : Math.round(ton / 1e4).toLocaleString()) + "만 톤"
           : (ton / 1e8).toFixed(1) + "억 톤");
-      text(ctx, "질량 약 " + tonTxt, cx, 331, { s: 11.5, a: "center", c: v("--mist") });
+    }
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      var E = energyJ(d), kt = E / KT;
+      /* ── 왼쪽: 소행성 ── */
+      var LW = 380, cx = 190, cy = 214, r = 8 + 100 * Math.sqrt(d / 1000);
+      K.stage(ctx, 0, 0, LW, H, "space", { seed: 41, title: "다가오는 소행성" });
+      K.pill(ctx, "점선 = 지름 25 m · 이보다 작으면 대부분 대기에서 부서짐", 16, 58, { s: 10.5, c: KC.green, box: [0, LW] });
+      K.warn(ctx, 16, 86, "⚠ 그림 크기는 지름에 비례하지 않음(제곱근 눈금)");
+      ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, LW, H, 14); ctx.clip();
+      var tr = ctx.createLinearGradient(cx + r * 2.6, cy - r * 2.2, cx, cy);
+      tr.addColorStop(0, "rgba(255,160,80,0)"); tr.addColorStop(1, "rgba(255,170,90,.45)");
+      ctx.fillStyle = tr; ctx.beginPath();
+      ctx.moveTo(cx - r * .55, cy - r * .75); ctx.lineTo(cx + r * 2.8, cy - r * 2.4); ctx.lineTo(cx + r * .8, cy + r * .5); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      rock(ctx, cx, cy, r, 5);
+      ctx.strokeStyle = KC.green; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(cx, cy, 8 + 100 * Math.sqrt(25 / 1000), 0, 6.2832); ctx.stroke(); ctx.setLineDash([]);
+      K.pill(ctx, "지름 " + d + " m · 질량 약 " + tonText(d), cx, H - 18, { s: 13, a: "center", c: KC.ink, box: [0, LW] });
 
-      /* 오른쪽 : 로그 눈금 에너지 막대 */
-      var bx0 = 380, bx1 = 830, by0 = 90, by1 = 285;
-      function ypos(k) { return by1 - clamp((log10(k) + 1) / 9, 0, 1) * (by1 - by0); }   // 0.1 kt~1e8 kt
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(bx0, by0); ctx.lineTo(bx0, by1); ctx.lineTo(bx1, by1); ctx.stroke();
-      MARK.forEach(function (m) {
-        var my = ypos(m.kt);
-        ctx.strokeStyle = v("--mist"); ctx.globalAlpha = .7; ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.moveTo(bx0, my); ctx.lineTo(bx1, my); ctx.stroke();
-        ctx.setLineDash([]); ctx.globalAlpha = 1;
-        text(ctx, m.n + " " + fmtE(m.kt), bx1 - 4, my - 6, { s: 10.5, w: "800", a: "right", c: v("--mist") });
+      /* ── 오른쪽: 충돌 에너지 막대 ── */
+      var RX = LW + 8, bx0 = RX + 66, bx1 = W - 16, by0 = 74, by1 = H - 34;
+      K.stage(ctx, RX, 0, W - RX, H, "lab", { seed: 12, title: "충돌 에너지 (TNT 환산, 10배씩 커지는 눈금)" });
+      function yp(k) { return by1 - clamp((log10(k) + 1) / 9, 0, 1) * (by1 - by0); }
+      ctx.strokeStyle = KC.grid; ctx.lineWidth = 1;
+      [[0.1, "0.1 kt"], [10, "10 kt"], [1000, "1 Mt"], [1e5, "100 Mt"], [1e7, "10 Gt"]].forEach(function (q) {
+        var gy = yp(q[0]); ctx.beginPath(); ctx.moveTo(bx0, gy); ctx.lineTo(bx1, gy); ctx.stroke();
+        K.t(ctx, q[1], bx0 - 8, gy + 4, { s: 10.5, a: "right", c: KC.mute, w: "600" });
       });
-      var cyv = ypos(kt);
-      ctx.fillStyle = v(kt >= 1e5 ? "--rose" : "--amber");
-      ctx.fillRect(bx0 + 40, cyv, 120, by1 - cyv);
-      text(ctx, fmtE(kt), bx0 + 100, cyv - 10, { s: 17, w: "900", a: "center", c: v(kt >= 1e5 ? "--rose-700" : "--amber-700") });
-      text(ctx, "충돌 에너지 (TNT 환산, 로그 눈금)", bx0, by0 - 20, { s: 11.5, w: "800", c: v("--mist") });
-      text(ctx, "100 Mt", bx0 + 170, ypos(1e5) + 14, { s: 10.5, w: "800", c: v("--rose-700") });
-      ctx.strokeStyle = v("--rose"); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(bx0, ypos(1e5)); ctx.lineTo(bx1, ypos(1e5)); ctx.stroke();
+      ctx.strokeStyle = KC.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(bx0, by0); ctx.lineTo(bx0, by1); ctx.lineTo(bx1, by1); ctx.stroke();
+      var cyv = yp(kt), big = kt >= 1e5, barX = bx0 + 34, barW = 110;
+      var bg = ctx.createLinearGradient(0, by1, 0, cyv); bg.addColorStop(0, "rgba(255,179,92,.35)"); bg.addColorStop(1, big ? KC.red : KC.orange);
+      ctx.save(); ctx.shadowColor = big ? KC.red : KC.orange; ctx.shadowBlur = 14;
+      ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(barX, cyv, barW, by1 - cyv, [6, 6, 0, 0]); ctx.fill(); ctx.restore();
+      K.glow(ctx, barX + barW / 2, cyv, 4, big ? "rgba(255,107,129,.95)" : "rgba(255,211,107,.95)", 4);
+      MARK.forEach(function (m) {
+        var my = yp(m.kt);
+        K.line(ctx, { x: bx0, y: my }, { x: bx1, y: my }, KC.mute, 1, [5, 4], .8);
+        K.pill(ctx, m.n + " " + fmtE(m.kt), bx1 - 4, my - 6, { s: 10.5, a: "right", c: KC.ink });
+      });
+      K.line(ctx, { x: bx0, y: yp(1e5) }, { x: bx1, y: yp(1e5) }, KC.red, 2);
+      K.pill(ctx, "100 Mt · 도시 하나를 날릴 규모", bx1 - 4, yp(1e5) - 6, { s: 10.5, a: "right", c: KC.red });
+      K.pill(ctx, fmtE(kt), barX + barW / 2, Math.max(cyv - 12, by0 + 4), { s: 15, a: "center", c: big ? KC.red : KC.yellow });
+      var e = $("c-read");
+      if (e) e.innerHTML = "<span class='k'>지름</span><span class='v b'>" + d + " m</span><span class='sub'>질량 약 " + tonText(d) + " (밀도 3,000 kg/m³)</span>" +
+        "<span class='k'>충돌 에너지</span><span class='v " + (big ? "r" : "y") + "'>" + fmtE(kt) + "</span><span class='sub'>E = ½ m v², v = 19 km/s · 히로시마 원자 폭탄의 약 " + (kt / 15 < 10 ? (kt / 15).toFixed(1) : Math.round(kt / 15).toLocaleString()) + "배</span>" +
+        (big ? "<span class='ok r'>도시 하나를 통째로 없앨 수 있는 규모</span>" : "");
     }
     canvas._redraw = draw;
 
@@ -753,59 +899,69 @@ function fmtAU(d) { var a = d / AU_KM; return (a < 0.01 ? a.toFixed(4) : (a < 10
     var t = 5, dv = 5;
     function drift(tt, dd) { return dd * tt * 94.671; }      // km ≈ 3 · Δv · 남은 시간
 
+    var u = REDUCE ? 1 : 0, moving = !REDUCE;
+    function bez(p0, p1, p2, p3, k) {
+      var m = 1 - k; return { x: m * m * m * p0.x + 3 * m * m * k * p1.x + 3 * m * k * k * p2.x + k * k * k * p3.x, y: m * m * m * p0.y + 3 * m * m * k * p1.y + 3 * m * k * k * p2.y + k * k * k * p3.y };
+    }
     function draw() {
-      paper(ctx, W, H);
-      var s = drift(t, dv);
-      text(ctx, "궤도 편향 계획 — 어긋난 거리 ≈ 3 × 속도 변화 × 남은 시간", 40, 28, { s: 13, w: "800" });
-
-      /* 위 : 지구와 소행성 경로 */
-      var ex = 430, ey = 140, er = 44;                         // 지구 반지름 6,371 km → 44 px
-      var SCALE = R_EARTH / er;                                // km per px
-      ctx.fillStyle = v("--brand"); ctx.beginPath(); ctx.arc(ex, ey, er, 0, Math.PI * 2); ctx.fill();
-      text(ctx, "🌍", ex, ey + 9, { s: 26, a: "center" });
-      text(ctx, "지구 (반지름 6,371 km)", ex, ey + er + 20, { s: 10.5, a: "center", c: v("--mist") });
-
-      /* 밀지 않았을 때의 경로 : 지구 정면 */
-      ctx.strokeStyle = v("--rose"); ctx.lineWidth = 2.5; ctx.setLineDash([7, 5]);
-      ctx.beginPath(); ctx.moveTo(60, ey); ctx.lineTo(ex - er, ey); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "밀지 않았을 때 — 충돌", 62, ey + 18, { s: 11, w: "800", c: v("--rose-700") });
-
+      ctx.clearRect(0, 0, W, H);
+      var s = drift(t, dv), ok = s >= NEED && dv <= DV_MAX && dv > 0;
+      var TH = 236, ex = 470, ey = 132, er = 44, SCALE = R_EARTH / er;
+      K.stage(ctx, 0, 0, W, TH, "space", { seed: 23, title: "궤도 편향 계획 · 어긋난 거리 ≈ 3 × 속도 변화 × 남은 시간" });
+      K.pill(ctx, "충돌 " + t + "년 전 · 속도 변화 " + dv + " mm/s", W - 16, 58, { s: 12, a: "right", c: KC.ink });
+      if (dv > DV_MAX) K.pill(ctx, "⚠ 40 mm/s 초과 · 소행성이 부서질 위험", W - 16, 86, { s: 11.5, a: "right", c: KC.red });
+      K.warn(ctx, W - 16, 28, "⚠ 가로 방향 거리는 줄여 그림", "right");
+      K.earth(ctx, ex, ey, er);
+      var hz = ctx.createRadialGradient(ex, ey, er, ex, ey, er + 10); hz.addColorStop(0, "rgba(127,211,255,.35)"); hz.addColorStop(1, "rgba(127,211,255,0)");
+      ctx.fillStyle = hz; ctx.beginPath(); ctx.arc(ex, ey, er + 10, 0, 6.2832); ctx.fill();
+      K.pill(ctx, "지구 (반지름 6,371 km)", ex, ey + er + 26, { s: 11, a: "center", c: KC.blue });
+      /* 밀지 않았을 때 */
+      K.line(ctx, { x: 60, y: ey }, { x: ex - er, y: ey }, KC.red, 2.2, [7, 5], .9);
+      K.pill(ctx, "밀지 않았을 때 · 충돌", 190, ey + 26, { s: 11, a: "center", c: KC.red });
       /* 밀었을 때 */
-      var offPx = Math.min(330, s / SCALE);
-      var clipped = (s / SCALE) > 330;
-      var ny = ey - offPx;
-      if (ny < 64) ny = 64;
-      ctx.strokeStyle = v(s >= NEED && dv <= DV_MAX && dv > 0 ? "--teal" : "--amber"); ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(60, ey);
-      ctx.bezierCurveTo(240, ey, 300, ny, ex + 120, ny); ctx.stroke();
-      ctx.fillStyle = v(s >= NEED && dv <= DV_MAX && dv > 0 ? "--teal" : "--amber");
-      text(ctx, "☄️", ex + 130, ny + 6, { s: 18 });
-      text(ctx, "밀었을 때 — " + Math.round(s).toLocaleString() + " km 어긋남" + (clipped ? " (화면 밖)" : ""),
-        62, ny - 12, { s: 11.5, w: "800", c: v(s >= NEED && dv <= DV_MAX && dv > 0 ? "--teal-700" : "--amber-700") });
+      var offPx = Math.min(330, s / SCALE), clipped = (s / SCALE) > 330, ny = Math.max(76, ey - offPx);
+      var col = ok ? KC.green : KC.orange;
+      var P0 = { x: 60, y: ey }, P1 = { x: 240, y: ey }, P2 = { x: 300, y: ny }, P3 = { x: ex + 120, y: ny };
+      ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 8; ctx.strokeStyle = col; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.moveTo(P0.x, P0.y); ctx.bezierCurveTo(P1.x, P1.y, P2.x, P2.y, P3.x, P3.y); ctx.stroke(); ctx.restore();
+      if (offPx > 14) {
+        ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.setLineDash([2, 3]);
+        ctx.beginPath(); ctx.moveTo(ex + 70, ey); ctx.lineTo(ex + 70, ny); ctx.stroke(); ctx.setLineDash([]);
+      }
+      /* 충돌체가 민 자리 */
+      K.glow(ctx, 60, ey, 4, "rgba(255,236,190,.95)", 4.5);
+      if (dv > 0) K.arrow(ctx, { x: 60, y: ey + 30 }, { x: 60, y: ey + 6 }, KC.yellow, 2);
+      K.pill(ctx, "충돌체로 밀기", 24, ey + 50, { s: 11, c: KC.yellow });
+      K.pill(ctx, "밀었을 때 · " + Math.round(s).toLocaleString() + " km 어긋남" + (clipped ? " (화면 밖)" : ""), 62, ny - 12, { s: 11.5, c: col });
+      /* 소행성 */
+      var ap = bez(P0, P1, P2, P3, u);
+      rock(ctx, ap.x, ap.y, 7, 5);
 
-      /* 아래 : 필요량과 비교 막대 (로그 눈금) */
-      var bx0 = 70, bx1 = 830, by = 270;
-      function xpos(km) { return bx0 + clamp((log10(Math.max(km, 10)) - 1) / 5, 0, 1) * (bx1 - bx0); }   // 10 km~1,000,000 km
-      ctx.strokeStyle = v("--line"); ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(bx1, by); ctx.stroke();
+      /* ── 아래: 필요량과 비교 ── */
+      var BY = TH + 8, bx0 = 70, bx1 = 830, by = 330;
+      K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 2, title: "어긋난 거리 (km, 10배씩 커지는 눈금)" });
+      function xpos(km) { return bx0 + clamp((log10(Math.max(km, 10)) - 1) / 5, 0, 1) * (bx1 - bx0); }
+      ctx.strokeStyle = KC.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(bx0, by); ctx.lineTo(bx1, by); ctx.stroke();
       [10, 100, 1000, 10000, 100000, 1000000].forEach(function (g) {
-        var gx = xpos(g);
-        ctx.strokeStyle = v("--line"); ctx.beginPath(); ctx.moveTo(gx, by); ctx.lineTo(gx, by + 6); ctx.stroke();
-        text(ctx, g >= 10000 ? (g / 10000) + "만" : g.toLocaleString(), gx, by + 22, { s: 10, c: v("--mist"), a: "center" });
+        var gx = xpos(g); ctx.beginPath(); ctx.moveTo(gx, by); ctx.lineTo(gx, by + 5); ctx.stroke();
+        K.t(ctx, g >= 10000 ? (g / 10000) + "만" : g.toLocaleString(), gx, by + 18, { s: 10.5, a: "center", c: KC.mute, w: "600" });
       });
-      text(ctx, "어긋난 거리 (km, 로그 눈금)", bx0, by + 46, { s: 11, c: v("--mist") });
+      var sxp = xpos(s), bc = s >= NEED ? KC.green : KC.red;
+      var bg = ctx.createLinearGradient(bx0, 0, Math.max(bx0 + 2, sxp), 0); bg.addColorStop(0, "rgba(255,255,255,.08)"); bg.addColorStop(1, bc);
+      ctx.save(); ctx.shadowColor = bc; ctx.shadowBlur = 10; ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(bx0, by - 24, Math.max(3, sxp - bx0), 18, 6); ctx.fill(); ctx.restore();
       var nx = xpos(NEED);
-      ctx.strokeStyle = v("--amber"); ctx.lineWidth = 2.5; ctx.setLineDash([5, 4]);
-      ctx.beginPath(); ctx.moveTo(nx, by - 52); ctx.lineTo(nx, by + 6); ctx.stroke(); ctx.setLineDash([]);
-      text(ctx, "필요 12,000 km", nx + 6, by - 40, { s: 11, w: "800", c: v("--amber-700") });
-      var sxp = xpos(s);
-      ctx.fillStyle = v(s >= NEED ? "--teal" : "--rose");
-      ctx.fillRect(bx0, by - 22, Math.max(2, sxp - bx0), 18);
-      text(ctx, Math.round(s).toLocaleString() + " km", Math.min(sxp + 6, 760), by - 8, { s: 11.5, w: "800", c: v(s >= NEED ? "--teal-700" : "--rose-700") });
-      text(ctx, "충돌 " + t + "년 전 · 속도 변화 " + dv + " mm/s", 860, 60, { s: 12, w: "800", a: "right", c: v("--ink") });
-      if (dv > DV_MAX) text(ctx, "⚠️ 40 mm/s 초과 — 소행성이 부서질 위험", 860, 82, { s: 11.5, w: "800", a: "right", c: v("--rose-700") });
+      K.line(ctx, { x: nx, y: by - 52 }, { x: nx, y: by + 6 }, KC.yellow, 2, [5, 4]);
+      K.pill(ctx, "필요 12,000 km", nx + 6, by - 38, { s: 11, c: KC.yellow, box: [0, W] });
+      K.pill(ctx, Math.round(s).toLocaleString() + " km", Math.min(sxp + 8, 770), by - 9, { s: 11.5, c: bc });
+      var e = $("c-dart-read");
+      if (e) e.innerHTML = "<span class='k'>미는 때</span><span class='v b'>충돌 " + t + "년 전</span>" +
+        "<span class='k'>속도 변화</span><span class='v " + (dv > DV_MAX ? "r" : "y") + "'>" + dv + " mm/s</span><span class='sub'>시속 약 " + (dv * 3.6).toFixed(1) + " m</span>" +
+        "<span class='k'>어긋난 거리</span><span class='v " + (s >= NEED ? "g" : "r") + "'>" + Math.round(s).toLocaleString() + " km</span>" +
+        "<span class='ok " + (ok ? "g" : "r") + "'>" + (ok ? "작전 성공 · 지구를 비켜 갑니다" : (dv > DV_MAX ? "너무 세게 밀었습니다 · 부서질 위험" : "아직 " + Math.round(Math.max(0, NEED - s)).toLocaleString() + " km 모자랍니다")) + "</span>";
     }
     canvas._redraw = draw;
+    playBtn("c-play", moving, "⏸ 소행성 멈추기", "▶ 소행성 움직이기", function (on) { moving = on; });
+    K.animate(canvas, function (dt) { if (moving) { u += dt / 4200; if (u > 1) u = 0; draw(); } });
 
     function update() {
       var s = drift(t, dv);
