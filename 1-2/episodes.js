@@ -1154,38 +1154,148 @@ function solveKepler(e, M) {
     draw(); check();
   })();
 
-  /* ---------------- 장면 3 — 식 현상(통과)법 ---------------- */
+  /* ---------------- 장면 3 — 식 현상(통과)법 (우주 진열장 블록 모형 + 망원경 화면 + 광도 곡선) ---------------- */
   (function () {
     var canvas = $("c-tr"); if (!canvas) return;
     var ctx = window.setupCanvas(canvas), W = canvas._w, H = canvas._h;
     var RSUN = 695700, RE = 6371, RJ = 71492, MJKG = 1.898e27;
     var RSTAR = 1.20 * RSUN, OBS_D = 1.40, MP_J = 0.69;
     var rp = 1, phase = null, busy = false, okR = window.sthState("trR") || 0;
+    var th = -2.2, orbiting = !REDUCE;                 /* th: 궤도 위 행성 각(0 = 지구 쪽 한가운데) */
 
     function depth(rr) { var x = rr * RE / RSTAR; return x * x * 100; }
+    function kk() { return rp * RE / RSTAR; }
 
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      var d = depth(rp), TH = 226;
-      /* ── 위: 별 앞을 지나는 행성 ── */
-      K.stage(ctx, 0, 0, W, TH, "space", { seed: 71, title: "가려진 면적 비율 = (행성 반지름 ÷ 별 반지름)² = " + d.toFixed(3) + "%" });
-      var cx = 450, cy = 124, R = 76;
-      var cg = ctx.createRadialGradient(cx, cy, R * .8, cx, cy, R * 1.6); cg.addColorStop(0, "rgba(255,200,110,.35)"); cg.addColorStop(1, "rgba(255,170,80,0)");
-      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, R * 1.6, 0, 6.2832); ctx.fill();
-      var sg = ctx.createRadialGradient(cx - R * .1, cy - R * .1, R * .05, cx, cy, R);
+    /* ── 진열장: x 0~L(화면 오른쪽 아래), y 0~D(왼쪽 아래), z 위. 지구는 +x 쪽 바깥 ── */
+    var DH = 440;
+    var I = K.iso({ ox: 372, oy: 218, s: 0.72, L: 300, D: 300 });
+    var L = I.L, D = I.D, ZH = 210, ZC = 105, CX = 150, CY = 150;
+    var A = 104, RS = 23;                              /* 궤도 반지름 · 별 반지름(그림 단위, 크게 과장) */
+    var EARTH = { x: L + 175, y: CY, z: ZC };
+    var INS = { x: 772, y: 262, r: 86, R: 60 };         /* 망원경으로 본 모습(동그란 창) */
+
+    function poly(pts, fill, stroke, lw) {
+      ctx.beginPath(); pts.forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1; ctx.stroke(); }
+    }
+    function pPos(a) { return { x: CX + A * Math.cos(a), y: CY + A * Math.sin(a) }; }
+    /* 지구에서 본 가로 위치(별 반지름 단위): 시선(+x 쪽)에서 보면 +y 가 오른쪽 */
+    function phOf(a) { return A * Math.sin(a) / RS; }
+    function nearSide(a) { return Math.cos(a) > 0; }
+    function curPh() {
+      if (phase != null) return phase;
+      var p = phOf(th);
+      return nearSide(th) && Math.abs(p) <= 1.6 ? p : null;
+    }
+    function bright(u) {                               /* u: −1.6~1.6 (0이 한가운데) */
+      var k = kk(), d = depth(rp), edge = 1 + k, inn = 1 - k, au = Math.abs(u);
+      if (au >= edge) return 100;
+      if (au <= inn) return 100 - d;
+      return 100 - d * (edge - au) / Math.max(1e-6, edge - inn);
+    }
+
+    function drawOrbit(front) {
+      ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6; ctx.strokeStyle = "rgba(127,211,255,.75)";
+      ctx.beginPath(); var on = false;
+      for (var i = 0; i <= 120; i++) {
+        var a = i / 120 * 6.2832, p = pPos(a), isF = (p.x + p.y) > (CX + CY);
+        if (isF === front) { var q = I.P(p.x, p.y, ZC); if (on) ctx.lineTo(q.x, q.y); else { ctx.moveTo(q.x, q.y); on = true; } }
+        else on = false;
+      }
+      ctx.stroke(); ctx.restore();
+    }
+    function drawPlanet(pa, prPx) {
+      var w = pPos(pa), q = I.P(w.x, w.y, ZC);
+      K.planet(ctx, q.x, q.y, prPx, "#d9a46a", "#4a2a14");
+      return q;
+    }
+
+    function drawModel() {
+      var k = kk(), d = depth(rp), ph = curPh();
+      var pa = phase != null ? Math.asin(clamp(phase * RS / A, -1, 1)) : th;
+      K.studio(ctx, 0, 0, W, DH, { x: I.P(L, D, 0).x - 60, y: I.P(L, D, 0).y - 40, rx: 300, ry: 52 });
+      /* 안쪽 우주: 바닥과 뒤쪽 두 벽 */
+      var f00 = I.P(0, 0, 0), fL0 = I.P(L, 0, 0), fLD = I.P(L, D, 0), f0D = I.P(0, D, 0);
+      var t00 = I.P(0, 0, ZH), tL0 = I.P(L, 0, ZH), t0D = I.P(0, D, ZH);
+      var g = ctx.createLinearGradient(0, t00.y, 0, fLD.y); g.addColorStop(0, "#0b1030"); g.addColorStop(1, "#1a1f4e");
+      poly([f00, fL0, tL0, t00], g); poly([f00, f0D, t0D, t00], "#0d1238"); poly([f00, fL0, fLD, f0D], "#141a46");
+      ctx.save(); ctx.beginPath(); [f0D, f00, fL0, tL0, t00, t0D].forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.lineTo(fLD.x, fLD.y); ctx.closePath(); ctx.clip();
+      var R = K.rng(83);
+      for (var i = 0; i < 140; i++) { ctx.globalAlpha = .25 + R() * .6; ctx.fillStyle = R() > .9 ? "#ffe2b8" : "#ffffff"; ctx.beginPath(); ctx.arc(t0D.x + R() * (tL0.x - t0D.x), t00.y + R() * (fLD.y - t00.y), R() > .95 ? 1.4 : .7, 0, 6.2832); ctx.fill(); }
+      ctx.globalAlpha = 1; ctx.restore();
+      /* 바닥 눈금 */
+      ctx.strokeStyle = "rgba(160,175,255,.14)"; ctx.lineWidth = 1;
+      for (var gx = 50; gx < L; gx += 50) { var a1 = I.P(gx, 0, 0), b1 = I.P(gx, D, 0); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(b1.x, b1.y); ctx.stroke(); }
+      for (var gy = 50; gy < D; gy += 50) { var a2 = I.P(0, gy, 0), b2 = I.P(L, gy, 0); ctx.beginPath(); ctx.moveTo(a2.x, a2.y); ctx.lineTo(b2.x, b2.y); ctx.stroke(); }
+      /* 바닥 그림자 · 높이 막대 */
+      var wp = pPos(pa);
+      [[CX, CY, 26, "rgba(255,200,110,.22)"], [wp.x, wp.y, 9, "rgba(0,0,0,.45)"]].forEach(function (s) {
+        var c0 = I.P(s[0], s[1], 0); ctx.fillStyle = s[3]; ctx.beginPath(); ctx.ellipse(c0.x, c0.y, s[2], s[2] * .5, 0, 0, 6.2832); ctx.fill();
+        K.line(ctx, c0, I.P(s[0], s[1], ZC), "rgba(200,210,255,.35)", 1, [3, 3]);
+      });
+      /* 궤도면(시선과 나란한 판) */
+      I.plane(ctx, ZC, "rgba(127,211,255,.07)", "rgba(127,211,255,.28)");
+      /* 시선: 별 → 지구 (궤도면 위) */
+      var sc = I.P(CX, CY, ZC), ep = I.P(EARTH.x, EARTH.y, EARTH.z);
+      drawOrbit(false);
+      var prPx = Math.max(3.4, RS * k * I.s * 2.6);
+      var far = !((wp.x + wp.y) > (CX + CY));
+      if (far) drawPlanet(pa, prPx);
+      K.sun(ctx, sc.x, sc.y, RS * I.s * .9);
+      K.glow(ctx, sc.x, sc.y, RS * I.s * .55, "rgba(255,226,150,.98)", 2.2);
+      if (!far) drawPlanet(pa, prPx);
+      drawOrbit(true);
+      /* 앞쪽 유리 두 면 + 윗면 */
+      var tLD = I.P(L, D, ZH);
+      var gl = ctx.createLinearGradient(f0D.x, f0D.y, fLD.x, tLD.y); gl.addColorStop(0, "rgba(255,255,255,.10)"); gl.addColorStop(1, "rgba(200,225,255,.04)");
+      poly([f0D, fLD, tLD, t0D], gl, "rgba(255,255,255,.55)", 1.2);
+      poly([fLD, fL0, tL0, tLD], "rgba(190,215,255,.07)", "rgba(255,255,255,.55)", 1.2);
+      poly([t00, tL0, tLD, t0D], "rgba(255,255,255,.05)", "rgba(255,255,255,.7)", 1.2);
+      ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(t0D.x + 8, t0D.y + 10); ctx.lineTo(t0D.x + 40, t0D.y + 52); ctx.stroke();
+      K.line(ctx, sc, ep, "rgba(255,211,107,.85)", 1.6, [7, 5]);
+      /* 지구(관측자) */
+      K.earth(ctx, ep.x, ep.y, 11);
+      K.pill(ctx, "지구 · 망원경", ep.x - 6, ep.y + 30, { s: 11, a: "center", c: KC.blue });
+      /* 이름표 */
+      var box = [0, 650];
+      I.label(ctx, CX, CY, ZC + RS, "별 HD 209458 (태양의 1.20배)", -178, -40, "#ffe7a8", box);
+      var oL = pPos(-2.35); I.label(ctx, oL.x, oL.y, ZC, "행성의 궤도면 — 지구 쪽에서 보면 거의 옆면", 150, -66, "#bfe6ff", box);
+      var mid = { x: (sc.x + ep.x) / 2, y: (sc.y + ep.y) / 2 };
+      K.pill(ctx, "시선 방향", mid.x + 10, mid.y + 26, { s: 10.5, c: KC.yellow, box: box });
+      var pq = I.P(wp.x, wp.y, ZC);
+      K.pill(ctx, "행성 (지구의 " + rp.toFixed(1) + "배)", pq.x, pq.y - prPx - 10, { s: 10.5, a: "center", c: "#e8ecff", box: box });
+      /* 망원경으로 본 모습 */
+      var cx = INS.x, cy = INS.y, RR = INS.R;
+      K.line(ctx, { x: ep.x + 12, y: ep.y - 4 }, { x: cx - INS.r * .9, y: cy + 30 }, "rgba(80,100,140,.55)", 1.2, [4, 4]);
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, INS.r, 0, 6.2832); ctx.fillStyle = "#05071a"; ctx.fill();
+      ctx.lineWidth = 5; ctx.strokeStyle = "#2b3350"; ctx.stroke(); ctx.clip();
+      var cg = ctx.createRadialGradient(cx, cy, RR * .8, cx, cy, RR * 1.5); cg.addColorStop(0, "rgba(255,200,110,.35)"); cg.addColorStop(1, "rgba(255,170,80,0)");
+      ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(cx, cy, RR * 1.5, 0, 6.2832); ctx.fill();
+      var sg = ctx.createRadialGradient(cx - RR * .1, cy - RR * .1, RR * .05, cx, cy, RR);
       sg.addColorStop(0, "#fff6d8"); sg.addColorStop(.6, "#ffd06a"); sg.addColorStop(.9, "#f29a34"); sg.addColorStop(1, "#c25a14");
-      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
-      K.pill(ctx, "HD 209458 (반지름 태양의 1.20배)", cx + R + 24, cy + 4, { s: 11.5, c: KC.yellow });
-      var prr = Math.max(2, R * (rp * RE / RSTAR));
-      var ph = phase == null ? 0 : phase;
-      var pxx = cx + ph * R;
-      ctx.fillStyle = "#05060f"; ctx.beginPath(); ctx.arc(pxx, cy, prr, 0, 6.2832); ctx.fill();
-      ctx.strokeStyle = "rgba(127,211,255,.6)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(pxx, cy, prr + 1, 0, 6.2832); ctx.stroke();
-      K.pill(ctx, "행성", pxx, cy - Math.max(prr, 8) - 12, { s: 10.5, a: "center", c: KC.blue });
-      K.pill(ctx, "지구에서 본 모습", 16, H - (H - TH) - 14, { s: 11, c: KC.mute });
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(cx, cy, RR, 0, 6.2832); ctx.fill();
+      var inFront = ph != null && Math.abs(ph) < 1 + k;
+      if (ph != null) {
+        var prr = Math.max(2, RR * k), pxx = cx + ph * RR;
+        ctx.fillStyle = "#05060f"; ctx.beginPath(); ctx.arc(pxx, cy, prr, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = "rgba(127,211,255,.6)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(pxx, cy, prr + 1, 0, 6.2832); ctx.stroke();
+      }
+      ctx.restore();
+      K.pill(ctx, "망원경으로 본 모습", cx, cy - INS.r - 12, { s: 11.5, a: "center", c: KC.blue });
+      K.pill(ctx, inFront ? "별빛 " + (100 - bright(ph)).toFixed(2) + "% 가려짐" : "행성이 별 앞에 없음", cx, cy + INS.r + 24, { s: 11, a: "center", c: inFront ? KC.yellow : KC.mute });
+      /* 큰 글자 */
+      var ok = Math.abs(d - OBS_D) <= 0.06;
+      if (busy || inFront) { K.bigText(ctx, "별빛에 그림자가 진다", 22, 52, 28, "#ffd35a"); K.bigText(ctx, "가려진 면적만큼 어두워진다", 22, 86, 18, "#ffffff"); }
+      else if (rp <= 1.5) { K.bigText(ctx, "지구만 한 행성이라면", 22, 52, 28, "#ffffff"); K.bigText(ctx, "별빛은 " + d.toFixed(3) + "%밖에 안 줄어든다", 22, 86, 18, "#ffd35a"); }
+      else if (ok) { K.bigText(ctx, "관측과 같은 그림자", 22, 52, 28, "#ffd35a"); K.bigText(ctx, "깊이 " + d.toFixed(2) + "% · 관측 1.40%", 22, 86, 18, "#ffffff"); }
+      else if (d < OBS_D) { K.bigText(ctx, "아직 덜 가린다", 22, 52, 28, "#ffffff"); K.bigText(ctx, "내 모형 " + d.toFixed(2) + "% · 관측 1.40%", 22, 86, 18, "#ffd35a"); }
+      else { K.bigText(ctx, "너무 많이 가렸다", 22, 52, 28, "#ffffff"); K.bigText(ctx, "내 모형 " + d.toFixed(2) + "% · 관측 1.40%", 22, 86, 18, "#ff9aac"); }
+      K.warn(ctx, W - 14, 30, "⚠ 별·행성 크기와 궤도는 보기 쉽게 과장", "right");
+    }
 
-      /* ── 아래: 광도 곡선 ── */
-      var BY = TH + 8, x0 = 90, x1 = 870, y0 = 278, y1 = 404;
+    function drawChart() {
+      var d = depth(rp), BY = DH + 8, x0 = 90, x1 = 870, y0 = BY + 46, y1 = H - 18, ph = curPh();
       K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 72, title: "별의 밝기 · 행성이 별 앞을 가로지르는 동안 (가로축: 별 반지름 단위)" });
       function py(f) { return clamp(y1 - (f - (100 - 2.2)) / 2.6 * (y1 - y0), y0, y1); }
       ctx.fillStyle = "rgba(255,255,255,.03)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
@@ -1193,30 +1303,27 @@ function solveKepler(e, M) {
         K.line(ctx, { x: x0, y: py(f) }, { x: x1, y: py(f) }, KC.grid, 1, [3, 4]);
         K.t(ctx, f.toFixed(1) + "%", x0 - 8, py(f) + 4, { s: 10, c: KC.mute, a: "right", w: "600" });
       });
-      /* 관측 깊이 기준선 */
       K.line(ctx, { x: x0, y: py(100 - OBS_D) }, { x: x1, y: py(100 - OBS_D) }, KC.red, 1.6, [6, 4]);
       K.pill(ctx, "관측된 깊이 1.40%", x1 - 4, py(100 - OBS_D) + 18, { s: 10.5, c: KC.red, a: "right" });
-      /* 모형 곡선 */
-      function bright(u) {              // u: −1.6~1.6 (0이 한가운데)
-        var k = rp * RE / RSTAR, edge = 1 + k, inn = 1 - k;
-        var au = Math.abs(u);
-        if (au >= edge) return 100;
-        if (au <= inn) return 100 - d;
-        return 100 - d * (edge - au) / Math.max(1e-6, edge - inn);
-      }
       ctx.save(); ctx.shadowColor = KC.yellow; ctx.shadowBlur = 8; ctx.strokeStyle = KC.yellow; ctx.lineWidth = 2.6; ctx.beginPath();
       for (var u = -1.6; u <= 1.6; u += 0.004) {
         var xx = x0 + (u + 1.6) / 3.2 * (x1 - x0);
         if (u === -1.6) ctx.moveTo(xx, py(bright(u))); else ctx.lineTo(xx, py(bright(u)));
       }
       ctx.stroke(); ctx.restore();
-      if (phase != null) {
+      if (ph != null) {
         var mx = x0 + (ph + 1.6) / 3.2 * (x1 - x0);
         K.line(ctx, { x: mx, y: y0 }, { x: mx, y: y1 }, KC.green, 1.6);
         K.glow(ctx, mx, py(bright(ph)), 4, "rgba(63,211,163,.95)", 3);
       }
       K.pill(ctx, "내 모형 깊이 " + d.toFixed(2) + "%", x0 + 8, y1 - 8, { s: 10.5, c: KC.yellow });
+    }
 
+    function paint() { ctx.clearRect(0, 0, W, H); drawModel(); drawChart(); }
+
+    function draw() {
+      paint();
+      var d = depth(rp);
       var ok = Math.abs(d - OBS_D) <= 0.06;
       $("c-tr-info").innerHTML = "행성 반지름 <b>" + rp.toFixed(1) + " 지구 반지름</b> (= " + (rp * RE).toLocaleString() + " km = 목성의 " +
         (rp * RE / RJ).toFixed(2) + "배) → 밝기 감소 깊이 <b>" + d.toFixed(3) + "%</b> (관측값 1.40%)<br>" +
@@ -1237,10 +1344,18 @@ function solveKepler(e, M) {
       busy = true; $("c-tr-run").disabled = true; phase = -1.6;
       (function step() {
         phase = Math.min(1.6, phase + 0.09);
-        draw();
+        paint();
         if (phase < 1.6) window.setTimeout(step, 18);
-        else { busy = false; $("c-tr-run").disabled = false; $("c-tr-run").textContent = "↻ 다시 관측하기"; phase = null; draw(); }
+        else { th = Math.asin(clamp(1.6 * RS / A, -1, 1)); busy = false; $("c-tr-run").disabled = false; $("c-tr-run").textContent = "↻ 다시 관측하기"; phase = null; draw(); }
       })();
+    });
+    playBtn("c-tr-play", orbiting, "⏸ 공전 멈추기", "▶ 공전 보기", function (on) { orbiting = on; });
+    K.animate(canvas, function (dt) {
+      if (!orbiting || busy) return;
+      var ft = nearSide(th) && Math.abs(phOf(th)) < 1.8;      /* 별 앞을 지날 때는 천천히 */
+      th += dt / 1000 * (ft ? 0.16 : 0.75);
+      if (th > Math.PI) th -= 6.2832;
+      paint();
     });
     draw(); check();
   })();

@@ -597,78 +597,172 @@ function rock(ctx, x, y, r, seed, light, dark) {
       return { x: tx, p: tp, c: tc, l1: L1_KM / vc };
     }
 
+    /* ── 위: 우주 디오라마(유리 진열장) — x = 태양(왼쪽 뒤) → 지구(오른쪽 앞), y = 깊이, z = 위 ── */
+    var TH = 452;
+    var I = K.iso({ ox: 262, oy: 98, s: 0.68, L: 820, D: 180 });
+    var BL = I.L, BD = I.D, BZ = 104, Z0 = 48, DC = BD / 2;
+    var SX = 70, EX = 740, LXW = EX - (L1_KM / AU_KM) * (EX - SX) * 12;   /* L1 은 12배 과장 */
+    var LANE = [-62, 0, 62], ph = 0, amb = !REDUCE;
+    var STARS = (function () { var R = K.rng(41), a = [], i; for (i = 0; i < 80; i++) a.push([R(), R(), R()]); return a; })();
+    function laneP(k, u) { return I.P(SX + u * (EX - SX), DC + LANE[k] * (1 - u), Z0); }
+    function poly(pts, fill, stroke, lw) {
+      ctx.beginPath(); pts.forEach(function (p, i) { if (i) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); }); ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1; ctx.stroke(); }
+    }
+    function headline(t, arrH) {
+      var s = clock * 3600;
+      if (running) {
+        if (s < t.x) return ["X급 플레어가 터졌다", "지구는 아직 아무것도 모른다"];
+        if (s < t.p) return ["첫 신호 — 섬광이 먼저 닿았다", "폭발 " + fmtTime(t.x) + " 뒤에 본 빛"];
+        if (s < t.c) return ["입자는 닿았다 — 이제 구름이 온다", "구름(CME) 도착까지 " + Math.max(0, arrH - clock).toFixed(1) + "시간"];
+        return ["자기 폭풍 — 오로라가 내려온다", "폭발 " + arrH.toFixed(1) + "시간 뒤 · 자기권이 눌렸다"];
+      }
+      var sub = "1 AU ÷ " + vc.toLocaleString() + " km/s = " + arrH.toFixed(1) + "시간";
+      if (arrH > 48) return ["느린 구름 — 이틀을 넘겨 닿는다", sub];
+      if (arrH < 24) return ["빠른 구름 — 하루 안에 닿는다", sub];
+      return ["태양 폭풍은 한 덩어리가 아니다", sub];
+    }
+
+    function drawBox(t, arrH) {
+      var s = clock * 3600, fr = [clamp(s / t.x, 0, 1), clamp(s / t.p, 0, 1), clamp(s / t.c, 0, 1)], hitC = fr[2] >= 1, k, i, p, q;
+      K.studio(ctx, 0, 0, W, TH, { x: 455, y: 330, rx: 360, ry: 110 });
+      var A = I.P(0, 0, BZ), B = I.P(BL, 0, BZ), Cc = I.P(BL, 0, 0), Dd = I.P(BL, BD, 0), E = I.P(0, BD, 0), F = I.P(0, BD, BZ), O = I.P(0, 0, 0), Bt = I.P(BL, BD, BZ);
+      /* 진열장 안쪽: 어두운 우주 */
+      var sp = ctx.createLinearGradient(A.x, A.y, Dd.x, Dd.y); sp.addColorStop(0, "#0b1030"); sp.addColorStop(1, "#151c4a");
+      poly([A, B, Cc, Dd, E, F], sp);
+      ctx.save(); poly([A, B, Cc, Dd, E, F]); ctx.clip();
+      STARS.forEach(function (st) { var sx = F.x + st[0] * (B.x - F.x), sy = A.y + st[1] * (Dd.y - A.y); ctx.fillStyle = "rgba(230,236,255," + (.25 + st[2] * .55).toFixed(2) + ")"; ctx.fillRect(sx, sy, st[2] > .8 ? 2 : 1.2, st[2] > .8 ? 2 : 1.2); });
+      /* 뒤쪽 모서리 */
+      ctx.strokeStyle = "rgba(200,215,255,.18)"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(Cc.x, Cc.y); ctx.moveTo(O.x, O.y); ctx.lineTo(E.x, E.y); ctx.moveTo(O.x, O.y); ctx.lineTo(A.x, A.y); ctx.stroke();
+      /* 궤도면(황도면) */
+      I.plane(ctx, Z0, "rgba(120,150,255,.10)", "rgba(170,190,255,.40)");
+      ctx.strokeStyle = "rgba(170,190,255,.10)"; ctx.lineWidth = 1;
+      for (var gx = 100; gx < BL; gx += 100) { p = I.P(gx, 0, Z0); q = I.P(gx, BD, Z0); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
+      for (var gy = 45; gy < BD; gy += 45) { p = I.P(0, gy, Z0); q = I.P(BL, gy, Z0); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
+      /* 지구 공전 궤도(태양을 중심으로 한 원의 한 토막) */
+      ctx.save(); ctx.setLineDash([5, 5]); ctx.strokeStyle = "rgba(127,211,255,.55)"; ctx.lineWidth = 1.4; ctx.beginPath();
+      for (i = 0; i <= 20; i++) { var th = -0.134 + i / 20 * 0.268, op = I.P(SX + (EX - SX) * Math.cos(th), DC + (EX - SX) * Math.sin(th), Z0); if (i) ctx.lineTo(op.x, op.y); else ctx.moveTo(op.x, op.y); }
+      ctx.stroke(); ctx.restore();
+      /* 늘 부는 태양풍(은은한 움직임) */
+      var WR = K.rng(19);
+      for (i = 0; i < 34; i++) { var wu = (WR() + ph * .004 * (.6 + WR() * .8)) % 1, wy = (WR() - .5) * BD * .9; p = I.P(SX + 40 + wu * (BL - SX - 60), DC + wy, Z0 + (WR() - .5) * 30); ctx.fillStyle = "rgba(220,230,255," + (.12 + .2 * (1 - wu)).toFixed(2) + ")"; ctx.fillRect(p.x, p.y, 2.2, 1.2); }
+      /* 태양 */
+      var sP = I.P(SX, DC, Z0);
+      K.sun(ctx, sP.x, sP.y, 32);
+      var fl = .55 + .45 * Math.sin(ph * .25);
+      K.glow(ctx, sP.x + 14, sP.y - 8, running && s < 600 ? 7 : 2 + 1.5 * fl, "rgba(255,255,240,.95)", 4);
+      /* 세 가지 도착 */
+      for (k = 2; k >= 0; k--) {
+        var f = fr[k], fp = laneP(k, f);
+        ctx.save(); ctx.setLineDash([2, 5]); ctx.strokeStyle = "rgba(200,210,255,.22)"; ctx.lineWidth = 1; p = laneP(k, 0); q = laneP(k, 1);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.restore();
+        if (k === 0 && f > 0) {
+          ctx.save(); ctx.shadowColor = KC.yellow; ctx.shadowBlur = 8; ctx.strokeStyle = KC.yellow; ctx.lineWidth = 2; ctx.beginPath();
+          for (i = 0; i <= 80; i++) { var uu = f * i / 80, pp = laneP(0, uu), wv = Math.sin(uu * 60 - ph * .5) * 3.5; if (i) ctx.lineTo(pp.x - wv * .5, pp.y + wv * .866); else ctx.moveTo(pp.x, pp.y); }
+          ctx.stroke(); ctx.restore();
+          if (f < 1) K.glow(ctx, fp.x, fp.y, 3, "rgba(255,211,107,.95)", 4);
+        } else if (k === 1 && f > 0) {
+          var PR = K.rng(8);
+          for (i = 0; i < 30; i++) { var pu = PR() * f, jt = (PR() - .5) * 26, pq = I.P(SX + pu * (EX - SX), DC + LANE[1] * (1 - pu) + jt, Z0 + (PR() - .5) * 18); ctx.globalAlpha = .3 + .65 * (pu / f); K.glow(ctx, pq.x, pq.y, 1.6, "rgba(182,156,255,.95)", 3); }
+          ctx.globalAlpha = 1; if (f < 1) K.glow(ctx, fp.x, fp.y, 3, "rgba(182,156,255,.95)", 4);
+        } else if (k === 2 && f > 0) {
+          var st0 = laneP(2, 0), rx = 8 + 30 * f, ry = 12 + 44 * f;
+          var tg = ctx.createLinearGradient(st0.x, st0.y, fp.x, fp.y); tg.addColorStop(0, "rgba(255,140,60,0)"); tg.addColorStop(1, "rgba(255,140,60,.28)");
+          ctx.fillStyle = tg; ctx.beginPath(); ctx.moveTo(st0.x, st0.y - 5); ctx.lineTo(fp.x + ry * .5, fp.y - ry * .866); ctx.lineTo(fp.x - ry * .5, fp.y + ry * .866); ctx.lineTo(st0.x, st0.y + 5); ctx.closePath(); ctx.fill();
+          ctx.save(); ctx.translate(fp.x, fp.y); ctx.rotate(Math.PI / 6);
+          var cg = ctx.createRadialGradient(-rx * .3, 0, 2, 0, 0, Math.max(rx, ry)); cg.addColorStop(0, "rgba(255,150,70,.05)"); cg.addColorStop(.7, hitC ? "rgba(255,150,70,.12)" : "rgba(255,150,70,.30)"); cg.addColorStop(1, hitC ? "rgba(255,200,140,.40)" : "rgba(255,200,140,.75)");
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, 6.2832); ctx.fill();
+          ctx.strokeStyle = "rgba(255,220,170,.85)"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, -1.3, 1.3); ctx.stroke();
+          ctx.restore();
+        }
+      }
+      /* L1 감시 위성(막대로 궤도면에 꽂아 높이를 보인다) */
+      var l1b = I.P(LXW, DC, Z0), l1 = I.P(LXW, DC, Z0 + 34);
+      K.line(ctx, l1b, l1, "rgba(63,211,163,.7)", 1.2, [3, 3]);
+      ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.beginPath(); ctx.ellipse(l1b.x, l1b.y, 7, 2.5, 0, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = "#c9d2de"; ctx.fillRect(l1.x - 3, l1.y - 4, 6, 7);
+      ctx.fillStyle = "#3a6fd8"; ctx.fillRect(l1.x - 14, l1.y - 3, 9, 5); ctx.fillRect(l1.x + 5, l1.y - 3, 9, 5);
+      if (SX + fr[2] * (EX - SX) >= LXW && !hitC) K.glow(ctx, l1.x, l1.y, 6, "rgba(63,211,163,.9)", 3);
+      /* 지구와 자기권(태양 쪽은 눌리고 반대쪽은 꼬리처럼 길다) */
+      var eP = I.P(EX, DC, Z0), cmp = hitC ? .74 : 1;
+      ctx.save(); ctx.translate(eP.x, eP.y); ctx.rotate(Math.PI / 6);
+      ctx.strokeStyle = hitC ? "rgba(255,180,120,.6)" : "rgba(127,211,255,.5)"; ctx.lineWidth = 1.4;
+      [26, 38, 50].forEach(function (rr) {
+        rr *= cmp; var ex = rr * .7, ey = rr * 1.4;
+        ctx.beginPath(); ctx.ellipse(6, 0, ex, ey, 0, Math.PI * .55, Math.PI * 1.45); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(6 - ex * .156, -ey * .988); ctx.quadraticCurveTo(rr * 1.2, -rr * 1.1, rr * 2.3, -rr * .6); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(6 - ex * .156, ey * .988); ctx.quadraticCurveTo(rr * 1.2, rr * 1.1, rr * 2.3, rr * .6); ctx.stroke();
+      });
+      ctx.restore();
+      ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.beginPath(); ctx.ellipse(eP.x + 4, eP.y + 15, 12, 3.5, 0, 0, 6.2832); ctx.fill();
+      K.earth(ctx, eP.x, eP.y, 14);
+      if (hitC) {
+        var al = .55 + .3 * Math.sin(ph * .3);
+        [-1, 1].forEach(function (sg) {
+          ctx.save(); ctx.translate(eP.x, eP.y + sg * 11); ctx.strokeStyle = "rgba(63,230,160," + al.toFixed(2) + ")"; ctx.lineWidth = 2.4; ctx.shadowColor = "#3fe6a0"; ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.ellipse(0, 0, 8, 2.6, 0, 0, 6.2832); ctx.stroke(); ctx.restore();
+        });
+      }
+      /* 유리 앞면·오른쪽 면·윗면 */
+      var gl = ctx.createLinearGradient(E.x, E.y, Dd.x, Dd.y - 80); gl.addColorStop(0, "rgba(220,235,255,.10)"); gl.addColorStop(.45, "rgba(255,255,255,.03)"); gl.addColorStop(.55, "rgba(255,255,255,.12)"); gl.addColorStop(1, "rgba(220,235,255,.05)");
+      poly([E, Dd, Bt, F], gl);
+      poly([Dd, Cc, B, Bt], "rgba(200,220,255,.10)");
+      poly([A, B, Bt, F], "rgba(255,255,255,.06)");
+      ctx.restore();
+      poly([A, B, Cc, Dd, E, F], null, "rgba(255,255,255,.75)", 1.3);
+      ctx.beginPath(); ctx.moveTo(F.x, F.y); ctx.lineTo(Bt.x, Bt.y); ctx.lineTo(B.x, B.y); ctx.moveTo(Bt.x, Bt.y); ctx.lineTo(Dd.x, Dd.y); ctx.stroke();
+      /* 이름표 */
+      var box = [0, W];
+      K.pill(ctx, "태양", sP.x, sP.y + 54, { s: 11, a: "center", c: KC.yellow, box: box });
+      K.pill(ctx, "L1 감시 위성", l1.x - 18, l1.y - 2, { s: 10.5, a: "right", c: KC.green, box: box });
+      K.pill(ctx, "지구", eP.x - 6, eP.y + 46, { s: 11, a: "center", c: KC.blue, box: box });
+      K.pill(ctx, hitC ? "자기권이 눌리고 오로라" : "자기권(지구 자기장)", eP.x + 34, eP.y - 34, { s: 10.5, c: hitC ? KC.orange : KC.blue, box: box });
+      K.pill(ctx, "태양 → 지구 1 AU", 14, 24, { s: 11, c: KC.ink, box: box });
+      /* 큰 제목 */
+      var hl = headline(t, arrH);
+      K.bigText(ctx, hl[0], W - 18, 54, 25, "#ffffff", "right");
+      K.bigText(ctx, hl[1], W - 18, 86, 17, "#ffd35a", "right");
+      K.pill(ctx, "폭발 후 " + (clock >= 72 ? "72" : clock.toFixed(1)) + "시간", W - 18, 114, { s: 11.5, a: "right", c: KC.ink, box: box });
+      /* 범례(왼쪽 아래) */
+      var LG = [
+        { n: "플레어의 X선·전파 · 빛과 같은 속력", t: t.x, c: KC.yellow },
+        { n: "고에너지 입자 · 광속의 약 " + Math.round(PART_FRAC * 100) + "%로 보면", t: t.p, c: KC.violet },
+        { n: "코로나 질량 방출 · " + vc.toLocaleString() + " km/s", t: t.c, c: KC.orange }
+      ];
+      LG.forEach(function (lg, j) {
+        K.pill(ctx, lg.n + " — " + (s >= lg.t ? "도착 ✓ " : "도착까지 ") + fmtTime(lg.t), 14, 352 + j * 26, { s: 11, c: lg.c, box: box });
+      });
+      K.warn(ctx, 14, 438, "⚠ 크기·거리는 실제 비율이 아님 · L1까지의 거리는 12배 과장");
+    }
+
     function draw() {
       ctx.clearRect(0, 0, W, H);
       var t = times(), arrH = t.c / 3600;
-      /* ── 위: 태양에서 지구까지 세 가지가 달려오는 모습 ── */
-      var TH = 236, x0 = 96, x1 = 820, lanesY = [92, 142, 192];
-      K.stage(ctx, 0, 0, W, TH, "space", { seed: 13, title: "태양 폭풍 추적 · 폭발 순간(0시간)부터" });
-      K.pill(ctx, "폭발 후 " + (clock >= 72 ? "72" : clock.toFixed(1)) + "시간", W - 16, 28, { s: 12.5, a: "right", c: KC.ink });
-      ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, W, TH, 14); ctx.clip();
-      K.sun(ctx, 30, 142, 30);
-      ctx.restore();
-      var lx = x1 - (L1_KM / AU_KM) * (x1 - x0) * 12;
-      K.line(ctx, { x: lx, y: 64 }, { x: lx, y: 214 }, KC.green, 1.2, [4, 4], .7);
-      ctx.fillStyle = "#c9d2de"; ctx.fillRect(lx - 3, 58, 6, 7);
-      ctx.fillStyle = "#3a6fd8"; ctx.fillRect(lx - 14, 59, 9, 5); ctx.fillRect(lx + 5, 59, 9, 5);
-      K.pill(ctx, "L1 감시 위성", lx - 18, 60, { s: 10.5, a: "right", c: KC.green });
-      /* 지구와 자기권 */
-      var ex = 860, ey = 142;
-      ctx.strokeStyle = "rgba(127,211,255,.35)"; ctx.lineWidth = 1.4;
-      [26, 38, 50].forEach(function (rr) { ctx.beginPath(); ctx.ellipse(ex + 6, ey, rr * .7, rr * 1.4, 0, Math.PI * .55, Math.PI * 1.45); ctx.stroke(); });
-      var hitC = clamp((clock * 3600) / t.c, 0, 1) >= 1;
-      if (hitC) { var au = ctx.createRadialGradient(ex, ey, 14, ex, ey, 34); au.addColorStop(0, "rgba(63,211,163,.55)"); au.addColorStop(1, "rgba(63,211,163,0)"); ctx.fillStyle = au; ctx.beginPath(); ctx.arc(ex, ey, 34, 0, 6.2832); ctx.fill(); }
-      K.earth(ctx, ex, ey, 15);
-      K.pill(ctx, "지구", ex, ey + 40, { s: 11, a: "center", c: KC.blue, box: [0, W] });
-      K.warn(ctx, 14, TH - 12, "⚠ L1까지의 거리는 12배 과장, 크기는 실제 비율이 아님");
-      var LN = [
-        { n: "플레어의 X선·전파 · 빛과 같은 속력", t: t.x, c: KC.yellow, k: 0 },
-        { n: "고에너지 입자 · 광속의 약 " + Math.round(PART_FRAC * 100) + "%로 보면", t: t.p, c: KC.violet, k: 1 },
-        { n: "코로나 질량 방출 · " + vc.toLocaleString() + " km/s", t: t.c, c: KC.orange, k: 2 }
-      ];
-      LN.forEach(function (ln) {
-        var ly = lanesY[ln.k], frac = clamp((clock * 3600) / ln.t, 0, 1), fx = x0 + frac * (x1 - x0);
-        K.line(ctx, { x: x0, y: ly }, { x: x1, y: ly }, "rgba(200,210,255,.18)", 1, [2, 4]);
-        if (ln.k === 0) {
-          ctx.save(); ctx.shadowColor = KC.yellow; ctx.shadowBlur = 8; ctx.strokeStyle = KC.yellow; ctx.lineWidth = 2; ctx.beginPath();
-          for (var xx = x0; xx <= fx; xx += 3) { var yy = ly + Math.sin((xx - x0) / 7) * 4; if (xx === x0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy); }
-          ctx.stroke(); ctx.restore();
-          K.glow(ctx, fx, ly, 3, "rgba(255,211,107,.95)", 4);
-        } else if (ln.k === 1) {
-          var PR = K.rng(8);
-          for (var q = 0; q < 26; q++) { var u = PR(), qx = x0 + u * (fx - x0), qy = ly + (PR() - .5) * 14; ctx.globalAlpha = .35 + .6 * u; K.glow(ctx, qx, qy, 1.6, "rgba(182,156,255,.95)", 3); }
-          ctx.globalAlpha = 1; K.glow(ctx, fx, ly, 3, "rgba(182,156,255,.95)", 4);
-        } else {
-          var tg = ctx.createLinearGradient(x0, 0, fx, 0); tg.addColorStop(0, "rgba(255,140,60,0)"); tg.addColorStop(1, "rgba(255,140,60,.35)");
-          ctx.fillStyle = tg; ctx.beginPath(); ctx.moveTo(x0, ly - 4); ctx.lineTo(fx, ly - 16); ctx.lineTo(fx, ly + 16); ctx.lineTo(x0, ly + 4); ctx.fill();
-          var cg = ctx.createRadialGradient(fx, ly, 2, fx, ly, 22); cg.addColorStop(0, "rgba(255,235,200,.95)"); cg.addColorStop(.35, "rgba(255,150,70,.8)"); cg.addColorStop(1, "rgba(255,90,50,0)");
-          ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(fx, ly, 16, 22, 0, 0, 6.2832); ctx.fill();
-        }
-        K.pill(ctx, ln.n, x0, ly - 14, { s: 11, c: ln.c });
-        K.pill(ctx, (frac >= 1 ? "도착 ✓ " : "도착까지 ") + fmtTime(ln.t), x1 - 8, ly + 26, { s: 11, a: "right", c: ln.c });
-      });
+      drawBox(t, arrH);
 
       /* ── 아래: 경보 시각표 ── */
-      var BY = TH + 8, tx0 = 60, tx1 = 860, ty = 356;
+      var BY = TH + 8, tx0 = 60, tx1 = 860, ty = BY + 112;
       function TX(h) { return tx0 + clamp(h, 0, 72) / 72 * (tx1 - tx0); }
       K.stage(ctx, 0, BY, W, H - BY, "lab", { seed: 6, title: "경보 시각표 · 폭발 후 0~72시간" });
       K.pill(ctx, "L1 감시 위성이 벌어 주는 여유 " + fmtTime(t.l1), W - 16, BY + 28, { s: 11.5, a: "right", c: KC.green });
       var aA = clamp(arrH - 6, 0, 72), aB = clamp(arrH, 0, 72);
-      var bandG = ctx.createLinearGradient(0, 310, 0, ty); bandG.addColorStop(0, "rgba(63,211,163,.12)"); bandG.addColorStop(1, "rgba(63,211,163,.42)");
-      ctx.fillStyle = bandG; ctx.fillRect(TX(aA), 310, TX(aB) - TX(aA), ty - 310);
-      K.pill(ctx, "보호 모드를 켜기 알맞은 6시간", TX(aA) - 6, 300, { s: 10.5, a: "right", c: KC.green, box: [0, W] });
+      var bandG = ctx.createLinearGradient(0, BY + 66, 0, ty); bandG.addColorStop(0, "rgba(63,211,163,.12)"); bandG.addColorStop(1, "rgba(63,211,163,.42)");
+      ctx.fillStyle = bandG; ctx.fillRect(TX(aA), BY + 66, TX(aB) - TX(aA), ty - BY - 66);
+      K.pill(ctx, "보호 모드를 켜기 알맞은 6시간", TX(aA) - 6, BY + 56, { s: 10.5, a: "right", c: KC.green, box: [0, W] });
       ctx.strokeStyle = KC.line; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(tx0, ty); ctx.lineTo(tx1, ty); ctx.stroke();
       for (var gh = 0; gh <= 72; gh += 12) {
         var gx = TX(gh); ctx.beginPath(); ctx.moveTo(gx, ty); ctx.lineTo(gx, ty + 5); ctx.stroke();
         K.t(ctx, gh + "시간", gx, ty + 18, { s: 10.5, a: "center", c: KC.mute, w: "600" });
       }
       var cxp = TX(arrH);
-      ctx.save(); ctx.shadowColor = KC.red; ctx.shadowBlur = 6; K.line(ctx, { x: cxp, y: 290 }, { x: cxp, y: ty + 6 }, KC.red, 2.2); ctx.restore();
-      K.pill(ctx, "폭풍 도착 " + arrH.toFixed(1) + "시간", cxp + 6, 300, { s: 11, c: KC.red, box: [0, W] });
-      if (clock < 72) { K.line(ctx, { x: TX(clock), y: 306 }, { x: TX(clock), y: ty }, "#ffffff", 1.5, null, .8); }
+      ctx.save(); ctx.shadowColor = KC.red; ctx.shadowBlur = 6; K.line(ctx, { x: cxp, y: BY + 46 }, { x: cxp, y: ty + 6 }, KC.red, 2.2); ctx.restore();
+      K.pill(ctx, "폭풍 도착 " + arrH.toFixed(1) + "시간", cxp + 6, BY + 56, { s: 11, c: KC.red, box: [0, W] });
+      if (clock < 72) { K.line(ctx, { x: TX(clock), y: BY + 62 }, { x: TX(clock), y: ty }, "#ffffff", 1.5, null, .8); }
       var hxp = TX(hh), inB = (hh <= arrH && hh >= arrH - 6), hc = inB ? KC.green : KC.blue;
       ctx.fillStyle = hc; ctx.beginPath(); ctx.moveTo(hxp, ty - 1); ctx.lineTo(hxp - 7, ty - 14); ctx.lineTo(hxp + 7, ty - 14); ctx.closePath(); ctx.fill();
-      K.pill(ctx, "보호 모드 " + hh + "시간", hxp, 336, { s: 11, a: "center", c: hc, box: [0, W] });
+      K.pill(ctx, "보호 모드 " + hh + "시간", hxp, BY + 92, { s: 11, a: "center", c: hc, box: [0, W] });
       var e = $("b-storm-read");
       if (e) e.innerHTML = "<span class='k'>X선</span><span class='v y'>" + fmtTime(t.x) + "</span>" +
         "<span class='k'>고에너지 입자</span><span class='v b'>" + fmtTime(t.p) + "</span>" +
@@ -676,6 +770,9 @@ function rock(ctx, x, y, r, seed, light, dark) {
         "<span class='ok " + (inB ? "g" : "r") + "'>" + (inB ? "보호 모드 " + hh + "시간 · 알맞은 시각" : (hh > arrH ? "보호 모드 " + hh + "시간 · 너무 늦습니다" : "보호 모드 " + hh + "시간 · 너무 이릅니다")) + "</span>";
     }
     canvas._redraw = draw;
+    /* 은은한 움직임(태양풍·섬광·오로라) — 미션과 상관없이 그림만 다시 그린다 */
+    K.animate(canvas, function (dt) { if (!amb || running) return; ph += dt / 40; draw(); }, 20);
+    playBtn("b-storm-anim", amb, "⏸ 태양풍 멈추기", "▶ 태양풍 보기", function (on) { amb = on; });
 
     function mission() {
       if (got.slow) done("b-m3a");
@@ -712,7 +809,7 @@ function rock(ctx, x, y, r, seed, light, dark) {
       running = true; $("b-run").disabled = true;
       var k = 0;
       (function step() {                                   // rAF는 가려진 탭에서 멈추므로 setTimeout을 쓴다
-        k++; clock = k / 60 * 72; draw();
+        k++; clock = k / 60 * 72; ph += 1; draw();
         if (k < 60) window.setTimeout(step, 24);
         else { clock = 72; running = false; $("b-run").disabled = false; draw(); }
       })();

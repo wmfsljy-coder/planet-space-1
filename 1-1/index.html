@@ -145,8 +145,9 @@
         <section class="scene" data-title="세 번의 도착 — 경보를 언제 낼까">
           <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“방금 극대기의 큰 흑점 무리에서 <b>X급 플레어</b>가 터졌습니다. 그런데 태양 폭풍은 한 덩어리로 오지 않아요. <b>세 가지가 서로 다른 속력으로</b> 따로따로 도착합니다. 코로나그래프로 잰 <span data-view="sun:c3" data-ask="코로나그래프는 왜 가운데의 태양을 원판으로 가릴까?">코로나 질량 방출(CME)</span>의 속력을 넣고, 각각 언제 닿는지 계산하세요.”</div></div>
           <div class="story"><div class="who">👩‍💼</div><div class="say"><span class="name">전력 회사 담당자</span>“예보관님, 저희는 경보를 받으면 송전망을 <b>보호 모드</b>로 돌립니다. 다만 보호 모드에서는 보낼 수 있는 전력이 줄어 손해가 커요. <b>너무 일찍 돌려도, 너무 늦게 돌려도 안 됩니다.</b> 폭풍이 닿기 <b>6시간 안쪽</b>에 시작하도록 시각을 잡아 주세요.”</div></div>
+          <figure class="hero-art"><img src="img/space-storm.webp" alt="투명한 아크릴 상자 안에 꾸민 우주 모형. 왼쪽 위의 태양에서 주황색 플라스마 구름이 뿜어져 나와 오른쪽 지구 쪽으로 퍼지고, 지구를 둘러싼 푸른 자기력선은 태양 쪽에서 둥글게 눌리고 반대쪽으로 길게 꼬리를 끈다. 지구의 남북 극지방에는 초록색 오로라 고리가 빛나고, 태양과 지구 사이에 작은 탐사선이 떠 있다." loading="lazy"><figcaption><b>지구는 보이지 않는 자기 방패 뒤에 숨어 있습니다</b> 지구 둘레에는 지구 자기장이 만든 자기권이 있어서, 태양에서 날아오는 전기를 띤 입자 대부분을 옆으로 비껴 보냅니다. 태양에서 거대한 플라스마 구름이 날아와 이 방패를 세게 누르면 자기권이 흔들리면서 극지방의 오로라가 커지고, 땅 위의 긴 송전선에는 원하지 않는 전류가 흐릅니다. 그림 속 크기와 거리는 실제 비율이 아닙니다.</figcaption></figure>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="b-c-storm" width="900" height="390"></canvas></div>
+            <div class="canvas-wrap" style="background:#e4eaf1"><canvas id="b-c-storm" width="900" height="612"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="b-storm-read"></div>
               <div>
@@ -158,7 +159,7 @@
                 <div class="ctrl-label">송전망 보호 모드를 켤 시각 — 폭발 후<span class="val" id="b-h-val">0시간</span></div>
                 <input type="range" id="b-h" min="0" max="72" step="1" value="0">
               </div>
-              <button class="btn primary" id="b-run" type="button" style="margin-top:10px">▶ 폭발 순간부터 지켜보기</button>
+              <button class="btn primary" id="b-run" type="button" style="margin-top:10px">▶ 폭발 순간부터 지켜보기</button> <button type="button" class="btn sm" id="b-storm-anim" style="margin-top:10px">⏸ 태양풍 멈추기</button>
               </div>
             </div>
             <div class="info-card" id="b-storm-info"></div>
