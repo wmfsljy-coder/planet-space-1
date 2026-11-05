@@ -19,20 +19,35 @@ function zAv(a) { return a.reduce(function (s, r) { return s + r[2]; }, 0) / (a.
 var Z_D = zAv(ZHI) - zAv(ZLO);
 var SRC_Z = "<small>출처: 흑점 수 — 위와 같은 SILSO 국제 흑점 수(연평균). 기온 — 기상청 날씨누리 과거 관측 일별 자료, 창원(155) 연평균 기온(1986 ~ 2025). 사본은 data/sunspots.js, data/cw155.js.</small>";
 
+/* 스튜디오 말투: 밝은 카드 그래프 + 흰 판정 카드 */
+var K = window.sthKit, LT = K.LT;
+function jcard(ctx, x, y, w, h, title, rows, tip, good) {
+  K.card(ctx, x, y, w, h, title);
+  var yy = y + 58;
+  rows.forEach(function (r) {
+    if (r[3]) { K.t(ctx, r[0], x + 18, yy, { s: 12, w: "700", c: LT.mute }); K.t(ctx, r[1], x + 18, yy + 28, { s: 24, w: "900", c: r[2] || LT.ink }); yy += 50; }
+    else { K.row(ctx, r[0], r[1], x + 18, x + w - 18, yy, r[2]); yy += 28; }
+  });
+  if (tip) K.tip(ctx, tip, x + 12, y + h - 46, w - 24, good);
+}
 function chart(H, ctx, W, CH, from, to, mark) {
   H.paper(ctx, W, CH);
-  var x0 = 60, x1 = 640, y0 = 24, y1 = CH - 36;
+  var x0 = 60, x1 = 590, y0 = 30, y1 = CH - 36;
   function X(y) { return x0 + (y - from) / (to - from) * (x1 - x0); }
   function Y(v) { return y1 - v / 300 * (y1 - y0); }
-  H.axes(ctx, x0, y0, x1, y1);
-  [0, 100, 200, 300].forEach(function (v) { H.text(ctx, v, x0 - 6, Y(v) + 4, { s: 10, a: "right", c: H.v("--mist") }); });
-  for (var y = Math.ceil(from / 25) * 25; y <= to; y += (to - from > 100 ? 50 : 10)) H.text(ctx, y, X(y), y1 + 15, { s: 10, a: "center", c: H.v("--mist") });
-  H.text(ctx, "연평균 흑점 수", x0 + 6, y0 - 8, { s: 11, w: "700", c: H.v("--mist") });
+  ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  [0, 100, 200, 300].forEach(function (v) { K.line(ctx, { x: x0, y: Y(v) }, { x: x1, y: Y(v) }, LT.grid, 1); K.t(ctx, String(v), x0 - 6, Y(v) + 4, { s: 10, a: "right", w: "700", c: LT.mute }); });
+  for (var y = Math.ceil(from / 25) * 25; y <= to; y += (to - from > 100 ? 50 : 10)) K.t(ctx, String(y), X(y), y1 + 15, { s: 10, a: "center", w: "700", c: LT.mute });
+  K.line(ctx, { x: x0, y: y0 }, { x: x0, y: y1 }, LT.line, 1.5); K.line(ctx, { x: x0, y: y1 }, { x: x1, y: y1 }, LT.line, 1.5);
+  K.t(ctx, "연평균 흑점 수", x0 + 6, y0 - 10, { s: 11, w: "800", c: LT.mute });
   var bw = Math.max(1.5, (x1 - x0) / (to - from) - 1);
-  S.forEach(function (r) { if (r[0] < from || r[0] > to) return; H.box(ctx, X(r[0]) - bw / 2, Y(r[1]), bw, y1 - Y(r[1]), r[0] === mark ? H.v("--amber-700") : H.v("--brand"), 0.85); });
+  S.forEach(function (r) {
+    if (r[0] < from || r[0] > to) return;
+    var g = ctx.createLinearGradient(0, Y(r[1]), 0, y1); g.addColorStop(0, r[0] === mark ? "#e8590c" : "#1c7ed6"); g.addColorStop(1, r[0] === mark ? "#ffc078" : "#a5d8ff");
+    ctx.fillStyle = g; ctx.fillRect(X(r[0]) - bw / 2, Y(r[1]), bw, y1 - Y(r[1]));
+  });
   return { X: X, Y: Y };
 }
-
 window.sthLab({
   mount: "real", key: "real", result: "rReal", label: "실제 자료",
   doneNote: "정리하기 탭에서 실제 자료로 태양 활동 주기와 우주 기상 감시의 필요성을 설명해 보세요.",
@@ -52,8 +67,9 @@ window.sthLab({
       function draw() {
         var from = view === "m" ? 1895 : 1749, to = S[S.length - 1][0];
         var p = chart(H, ctx, W, cv.H, from, to, null);
-        if (view === "m") for (var y = P1900[0], k = 0; y <= to; y += g, k++) H.dash(ctx, p.X(y), 24, p.X(y), cv.H - 36, H.v("--amber-700"), 1.2);
-        H.rows(ctx, 680, 60, [["내 답 (평균 간격)", g.toFixed(1) + " 년", null, true], [view === "m" ? "노란 점선" : "", view === "m" ? P1900[0] + "년부터 그 간격마다" : ""]], 60);
+        if (view === "m") for (var y = P1900[0], k = 0; y <= to; y += g, k++) K.line(ctx, { x: p.X(y), y: 30 }, { x: p.X(y), y: cv.H - 36 }, LT.orange, 1.4, [5, 4]);
+        var okG = Math.abs(g - MEAN) <= 0.5;
+        jcard(ctx, 610, 10, 276, cv.H - 20, "판정 · 극대기 간격", [["내 답 (평균 간격)", g.toFixed(1) + " 년", okG ? LT.green : LT.ink, true], [view === "m" ? "주황 점선" : "보기", view === "m" ? P1900[0] + "년부터 그 간격마다" : "1749년부터 전체"]], okG ? "점선이 봉우리마다 겹친다" : "점선을 봉우리에 겹쳐 보기", okG ? true : null);
       }
       cv.canvas._redraw = draw;
       api.seg({ label: "보기", value: "m", options: [{ v: "m", t: "1895년 이후" }, { v: "all", t: "1749년부터 전체" }], onPick: function (x) { view = x; draw(); } });
@@ -87,7 +103,8 @@ window.sthLab({
       var H = api.h, cv = api.canvas(280), ctx = cv.ctx, W = cv.W, y = 2020;
       function draw() {
         chart(H, ctx, W, cv.H, 1996, S[S.length - 1][0], y);
-        H.rows(ctx, 680, 50, [["고른 해", y + "년", "--amber-700"], ["연평균 흑점 수", (val(y) == null ? "-" : val(y).toFixed(1)), null, true], ["24주기 봉우리", C24[0] + "년 " + C24[1].toFixed(0)]], 60);
+        var okY = y === C25[0];
+        jcard(ctx, 610, 10, 276, cv.H - 20, "판정 · 25주기 봉우리", [["고른 해", y + "년", LT.orange], ["연평균 흑점 수", (val(y) == null ? "-" : val(y).toFixed(1)), okY ? LT.green : LT.ink, true], ["24주기 봉우리", C24[0] + "년 " + C24[1].toFixed(0)]], okY ? "이번 주기에서 가장 높다" : "더 높은 해를 찾기", okY ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "연도", min: 2020, max: S[S.length - 1][0], step: 1, value: 2020, fmt: function (x) { return x + "년"; }, onInput: function (x) { y = x; api.changed(); draw(); } });
@@ -118,21 +135,24 @@ window.sthLab({
     task: "오른쪽 두 평균으로 <b>흑점 많은 8해 − 적은 8해</b>의 기온 차이를 슬라이더로 맞추세요(± 0.1 °C).",
     build: function (stage, api) {
       var H = api.h, cv = api.canvas(290), ctx = cv.ctx, W = cv.W, k = 0;
-      var x0 = 60, x1 = 640, y0 = 24, y1 = 250;
+      var x0 = 60, x1 = 590, y0 = 30, y1 = 250;
       function X(v) { return x0 + v / 240 * (x1 - x0); }
       function Y(t) { return y1 - (t - 13.6) / 2.8 * (y1 - y0); }
       function draw() {
-        H.paper(ctx, W, cv.H); H.axes(ctx, x0, y0, x1, y1);
-        [14, 15, 16].forEach(function (t) { H.text(ctx, t + "°", x0 - 8, Y(t) + 4, { s: 10, a: "right", c: H.v("--mist") }); H.dash(ctx, x0, Y(t), x1, Y(t), H.v("--line"), 0.5); });
-        [0, 50, 100, 150, 200].forEach(function (v) { H.text(ctx, v, X(v), y1 + 15, { s: 10, a: "center", c: H.v("--mist") }); });
-        H.text(ctx, "흑점 수 →", x1 - 4, y1 - 6, { s: 11, w: "700", a: "right", c: H.v("--mist") });
-        H.text(ctx, "창원 연평균 기온", x0 + 6, y0 - 8, { s: 11, w: "700", c: H.v("--mist") });
+        H.paper(ctx, W, cv.H);
+        ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+        [14, 15, 16].forEach(function (t) { K.t(ctx, t + "°", x0 - 8, Y(t) + 4, { s: 10, a: "right", w: "700", c: LT.mute }); K.line(ctx, { x: x0, y: Y(t) }, { x: x1, y: Y(t) }, LT.grid, 1); });
+        [0, 50, 100, 150, 200].forEach(function (v) { K.t(ctx, String(v), X(v), y1 + 15, { s: 10, a: "center", w: "700", c: LT.mute }); });
+        K.line(ctx, { x: x0, y: y0 }, { x: x0, y: y1 }, LT.line, 1.5); K.line(ctx, { x: x0, y: y1 }, { x: x1, y: y1 }, LT.line, 1.5);
+        K.t(ctx, "흑점 수 →", x1 - 4, y1 - 6, { s: 11, w: "800", a: "right", c: LT.mute });
+        K.t(ctx, "창원 연평균 기온", x0 + 6, y0 - 10, { s: 11, w: "800", c: LT.mute });
         ZPAIR.forEach(function (r) {
           var hi = ZHI.indexOf(r) >= 0, lo = ZLO.indexOf(r) >= 0;
-          H.dot(ctx, X(r[1]), Y(r[2]), hi || lo ? 4.5 : 3, hi ? H.v("--coral-700") : lo ? H.v("--brand") : H.v("--mist"));
-          if (hi || lo) H.text(ctx, String(r[0]).slice(2), X(r[1]) + 6, Y(r[2]) + 4, { s: 9, c: H.v("--mist") });
+          if (hi || lo) K.planet(ctx, X(r[1]), Y(r[2]), 5, hi ? "#ff6b6b" : "#4dabf7", hi ? "#a51111" : "#0b4f8a"); else { ctx.fillStyle = "#a7b0bf"; ctx.beginPath(); ctx.arc(X(r[1]), Y(r[2]), 3, 0, 6.2832); ctx.fill(); }
+          if (hi || lo) K.t(ctx, String(r[0]).slice(2), X(r[1]) + 7, Y(r[2]) + 4, { s: 9.5, w: "700", c: LT.mute });
         });
-        H.rows(ctx, 680, 34, [["흑점 많은 8해 평균", zAv(ZHI).toFixed(2) + " °C", "--coral-700"], ["흑점 적은 8해 평균", zAv(ZLO).toFixed(2) + " °C", "--brand"], ["내 답 (차이)", "+" + k.toFixed(1) + " °C", null, true]], 56);
+        var okK = Math.abs(k - Z_D) <= 0.1;
+        jcard(ctx, 610, 10, 276, cv.H - 20, "판정 · 기온 차이", [["흑점 많은 8해 평균", zAv(ZHI).toFixed(2) + " °C", LT.red], ["흑점 적은 8해 평균", zAv(ZLO).toFixed(2) + " °C", LT.blue], ["내 답 (차이)", "+" + k.toFixed(1) + " °C", okK ? LT.green : LT.ink, true]], okK ? "차이는 맞다 · 원인은 따로 따지기" : "두 평균을 빼 보기", okK ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "많은 8해 − 적은 8해", min: 0, max: 1.5, step: 0.1, value: 0, fmt: function (x) { return "+" + x.toFixed(1) + " °C"; }, onInput: function (x) { k = x; api.changed(); draw(); } });

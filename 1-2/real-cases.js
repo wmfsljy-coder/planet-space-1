@@ -4,7 +4,19 @@
    자료: data/exoplanets.js (NASA Exoplanet Archive) */
 (function () {
 "use strict";
-var X_ = window.REAL_EXO || { total: 0, methods: [], byYear: [], transitPeriods: [] };
+/* 스튜디오 말투: 밝은 카드 그래프 + 흰 판정 카드 */
+var K = window.sthKit, LT = K.LT;
+function jcard(ctx, x, y, w, h, title, rows, tip, good) {
+  K.card(ctx, x, y, w, h, title);
+  var yy = y + 58;
+  rows.forEach(function (r) {
+    if (r[3]) { K.t(ctx, r[0], x + 18, yy, { s: 12, w: "700", c: LT.mute }); K.t(ctx, r[1], x + 18, yy + 28, { s: 24, w: "900", c: r[2] || LT.ink }); yy += 50; }
+    else { K.row(ctx, r[0], r[1], x + 18, x + w - 18, yy, r[2]); yy += 28; }
+  });
+  if (tip) K.tip(ctx, tip, x + 12, y + h - 46, w - 24, good);
+}
+function hbar(ctx, x, y, w, h, c0, c1) { var g = ctx.createLinearGradient(x, 0, x + Math.max(2, w), 0); g.addColorStop(0, c1); g.addColorStop(1, c0); ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(x, y, Math.max(2, w), h, 5); ctx.fill(); }
+function vbar(ctx, x, y, w, h, c0, c1) { var g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, c0); g.addColorStop(1, c1); ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(x, y, w, Math.max(1, h), [5, 5, 0, 0]); ctx.fill(); }var X_ = window.REAL_EXO || { total: 0, methods: [], byYear: [], transitPeriods: [] };
 var KO = { "Transit": "통과(식)", "Radial Velocity": "시선 속도(별의 흔들림)", "Microlensing": "미세 중력 렌즈", "Imaging": "직접 촬영", "Transit Timing Variations": "통과 시각 변화", "Eclipse Timing Variations": "식 시각 변화", "Orbital Brightness Modulation": "공전 밝기 변화", "Pulsar Timing": "펄서 시각", "Astrometry": "위치 측정", "Pulsation Timing Variations": "맥동 시각 변화", "Disk Kinematics": "원반 운동" };
 var TR = (X_.methods.filter(function (m) { return m[0] === "Transit"; })[0] || ["Transit", 0])[1], SHARE = X_.total ? TR / X_.total * 100 : 0;
 var PER = X_.transitPeriods, SHORT = PER.filter(function (p) { return p < 100; }).length / (PER.length || 1) * 100;
@@ -29,13 +41,15 @@ window.sthLab({
       function draw() {
         H.paper(ctx, W, cv.H);
         var x0 = 230, x1 = 590, y = 30, top = X_.methods.slice(0, 6), mx = top.length ? top[0][1] : 1;
+        var x1b = 520;
         top.forEach(function (m, i) {
-          var yy = y + i * 36, w = m[1] / mx * (x1 - x0);
-          H.text(ctx, KO[m[0]] || m[0], x0 - 10, yy + 17, { s: 12, w: "800", a: "right" });
-          H.box(ctx, x0, yy, Math.max(2, w), 24, i === 0 ? H.v("--amber-700") : H.v("--brand"), 0.85);
-          H.text(ctx, m[1].toLocaleString() + " 개", x0 + w + 8, yy + 17, { s: 11.5, w: "800", c: H.v("--mist") });
+          var yy = y + i * 36, w = m[1] / mx * (x1b - x0);
+          K.t(ctx, KO[m[0]] || m[0], x0 - 10, yy + 17, { s: 12, w: "800", a: "right", c: LT.ink });
+          if (i === 0) hbar(ctx, x0, yy, w, 24, "#e8590c", "#ffc078"); else hbar(ctx, x0, yy, w, 24, "#1c7ed6", "#a5d8ff");
+          K.t(ctx, m[1].toLocaleString() + " 개", x0 + w + 8, yy + 17, { s: 11.5, w: "800", c: LT.mute });
         });
-        H.rows(ctx, 730, 60, [["전체", X_.total.toLocaleString() + " 개"], ["내 답 (통과 방법)", g + " %", null, true]], 60);
+        var okS = Math.abs(g - SHARE) <= 3;
+        jcard(ctx, 610, 10, 276, cv.H - 20, "판정 · 통과 방법의 비율", [["전체", X_.total.toLocaleString() + " 개"], ["내 답 (통과 방법)", g + " %", okS ? LT.green : LT.ink, true]], okS ? "대부분 통과 방법으로 찾았다" : "통과 개수 ÷ 전체 × 100", okS ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "통과 방법의 비율", min: 0, max: 100, step: 1, value: 20, fmt: function (x) { return x + " %"; }, onInput: function (x) { g = x; api.changed(); draw(); } });
@@ -70,16 +84,18 @@ window.sthLab({
       var CNT = BIN.map(function (b) { return PER.filter(function (p) { return p >= b[0] && p < b[1]; }).length; }), MX = Math.max.apply(null, CNT);
       function draw() {
         H.paper(ctx, W, cv.H);
-        var x0 = 60, x1 = 640, y0 = 30, y1 = cv.H - 46, bw = (x1 - x0) / BIN.length;
-        H.axes(ctx, x0, y0, x1, y1);
+        var x0 = 50, x1 = 590, y0 = 30, y1 = cv.H - 46, bw = (x1 - x0) / BIN.length;
+        ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+        K.line(ctx, { x: x0, y: y1 }, { x: x1, y: y1 }, LT.line, 1.5);
         CNT.forEach(function (c, i) {
-          var h = c / MX * (y1 - y0), x = x0 + i * bw + 6;
-          H.box(ctx, x, y1 - h, bw - 12, h, BIN[i][1] <= 100 ? H.v("--brand") : H.v("--coral-700"), 0.85);
-          H.text(ctx, c.toLocaleString(), x + (bw - 12) / 2, y1 - h - 5, { s: 10.5, w: "800", a: "center", c: H.v("--mist") });
-          H.text(ctx, NM[i], x + (bw - 12) / 2, y1 + 15, { s: 10, a: "center", c: H.v("--mist") });
+          var h = c / MX * (y1 - y0 - 18), x = x0 + i * bw + 6;
+          if (BIN[i][1] <= 100) vbar(ctx, x, y1 - h, bw - 12, h, "#1c7ed6", "#a5d8ff"); else vbar(ctx, x, y1 - h, bw - 12, h, "#e03131", "#ffc9c9");
+          K.t(ctx, c.toLocaleString(), x + (bw - 12) / 2, y1 - h - 5, { s: 10.5, w: "800", a: "center", c: LT.mute });
+          K.t(ctx, NM[i], x + (bw - 12) / 2, y1 + 15, { s: 10, w: "700", a: "center", c: LT.mute });
         });
-        H.text(ctx, "공전 주기 (일)", (x0 + x1) / 2, y1 + 32, { s: 10.5, w: "700", a: "center", c: H.v("--mist") });
-        H.rows(ctx, 680, 60, [["통과 방법 행성", PER.length.toLocaleString() + " 개"], ["내 답 (100일보다 짧음)", g + " %", null, true]], 60);
+        K.t(ctx, "공전 주기 (일) · 파랑 = 100일보다 짧음", (x0 + x1) / 2, y1 + 32, { s: 10.5, w: "800", a: "center", c: LT.mute });
+        var okS2 = Math.abs(g - SHORT) <= 3;
+        jcard(ctx, 610, 10, 276, cv.H - 20, "판정 · 관측 치우침", [["통과 방법 행성", PER.length.toLocaleString() + " 개"], ["내 답 (100일보다 짧음)", g + " %", okS2 ? LT.green : LT.ink, true]], okS2 ? "짧은 주기 행성이 찾기 쉽다" : "파란 막대의 합 ÷ 전체", okS2 ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "100일보다 짧은 행성의 비율", min: 0, max: 100, step: 1, value: 50, fmt: function (x) { return x + " %"; }, onInput: function (x) { g = x; api.changed(); draw(); } });

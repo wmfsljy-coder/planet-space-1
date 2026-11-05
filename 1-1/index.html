@@ -41,6 +41,7 @@
         <section class="scene" data-title="11분 전의 사진">
           <div class="story narr"><div class="who">🛰️</div><div class="say"><span class="name">이야기</span>오전 9시 14분, 관제소 화면에 화성 로버가 보낸 사진 한 장이 떴습니다. 로버 앞 <b>3 m 지점에 바퀴가 빠질 만한 모래 구덩이</b>가 있습니다. 관제사가 반사적으로 “정지!”를 외쳤지만, 옆자리 선임이 고개를 저었습니다.</div></div>
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">선임 관제사 한별</span>“소용없어요. 지금 보고 있는 이 사진은 <b>11분 전</b> 모습이고, 우리가 보내는 ‘정지’ 명령도 <b>11분 뒤</b>에야 로버에 닿아요. 지금 우리가 보는 건 오전 9시 3분의 화성이고, 명령이 닿는 건 9시 25분이에요. 그사이 22분 동안 무슨 일이 일어나는지 우리는 알 수 없죠.”</div></div>
+          <figure class="hero-art"><img src="img/rover-delay.webp" alt="두 개의 블록 모형. 왼쪽은 풀밭과 숲 위에 커다란 흰 접시 안테나와 작은 관제 건물이 있는 지구 쪽 블록이고, 오른쪽은 옆면에 붉은 퇴적층이 켜켜이 드러난 화성 땅 블록이다. 화성 블록 위에는 바퀴 여섯 개 달린 로버가 모래 구덩이 앞에 서 있고, 안테나에서 화성 쪽으로 점선 전파가 호를 그리며 날아간다." width="900" height="900" loading="lazy"><figcaption><b>명령은 빛의 속력으로 가도 몇 분에서 몇십 분이 걸립니다</b> 지구의 거대한 접시 안테나가 보낸 전파는 1초에 약 30만 km를 가지만, 화성까지는 수천만~수억 km라서 편도에만 몇 분에서 20분 넘게 걸립니다. 그래서 화성 로버는 사람이 화면을 보며 운전할 수 없고, 하루치 명령을 미리 받아 스스로 길을 고르며 움직입니다. <span class="art-note">⚠ 안테나·로버·두 행성 사이 거리는 실제 비율이 아닙니다.</span></figcaption></figure>
           <div class="case-file"><b class="k">오늘의 자료</b> 지구–화성 거리 <b>1.32 AU</b> (약 1억 9,700만 km) &nbsp;|&nbsp; 전파는 빛과 같은 속력 <b>299,792 km/s</b> &nbsp;|&nbsp; 로버가 하루에 받을 수 있는 명령: <b>1회</b></div>
           <div class="gate loose" id="a-g1"></div>
         </section>
@@ -56,7 +57,7 @@
         <section class="scene" data-title="명령은 언제 도착하는가">
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“이제 아까 그 11분의 정체를 직접 재 봅시다. 거리를 바꿔 가며 <b>편도 지연</b>과 <b>왕복 지연</b>이 얼마나 되는지 확인하세요. 화성은 공전하면서 지구와의 거리가 <b>0.37 AU에서 2.67 AU까지</b> 크게 달라집니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="a-c-delay" width="900" height="350"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="a-c-delay" width="900" height="400"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="a-read"></div>
               <div>
@@ -75,7 +76,7 @@
         <section class="scene" data-title="로버에게 보낼 하루치 명령">
           <div class="story"><div class="who">👩‍🚀</div><div class="say"><span class="name">한별</span>“자, 실전입니다. 로버가 <b>900 m</b> 떨어진 삼각주 바위까지 <b>30솔(화성의 하루) 안에</b> 가야 합니다. 지연 때문에 명령은 하루에 한 번뿐이에요. 지구에서 사진으로 안전을 확인할 수 있는 거리는 로버 앞 <b>25 m</b>까지. 그보다 멀리 가라고 시키면 보지도 못한 땅을 밟게 됩니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="a-c-rover" width="900" height="360"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="a-c-rover" width="900" height="400"></canvas></div>
             <div class="controls">
               <div class="ctrl-group" style="flex:1 1 100%">
                 <div class="ctrl-label">하루치 명령 — “오늘은 몇 m 전진하라”<span class="val" id="a-L-val">20 m</span></div>
@@ -125,7 +126,7 @@
         <section class="scene" data-title="태양을 11년 동안 지켜보기">
           <div class="story"><div class="who">👨‍🔬</div><div class="say"><span class="name">도현</span>“예보의 시작은 <b>흑점 세기</b>입니다. 400년 전 <span data-view="who:갈릴레오 갈릴레이">갈릴레이</span> 때부터 사람들이 세어 온 숫자죠. 태양 관측 화면의 시간을 11년 동안 돌려 보세요. 흑점이 가장 적을 때와 가장 많을 때를 직접 찾아내야 합니다.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="b-c-sun" width="900" height="360"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="b-c-sun" width="900" height="380"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="b-read"></div>
               <div>
@@ -147,7 +148,7 @@
           <div class="story"><div class="who">👩‍💼</div><div class="say"><span class="name">전력 회사 담당자</span>“예보관님, 저희는 경보를 받으면 송전망을 <b>보호 모드</b>로 돌립니다. 다만 보호 모드에서는 보낼 수 있는 전력이 줄어 손해가 커요. <b>너무 일찍 돌려도, 너무 늦게 돌려도 안 됩니다.</b> 폭풍이 닿기 <b>6시간 안쪽</b>에 시작하도록 시각을 잡아 주세요.”</div></div>
           <figure class="hero-art"><img src="img/space-storm.webp" alt="투명한 아크릴 상자 안에 꾸민 우주 모형. 왼쪽 위의 태양에서 주황색 플라스마 구름이 뿜어져 나와 오른쪽 지구 쪽으로 퍼지고, 지구를 둘러싼 푸른 자기력선은 태양 쪽에서 둥글게 눌리고 반대쪽으로 길게 꼬리를 끈다. 지구의 남북 극지방에는 초록색 오로라 고리가 빛나고, 태양과 지구 사이에 작은 탐사선이 떠 있다." width="900" height="900" loading="lazy"><figcaption><b>지구는 보이지 않는 자기 방패 뒤에 숨어 있습니다</b> 지구 둘레에는 지구 자기장이 만든 자기권이 있어서, 태양에서 날아오는 전기를 띤 입자 대부분을 옆으로 비껴 보냅니다. 태양에서 거대한 플라스마 구름이 날아와 이 방패를 세게 누르면 자기권이 흔들리면서 극지방의 오로라가 커지고, 땅 위의 긴 송전선에는 원하지 않는 전류가 흐릅니다. 그림 속 크기와 거리는 실제 비율이 아닙니다.</figcaption></figure>
           <div class="stage-card">
-            <div class="canvas-wrap" style="background:#e4eaf1"><canvas id="b-c-storm" width="900" height="612"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="b-c-storm" width="900" height="612"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="b-storm-read"></div>
               <div>
@@ -203,6 +204,7 @@
         <section class="scene" data-title="2013년 2월 15일 아침">
           <div class="story narr"><div class="who">☄️</div><div class="say"><span class="name">이야기</span>2013년 2월 15일 아침, 러시아 <b><span data-place=55.1598,61.4026,10,s>첼랴빈스크</span></b> 상공에 해보다 밝은 불덩이가 나타났습니다. 지름 약 <b>20 m</b>짜리 돌덩이가 초속 약 <b>19 km</b>로 들어와 상공 30 km 부근에서 터진 것입니다. 충격파에 유리창이 한꺼번에 깨지면서 약 <b>1,500명</b>이 다쳤습니다. 이 소행성을 미리 발견한 사람은 <b>아무도 없었습니다.</b> 태양 쪽에서 날아와 망원경으로는 보이지 않았기 때문입니다.</div></div>
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">지구 접근 천체 감시팀장 수아</span>“그날 이후 감시망이 크게 늘었습니다. 그리고 오늘 아침, 우리 망원경이 하나 찾아냈어요. 지름 <b>150 m</b>급. 아직 몇 년 뒤의 일이지만, 궤도 계산 결과가 좋지 않습니다.”</div></div>
+          <figure class="hero-art"><img src="img/chelyabinsk.webp" alt="눈 덮인 겨울 도시를 블록처럼 잘라 낸 모형. 회색 아파트 단지와 얼어붙은 강이 있고, 블록 옆면에는 흙층이 보인다. 하늘 왼쪽 위에서 오른쪽 아래로 긴 회색 연기 꼬리를 끌며 밝게 빛나는 불덩이가 비스듬히 내려오고, 불덩이는 지붕보다 훨씬 높은 하늘에서 둥근 충격파에 싸여 있다." width="900" height="900" loading="lazy"><figcaption><b>첼랴빈스크의 돌덩이는 땅에 닿기 전에 하늘에서 터졌습니다</b> 2013년 첼랴빈스크의 소행성은 비스듬히 대기로 들어오며 공기와 부딪혀 불덩이가 되었고, 땅에 닿기 전 상공 약 30 km에서 터졌습니다. 이때 생긴 충격파가 몇십 초 뒤 도시에 닿아 유리창을 깨뜨렸습니다. 지름 20 m짜리도 이 정도였으니, 150 m급이라면 미리 찾아내 비껴가게 하는 것이 중요합니다. <span class="art-note">⚠ 불덩이의 높이와 크기, 건물 크기는 실제 비율이 아닙니다.</span></figcaption></figure>
           <div class="case-file"><b class="k">관측 자료</b> 지름 약 <b>150 m</b> &nbsp;|&nbsp; 밀도 약 <b>3,000 kg/m³</b>(암석질) &nbsp;|&nbsp; 충돌 속도 약 <b>19 km/s</b> &nbsp;|&nbsp; 지구를 빗나가게 하려면 궤도를 따라 <b>12,000 km</b> 이상 어긋나게 해야 함</div>
           <div class="gate loose" id="c-g1"></div>
         </section>
@@ -210,7 +212,7 @@
         <section class="scene" data-title="얼마나 큰 것이 얼마나 위험한가">
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“먼저 상대를 알아야죠. 소행성이 가진 <b>운동 에너지</b>가 그대로 충돌 에너지가 됩니다. 지름을 바꿔 가며 에너지가 어떻게 달라지는지 보세요. 지름이 <b>2배</b>가 되면 에너지는 몇 배가 될까요?”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="c-c-energy" width="900" height="370"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="c-c-energy" width="900" height="390"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="c-read"></div>
               <div class="ctrl-group">
@@ -227,7 +229,7 @@
           <div class="story"><div class="who">👩‍🔬</div><div class="say"><span class="name">수아</span>“영화처럼 폭파하지 않습니다. <b>살짝 밀어 속력만 아주 조금 바꿔 주면</b> 됩니다. 소행성은 그 뒤로 수천 번 공전하면서 조금씩 제자리에서 어긋나, 약속 장소에 늦게 도착하게 되거든요. 밀어 주는 힘이 같아도 <b>일찍 밀수록 어긋남이 훨씬 커집니다.</b>”</div></div>
           <div class="story"><div class="who">👨‍🔧</div><div class="say"><span class="name">충돌체 설계 기술자</span>“다만 조건이 있습니다. 속도 변화를 <b>40 mm/s보다 크게</b> 주려면 그만큼 세게 들이받아야 하는데, 그러면 소행성이 부서져 <b>여러 조각이 쏟아질</b> 위험이 있어요. 40 mm/s 이하로 맞춰 주세요.”</div></div>
           <div class="stage-card">
-            <div class="canvas-wrap stage"><canvas id="c-c-dart" width="900" height="380"></canvas></div>
+            <div class="canvas-wrap studio"><canvas id="c-c-dart" width="900" height="420"></canvas></div>
             <div class="sim-side">
               <div class="readout" id="c-dart-read"></div>
               <div>

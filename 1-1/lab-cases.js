@@ -2,7 +2,23 @@
    이야기에서 찾은 개념을 처음 보는 상황에 써 본다. 공용 엔진: ../assets/lab.js (sthLab) */
 (function () {
 "use strict";
-
+/* 스튜디오 말투 그림 도구(../assets/kit.js) — 큰 글자 · 흰 판정 카드 · 입체 공 */
+var K = window.sthKit, LT = K.LT;
+function bigT(ctx, a, b) { K.bigText(ctx, a, 22, 42, 24, "#ffffff"); if (b) K.bigText(ctx, b, 22, 70, 15, "#ffd35a"); }
+function jcard(ctx, x, y, w, h, title, rows, tip, good) {
+  K.card(ctx, x, y, w, h, title);
+  var yy = y + 62;
+  rows.forEach(function (r) {
+    if (r[3]) { K.t(ctx, r[0], x + 18, yy, { s: 12, w: "700", c: LT.mute }); K.t(ctx, r[1], x + 18, yy + 28, { s: 24, w: "900", c: r[2] || LT.ink }); yy += 50; }
+    else { K.row(ctx, r[0], r[1], x + 18, x + w - 18, yy, r[2]); yy += 28; }
+  });
+  if (tip) K.tip(ctx, tip, x + 12, y + h - 46, w - 24, good);
+}
+function photo(ctx, x, y, w, h, seed) {
+  ctx.save(); ctx.shadowColor = "rgba(20,30,60,.28)"; ctx.shadowBlur = 14; ctx.shadowOffsetY = 5; ctx.fillStyle = "#fbfbf7";
+  ctx.beginPath(); ctx.roundRect(x - 8, y - 8, w + 16, h + 30, 8); ctx.fill(); ctx.restore();
+  K.stage(ctx, x, y, w, h, "space", { seed: seed || 5, r: 4 });
+}
 window.sthLab({
   mount: "lab", key: "lab", result: "rLab",
   cases: [
@@ -26,24 +42,30 @@ window.sthLab({
       function power() { return flux() * 0.28 * A; }
       function draw() {
         H.paper(ctx, W, cv.H);
-        H.text(ctx, "햇빛은 거리의 제곱에 반비례해 약해진다", 40, 26, { s: 13.5, w: "900" });
-        H.text(ctx, "☀️", 50, 150, { s: 30 });
-        var sc = 60;
+        var P = power(), F = flux(), ok = dest === "jup" && P >= 500 && A <= 40;
+        bigT(ctx, "1 m²에 " + F.toFixed(0) + " W · 전력 " + P.toFixed(0) + " W", "햇빛은 거리의 제곱에 반비례해 약해진다");
+        /* 태양에서 퍼져 나가는 빛: 같은 빛이 거리 r 에서는 r² 넓이에 퍼진다 */
+        var sx = 70, sy = 190, sc = 52;
+        K.sun(ctx, sx, sy, 16); K.planet(ctx, sx, sy, 15, "#fff3c4", "#f08a1a");
         ["mars", "jup", "sat"].forEach(function (k) {
-          var x = 90 + DEST[k].a * sc * 0.85;
-          H.dot(ctx, x, 140, k === dest ? 9 : 5, k === dest ? H.v("--amber") : H.v("--mist"));
-          H.text(ctx, DEST[k].t.split(" ")[0], x, 170, { s: 11, w: "800", a: "center", c: k === dest ? H.v("--amber-700") : H.v("--mist") });
+          var x = sx + 40 + DEST[k].a * sc * 0.85, on = k === dest, hw = 10 + DEST[k].a * 7;
+          ctx.fillStyle = on ? "rgba(245,159,0,.16)" : "rgba(20,40,90,.05)"; ctx.beginPath(); ctx.moveTo(sx + 16, sy - 4); ctx.lineTo(x, sy - hw); ctx.lineTo(x, sy + hw); ctx.lineTo(sx + 16, sy + 4); ctx.closePath(); ctx.fill();
+          K.planet(ctx, x, sy, on ? 11 : 7, k === "mars" ? "#ef8f60" : (k === "jup" ? "#ecd6b2" : "#f3e2b6"), k === "mars" ? "#5a2412" : "#7a5634");
+          K.t(ctx, DEST[k].t, x, sy + 34, { s: 11, w: on ? "900" : "700", a: "center", c: on ? LT.orange : LT.mute });
         });
-        H.dot(ctx, 90 + 1 * sc * 0.85, 140, 5, H.v("--brand")); H.text(ctx, "지구", 90 + sc * 0.85, 122, { s: 10.5, a: "center", c: H.v("--brand-700") });
-        var P = power();
-        H.rows(ctx, 90, 210, [
-          ["1 m²에 닿는 햇빛", flux().toFixed(1) + " W"],
-          ["전지판 넓이", A + " m²", A > 40 ? "--rose-700" : null]
-        ], 50);
-        H.rows(ctx, 420, 210, [
-          ["얻는 전력 (효율 28%)", P.toFixed(0) + " W", dest === "jup" && P >= 500 ? "--green-700" : "--rose-700", true],
-          ["목표", "목성 궤도 500 W"]
-        ], 50);
+        var ex = sx + 40 + sc * 0.85; K.earth(ctx, ex, sy, 7); K.t(ctx, "지구 1 AU", ex, sy - 16, { s: 10.5, w: "800", a: "center", c: LT.blue });
+        /* 태양 전지판 미니어처(넓이에 따라 커진다) */
+        var I = K.iso({ ox: 300, oy: 250, s: 1, L: 10, D: 10 }), sd = Math.sqrt(A) * 7;
+        I.box(ctx, -sd / 2, -sd * .35, 0, sd / 2, sd * .35, 2.5, "#2f5fb3", "#24498c", "#1b386c");
+        ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1;
+        for (var i = 1; i < 5; i++) { var a1 = I.P(-sd / 2 + sd * i / 5, -sd * .35, 2.5), b1 = I.P(-sd / 2 + sd * i / 5, sd * .35, 2.5); ctx.beginPath(); ctx.moveTo(a1.x, a1.y); ctx.lineTo(b1.x, b1.y); ctx.stroke(); }
+        K.t(ctx, "전지판 " + A + " m²", 300, 296, { s: 11.5, w: "900", a: "center", c: A > 40 ? LT.red : LT.ink });
+        jcard(ctx, 610, 14, 276, cv.H - 28, "판정", [
+          ["1 m²에 닿는 햇빛", F.toFixed(1) + " W"],
+          ["전지판 넓이", A + " m²", A > 40 ? LT.red : LT.ink],
+          ["얻는 전력 (효율 28%)", P.toFixed(0) + " W", ok ? LT.green : LT.red, true],
+          ["목표", "목성 궤도 500 W · 40 m² 이하"]
+        ], ok ? "목성 궤도에서 500 W 확보" : (dest !== "jup" ? "목적지는 목성" : (A > 40 ? "너무 무겁다" : "전력이 모자라다")), ok ? true : null);
       }
       cv.canvas._redraw = draw;
       api.seg({ label: "목적지", value: "mars", options: [{ v: "mars", t: "화성" }, { v: "jup", t: "목성" }, { v: "sat", t: "토성" }], onPick: function (x) { dest = x; draw(); } });
@@ -86,22 +108,29 @@ window.sthLab({
       var TV = 12 * RS / 7200, TT = (AU - 16 * RS) / TV / 3600;
       function draw() {
         H.paper(ctx, W, cv.H);
-        H.text(ctx, "코로나그래프 사진 두 장 (가운데 원판은 가린 태양)", 40, 26, { s: 13.5, w: "900" });
-        [[200, "10시", 4], [480, "12시", 16]].forEach(function (p) {
-          var cx = p[0], cy = 150, sc = 6;
-          H.box(ctx, cx - 120, cy - 110, 240, 220, "#0b1020", 1);
-          ctx.fillStyle = "#555"; ctx.beginPath(); ctx.arc(cx, cy, 2 * sc, 0, Math.PI * 2); ctx.fill();
-          ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.setLineDash([3, 3]);
+        var okV = Math.abs(v - TV) <= 40, okT = Math.abs(t - TT) <= 2;
+        bigT(ctx, "2시간에 12 R☉ → 속도 " + v + " km/s", "코로나그래프 사진 두 장 (가운데 원판은 가린 태양)");
+        [[170, "10시", 4, 31], [440, "12시", 16, 32]].forEach(function (p) {
+          var cx = p[0], cy = 192, sc = 6.2, w = 236, h = 196;
+          photo(ctx, cx - w / 2, cy - h / 2, w, h, p[3]);
+          ctx.save(); ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 4); ctx.clip();
+          var co = ctx.createRadialGradient(cx, cy, 2 * sc, cx, cy, 9 * sc); co.addColorStop(0, "rgba(255,230,190,.35)"); co.addColorStop(1, "rgba(255,230,190,0)"); ctx.fillStyle = co; ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+          ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
           [4, 8, 12, 16].forEach(function (r) { ctx.beginPath(); ctx.arc(cx, cy, r * sc, 0, Math.PI * 2); ctx.stroke(); });
           ctx.setLineDash([]);
-          ctx.strokeStyle = "rgba(255,210,150,.9)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, p[2] * sc, -0.9, 0.3); ctx.stroke(); ctx.lineWidth = 1;
-          H.text(ctx, p[1] + " — 앞머리 " + p[2] + " R☉", cx, cy + 128, { s: 12, w: "800", a: "center" });
+          var cg = ctx.createRadialGradient(cx, cy, (p[2] - 3) * sc, cx, cy, p[2] * sc); cg.addColorStop(0, "rgba(255,210,150,0)"); cg.addColorStop(1, "rgba(255,210,150,.55)");
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, p[2] * sc, -0.9, 0.3); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = "rgba(255,220,170,.95)"; ctx.lineWidth = 3.5; ctx.beginPath(); ctx.arc(cx, cy, p[2] * sc, -0.9, 0.3); ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = "#4a4f5c"; ctx.beginPath(); ctx.arc(cx, cy, 2 * sc, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, 1 * sc, 0, Math.PI * 2); ctx.stroke();
+          K.t(ctx, p[1] + " — 앞머리 " + p[2] + " R☉", cx, cy + h / 2 + 18, { s: 12, w: "900", a: "center", c: LT.ink });
         });
-        H.rows(ctx, 650, 60, [
-          ["내가 정한 CME 속도", v + " km/s", Math.abs(v - TV) <= 40 ? "--green-700" : null],
-          ["남은 거리 (1 AU − 16 R☉)", ((AU - 16 * RS) / 1e8).toFixed(3) + " × 10⁸ km"],
-          ["내 예보: 12시 이후", t + " 시간", null, true]
-        ], 62);
+        jcard(ctx, 610, 14, 276, cv.H - 28, "판정 · 도착 예보", [
+          ["내가 정한 CME 속도", v + " km/s", okV ? LT.green : LT.red],
+          ["남은 거리 (1 AU − 16 R☉)", ((AU - 16 * RS) / 1e8).toFixed(3) + "×10⁸ km"],
+          ["내 예보: 12시 이후", t + " 시간", okV && okT ? LT.green : LT.ink, true]
+        ], !okV ? "먼저 사진 두 장으로 속도 구하기" : (okT ? "경보: 내일 밤 도착" : "남은 거리 ÷ 속도 다시 계산"), okV && okT ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "CME 속도", min: 200, max: 2000, step: 40, value: 600, fmt: function (x) { return x + " km/s"; }, onInput: function (x) { v = x; draw(); } });
@@ -142,18 +171,29 @@ window.sthLab({
       function D() { return 1329 / Math.sqrt(p) * Math.pow(10, -HM / 5) * 1000; }
       function draw() {
         H.paper(ctx, W, cv.H);
-        H.text(ctx, "절대 등급 22 — 같은 밝기, 알베도에 따라 다른 크기", 40, 26, { s: 13.5, w: "900" });
-        var d = D(), r = Math.min(120, d / 3);
-        var g = Math.round(40 + p * 400); g = Math.min(230, g);
-        ctx.fillStyle = "rgb(" + g + "," + g + "," + (g - 10) + ")"; ctx.beginPath(); ctx.arc(200, 160, r, 0, Math.PI * 2); ctx.fill();
-        H.line(ctx, [[200 - 140 / 3, 290], [200 + 140 / 3, 290]], H.v("--rose"), 3);
-        H.text(ctx, "레이더 지름 140 m", 200, 284, { s: 10.5, w: "800", a: "center", c: H.v("--rose-700") });
+        var d = D(), ok = Math.abs(d - 140) <= 5, r = Math.min(92, d / 3.4), cx = 210, cy = 172;
         var E = 0.5 * (4 / 3 * Math.PI * Math.pow(d / 2, 3) * 2600) * Math.pow(17000, 2) / 4.184e15;
-        H.rows(ctx, 440, 60, [
-          ["알베도", p.toFixed(2) + (p < 0.1 ? " (어두운 탄소질)" : p < 0.3 ? " (암석질)" : " (밝은 표면)")],
-          ["계산한 지름", d.toFixed(0) + " m", Math.abs(d - 140) <= 5 ? "--green-700" : "--rose-700", true],
+        bigT(ctx, "지름 " + d.toFixed(0) + " m", "절대 등급 22 — 같은 밝기, 알베도에 따라 다른 크기");
+        /* 바닥 그림자 + 알베도에 따라 밝기가 다른 입체 소행성 */
+        ctx.fillStyle = "rgba(20,30,60,.2)"; ctx.beginPath(); ctx.ellipse(cx + 6, cy + Math.min(r, 100) + 12, r * .9, r * .18, 0, 0, 6.2832); ctx.fill();
+        var gv = Math.min(225, Math.round(50 + p * 420));
+        K.planet(ctx, cx, cy, r, "rgb(" + gv + "," + gv + "," + Math.max(0, gv - 12) + ")", "rgb(" + Math.round(gv * .25) + "," + Math.round(gv * .25) + "," + Math.round(gv * .22) + ")");
+        var R = K.rng(3); ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.2832); ctx.clip();
+        for (var i = 0; i < 7; i++) { var qx = cx + (R() - .5) * r * 1.3, qy = cy + (R() - .5) * r * 1.3, qr = r * (.08 + R() * .14); ctx.fillStyle = "rgba(20,14,10,.28)"; ctx.beginPath(); ctx.arc(qx, qy, qr, 0, 6.2832); ctx.fill(); }
+        ctx.restore();
+        /* 레이더 지름 140 m 자(같은 축척) */
+        var rr = 140 / 1.7 / 2, rx0 = 430, ry = 246;
+        K.line(ctx, { x: rx0, y: ry }, { x: rx0 + 2 * rr, y: ry }, LT.red, 3);
+        [0, 2].forEach(function (k) { K.line(ctx, { x: rx0 + k * rr, y: ry - 6 }, { x: rx0 + k * rr, y: ry + 6 }, LT.red, 2); });
+        K.t(ctx, "레이더로 잰 지름 140 m (같은 축척)", rx0, ry + 22, { s: 11, w: "900", c: LT.red });
+        K.t(ctx, "알베도 " + p.toFixed(3) + (p < 0.1 ? " · 어두운 탄소질" : p < 0.3 ? " · 암석질" : " · 밝은 표면"), 430, 150, { s: 13, w: "900", c: LT.ink });
+        K.bar(ctx, 430, 162, 150, p / 0.5, LT.yellow);
+        K.t(ctx, "어둡다", 430, 190, { s: 10, c: LT.dim }); K.t(ctx, "밝다", 580, 190, { s: 10, c: LT.dim, a: "right" });
+        jcard(ctx, 610, 14, 276, cv.H - 28, "판정", [
+          ["알베도", p.toFixed(3)],
+          ["계산한 지름", d.toFixed(0) + " m", ok ? LT.green : LT.red, true],
           ["충돌 에너지 (17 km/s, TNT)", E >= 1 ? E.toFixed(0) + " 메가톤" : (E * 1000).toFixed(0) + " 킬로톤"]
-        ], 62);
+        ], ok ? "레이더 값과 같다 · 암석질" : (d > 140 ? "너무 크다 → 알베도를 키우기" : "너무 작다 → 알베도를 줄이기"), ok ? true : null);
       }
       cv.canvas._redraw = draw;
       api.slider({ label: "알베도 (빛을 반사하는 비율)", min: 0.02, max: 0.5, step: 0.005, value: 0.05, fmt: function (x) { return x.toFixed(3); }, onInput: function (x) { p = x; draw(); } });
